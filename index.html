@@ -301,6 +301,10 @@ input:focus{background:var(--surface)}
 .prev{border:0;background:var(--bg);border-radius:16px;padding:10px 14px;gap:4px}
 .prev .warn{margin-bottom:6px}
 .toast{background:var(--deep);color:#fff;border-radius:16px}
+.tbox{position:relative}
+.tbox textarea{display:block;padding-bottom:40px}
+.tbox .clr{position:absolute;inset-inline-start:8px;bottom:8px;border:0;border-radius:999px;background:var(--surface);color:var(--red);
+  font:inherit;font-size:13px;font-weight:600;padding:5px 12px;box-shadow:var(--shadow)}
 .toast button{color:#fff}
 </style>
 <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -335,7 +339,7 @@ input:focus{background:var(--surface)}
       <button class="bigmic" id="sayMic" type="button"><span class="micIco" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="2.5" width="6" height="12" rx="3" fill="currentColor"/><path d="M5 11a7 7 0 0 0 14 0M12 18v3.5M8.5 21.5h7"/></svg></span><span>دوس واتكلم</span></button>
       <div class="steps"><span><b>1</b> المشروع</span><span><b>2</b> من إمتى لإمتى</span><span><b>3</b> الفواتير</span></div>
       <div class="example">«مدن جدة <mark>من تسعة وعشرين لحد النهاردة</mark>، فندق ميتين، تاكسي سبعة وسبعين، بنزين مية وعشرة»</div>
-      <textarea id="sayTxt" dir="rtl" placeholder="الكلام هيظهر هنا… وتقدر تكتب كمان"></textarea>
+      <div class="tbox"><textarea id="sayTxt" dir="rtl" placeholder="الكلام هيظهر هنا… وتقدر تكتب كمان"></textarea><button class="clr" type="button" aria-label="امسح الكلام" hidden>✕ امسح</button></div>
       <button class="btn primary big" id="sayGo" type="button">✨ رتّبها</button>
       <div id="sayMsg" class="note" hidden></div>
       <div id="sayPrev" hidden></div>
@@ -393,7 +397,7 @@ input:focus{background:var(--surface)}
 
     <div class="say">
       <div class="sayhead"><b>زوّد فواتير بالكلام</b></div>
-      <textarea id="voiceTxt" dir="rtl" placeholder="فندق 200، بنزين مية وعشرة…"></textarea>
+      <div class="tbox"><textarea id="voiceTxt" dir="rtl" placeholder="فندق 200، بنزين مية وعشرة…"></textarea><button class="clr" type="button" aria-label="امسح الكلام" hidden>✕ امسح</button></div>
       <div class="confirm"><button class="btn mic2" id="micBtn" type="button">🎤 <span>اتكلم</span></button><button class="btn primary big grow" id="parseBtn" style="flex:1">ضيفها</button></div>
       <div id="voiceMsg" class="note" hidden></div>
       <div id="voicePrev" hidden></div>
@@ -785,13 +789,14 @@ const daysTxt=n=>n===1?'يوم واحد':n===2?'يومين':n<=10?`${n} أيام
 function normDigits(s){return String(s).replace(/[٠-٩]/g,d=>'٠١٢٣٤٥٦٧٨٩'.indexOf(d)).replace(/٫/g,'.')}
 let pending=[];
 function parseVoice(){
+  stopRec();
   const txt=$('voiceTxt').value.trim(); const msg=$('voiceMsg');
   if(!txt){msg.hidden=false;msg.textContent='اتكلم أو اكتب الفواتير الأول.';return}
   const dt=extractDates(txt);
   const items=parseItems(dt.rest).map(i=>({...i,note:''}));
   if(!items.length&&dt.from){applyDates(dt.from,dt.to);$('voiceTxt').value='';msg.hidden=true;$('voicePrev').hidden=true;return}
   if(!items.length){msg.hidden=false;msg.textContent='ما فهمتش فواتير من الكلام ده. قول النوع وبعده المبلغ، زي «بنزين مية وعشرة».';return}
-  msg.hidden=true; pending=items; pendingDates=dt.from?{from:dt.from,to:dt.to}:null; renderPending();
+  msg.hidden=true; pending=items; pendingDates=dt.from?{from:dt.from,to:dt.to}:null; renderPending(); clearBox('voiceTxt');
 }
 let pendingDates=null;
 function applyDates(from,to){
@@ -886,17 +891,30 @@ function mic(btn,target,idle,done){
   if(rec){try{rec.stop()}catch(e){}return}
   const SR=window.SpeechRecognition||window.webkitSpeechRecognition;
   if(!SR){target.focus();toast('المتصفح ده مش بيدعم المايك — استخدم مايك الكيبورد 🎤');return}
-  const base=target.value.trim()?target.value.trim()+' ':''; let finals='';
+  /* every new recording starts with an empty box (old words are wiped) */
   let r; try{r=new SR()}catch(e){target.focus();toast('استخدم مايك الكيبورد 🎤');return}
+  target.value=''; target.dispatchEvent(new Event('input'));
   rec=r; r.lang='ar-EG'; r.continuous=!done; r.interimResults=true;
   const lab=btn.querySelector('span'); btn.classList.add('on'); lab.textContent='بسمعك… دوس لما تخلص';
-  r.onresult=e=>{let interim='';for(let i=e.resultIndex;i<e.results.length;i++){const t=e.results[i][0].transcript;if(e.results[i].isFinal)finals+=t+' ';else interim+=t}
-    target.value=(base+finals+interim).trim()};
+  /* rebuild the text from all results each time. Android Chrome repeats earlier phrases inside later
+     results («فندق» then «فندق ميتين»), so a result that already contains the previous one replaces it */
+  r.onresult=e=>{const parts=[];
+    for(let i=0;i<e.results.length;i++){const t=e.results[i][0].transcript.trim();if(!t)continue;
+      const p=parts[parts.length-1];
+      if(p!=null&&t.startsWith(p)) parts[parts.length-1]=t;
+      else if(p!=null&&p.startsWith(t)) continue;
+      else parts.push(t)}
+    target.value=parts.join(' ').replace(/\s+/g,' ').trim(); target.dispatchEvent(new Event('input'))};
   r.onerror=e=>{if(e.error==='not-allowed'||e.error==='service-not-allowed')toast('اسمح للمايك من إعدادات المتصفح، أو استخدم مايك الكيبورد 🎤');
     else if(e.error==='no-speech')toast('ما سمعتش حاجة — جرّب تاني');};
   r.onend=()=>{rec=null;btn.classList.remove('on');lab.textContent=idle;if(done)done()};
   try{r.start()}catch(e){rec=null;btn.classList.remove('on');lab.textContent=idle;target.focus()}
 }
+/* ✕ on the text boxes */
+function clearBox(id){$(id).value='';$(id).dispatchEvent(new Event('input'))}
+document.querySelectorAll('.tbox').forEach(b=>{const ta=b.querySelector('textarea'),x=b.querySelector('.clr');
+  const upd=()=>{x.hidden=!ta.value.trim()}; ta.addEventListener('input',upd); upd();
+  x.onclick=()=>{if(rec){try{rec.abort()}catch(e){}}clearBox(ta.id);ta.focus()}});
 $('sayMic').onclick=()=>mic($('sayMic'),$('sayTxt'),'دوس واتكلم');
 $('micBtn').onclick=()=>mic($('micBtn'),$('voiceTxt'),'اتكلم');
 /* «قول التاريخ»: one sentence like «من 29 لحد النهاردة» fills من / إلى */
@@ -915,8 +933,10 @@ $('nDateTxt').addEventListener('change',()=>speakDate('nDateTxt',nApply));
 $('sDateMic').onclick=()=>mic($('sDateMic'),$('sDateTxt'),'قول التاريخ',()=>speakDate('sDateTxt',applyDates));
 $('sDateTxt').addEventListener('change',()=>speakDate('sDateTxt',applyDates));
 let sayDraft=null;
+/* pressing «رتّبها/ضيفها» while the mic is on: take what is in the box and drop late results */
+function stopRec(){if(rec){rec.onresult=null;try{rec.abort()}catch(e){}}}
 function sayParse(){
-  if(rec){try{rec.stop()}catch(e){}}
+  stopRec();
   const txt=$('sayTxt').value.trim(), msg=$('sayMsg');
   if(!txt){msg.hidden=false;msg.textContent='اتكلم أو اكتب العهدة الأول.';return}
   const dt=extractDates(txt);
@@ -928,7 +948,7 @@ function sayParse(){
   const alias=dt.before.filter(w=>w!==','&&!typeOf(w)&&!isNumTok(w)).join(' ').trim();
   const to=dt.to||todayISO(), from=dt.from||to;
   if(!items.length){msg.hidden=false;msg.textContent='ما لقيتش فواتير في الكلام. قول النوع وبعده المبلغ، زي «بنزين مية وعشرة».';return}
-  msg.hidden=true; sayDraft={project,code,from:from>to?to:from,to:from>to?from:to,items,alias:hit?'':alias,noDate:!dt.from}; renderSayPrev();
+  msg.hidden=true; sayDraft={project,code,from:from>to?to:from,to:from>to?from:to,items,alias:hit?'':alias,noDate:!dt.from}; renderSayPrev(); clearBox('sayTxt');
 }
 function renderSayPrev(){
   const D=sayDraft,P=$('sayPrev');P.hidden=false;P.innerHTML='';
