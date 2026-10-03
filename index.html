@@ -340,6 +340,69 @@ input:focus{background:var(--surface)}
 .tbox .clr{position:absolute;inset-inline-start:8px;bottom:8px;border:0;border-radius:999px;background:var(--surface);color:var(--red);
   font:inherit;font-size:13px;font-weight:600;padding:5px 12px;box-shadow:var(--shadow)}
 .toast button{color:#fff}
+
+/* ---- pages + tab bar ---- */
+.page{display:flex;flex-direction:column;gap:14px}
+.wrap{padding-bottom:calc(110px + env(safe-area-inset-bottom,0px))}
+.pagehead{display:flex;align-items:center;gap:10px;margin-top:2px}
+.pagehead h2{margin:0;font-size:24px;font-weight:700;letter-spacing:-.01em}
+.listhead{justify-content:space-between}
+.linkBtn{border:0;background:none;color:var(--brand);font:inherit;font-size:14px;font-weight:600;padding:4px 2px}
+.stats{display:grid;grid-template-columns:repeat(3,1fr);gap:10px}
+.stat{background:var(--surface);border-radius:16px;box-shadow:var(--shadow);padding:12px;display:flex;flex-direction:column;gap:2px;min-width:0}
+.stat small{font-size:12px;color:var(--muted);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.stat b{font-size:19px;font-weight:700;line-height:1.3;text-align:right;overflow:hidden;text-overflow:ellipsis}
+.stat span{font-size:11px;color:var(--muted)}
+.cta{display:flex;align-items:center;gap:14px;width:100%;border:0;border-radius:var(--r);padding:16px 18px;font:inherit;text-align:start;color:var(--ink);
+  background:var(--surface);box-shadow:var(--shadow);outline:2px solid color-mix(in srgb,var(--brand) 30%,transparent);transition:transform .15s var(--ease)}
+.cta:active{transform:scale(.98)}
+.ctaIco{width:46px;height:46px;border-radius:14px;display:grid;place-items:center;font-size:28px;font-weight:400;color:#fff;flex:none;
+  background:linear-gradient(145deg,var(--hero),var(--deep))}
+.ctaT{flex:1;display:flex;flex-direction:column}
+.ctaT b{font-size:17px}
+.ctaT small{font-size:13px;color:var(--muted)}
+.ctaArr{color:var(--brand);font-size:20px}
+.seg{display:grid;grid-template-columns:repeat(3,1fr);background:var(--surface);border-radius:14px;padding:4px;box-shadow:var(--shadow)}
+.seg button{border:0;background:none;font:inherit;font-size:14px;font-weight:600;color:var(--muted);padding:9px 6px;border-radius:10px;transition:background .2s,color .2s}
+.seg button[aria-pressed="true"]{background:var(--brand);color:var(--brand-ink)}
+.orline{display:flex;align-items:center;gap:12px;color:var(--muted);font-size:13px}
+.orline::before,.orline::after{content:"";flex:1;height:1px;background:var(--line)}
+.btn.wide{width:100%;background:var(--surface);border:0;box-shadow:var(--shadow)}
+/* about */
+.aboutHero{display:flex;flex-direction:column;align-items:center;text-align:center;gap:6px;padding:22px 16px 18px;border-radius:24px;color:#fff;position:relative;overflow:hidden;
+  background:radial-gradient(120% 140% at 0% 0%,rgba(255,255,255,.16),transparent 55%),radial-gradient(90% 120% at 100% 100%,rgba(80,200,255,.25),transparent 60%),linear-gradient(140deg,var(--hero),var(--deep))}
+.aLogo{width:84px;height:84px;border-radius:24px;background:#fff;display:grid;place-items:center;box-shadow:0 10px 26px rgba(0,0,0,.25);margin-bottom:6px}
+.aLogo img{width:72px;height:72px}
+.aboutHero h2{margin:0;font-size:24px;font-weight:700}
+.aboutHero p{margin:0;font-size:14px;opacity:.85}
+.verPill{margin-top:6px;background:rgba(255,255,255,.16);border-radius:999px;padding:4px 12px;font-size:13px}
+.credit{flex-direction:row;align-items:center;gap:14px}
+.cAv{width:52px;height:52px;border-radius:50%;flex:none;display:grid;place-items:center;font-size:22px;font-weight:700;color:#fff;background:linear-gradient(145deg,#18865a,#0d5c3d)}
+.credit div{display:flex;flex-direction:column;min-width:0}
+.credit small{font-size:12px;color:var(--muted)}
+.credit b{font-size:18px}
+.credit .en{font-size:12px;color:var(--muted);direction:ltr;text-align:right}
+.feat{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:10px}
+.feat li{display:flex;gap:12px;align-items:flex-start}
+.feat i{font-style:normal;width:38px;height:38px;border-radius:12px;background:var(--brand-soft);display:grid;place-items:center;font-size:19px;flex:none}
+.feat span{display:flex;flex-direction:column;font-size:13px;color:var(--muted);line-height:1.5}
+.feat b{font-size:15px;color:var(--ink);font-weight:600}
+.foot{text-align:center;font-size:12px;color:var(--muted);padding:6px 0 4px}
+/* bottom tab bar */
+.tabbar{position:fixed;z-index:6;inset-inline:0;bottom:0;display:grid;grid-template-columns:repeat(4,1fr);gap:2px;
+  max-width:560px;margin:0 auto;padding:8px 10px calc(8px + env(safe-area-inset-bottom,0px));
+  background:color-mix(in srgb,var(--surface) 88%,transparent);backdrop-filter:blur(16px);-webkit-backdrop-filter:blur(16px);
+  border-top:1px solid var(--line);border-radius:22px 22px 0 0;box-shadow:0 -8px 24px rgba(20,40,80,.08)}
+.tabbar button{border:0;background:none;font:inherit;color:var(--muted);display:flex;flex-direction:column;align-items:center;gap:3px;padding:6px 2px;border-radius:14px;font-size:11.5px;font-weight:600}
+.tabbar svg{width:24px;height:24px;fill:none;stroke:currentColor;stroke-width:1.9;stroke-linecap:round;stroke-linejoin:round}
+.tabbar button[aria-current]{color:var(--brand)}
+.tabbar button[aria-current] svg{fill:color-mix(in srgb,var(--brand) 16%,transparent)}
+.tabbar .tAdd .plus{width:44px;height:44px;margin-top:-22px;border-radius:15px;display:grid;place-items:center;font-size:28px;font-weight:400;color:#fff;
+  background:linear-gradient(145deg,var(--hero),var(--deep));box-shadow:0 8px 20px color-mix(in srgb,var(--deep) 40%,transparent);transition:transform .2s var(--ease)}
+.tabbar .tAdd[aria-current] .plus{transform:scale(1.06)}
+.tabbar button:active{transform:scale(.95)}
+body.subpage .toast{bottom:calc(96px + env(safe-area-inset-bottom,0px))}
+.toast{bottom:calc(100px + env(safe-area-inset-bottom,0px))}
 </style>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -354,8 +417,8 @@ input:focus{background:var(--surface)}
     <button class="iconBtn" id="nameEdit" type="button" aria-label="تغيير الاسم" title="تغيير الاسم">✎</button>
   </header>
 
-  <!-- HOME -->
-  <section id="home" class="wrap" style="padding:0;gap:14px">
+  <!-- TAB: HOME (summary) -->
+  <section id="home" class="page">
     <div class="welcome" id="installBox" hidden>
       <div class="wTop"><img src="icon-192.png" alt=""><div class="wT"><b>ثبّت «عهدة UUES» على موبايلك</b><small>يفتح من الشاشة الرئيسية زي أي أبلكيشن، ويشتغل من غير نت</small></div>
         <button class="x" id="installX" type="button" aria-label="إخفاء">×</button></div>
@@ -373,7 +436,25 @@ input:focus{background:var(--surface)}
       <div class="big num" id="yTotal">0.00</div>
       <div class="yearSub" id="ySub"></div>
     </div>
+    <div class="stats" id="stats"></div>
+    <button class="cta" id="goAdd" type="button"><span class="ctaIco" aria-hidden="true">+</span><span class="ctaT"><b>سجّل عهدة جديدة</b><small>بصوتك أو بالكتابة</small></span><span class="ctaArr" aria-hidden="true">←</span></button>
+    <div id="dbWarn" class="warn" hidden>الحفظ مش شغال هنا (ممكن تكون فاتح تصفح خاص). اللي هتكتبه هيتمسح لما تقفل الصفحة.</div>
+    <div id="projBox" hidden><div class="listhead"><b>حسب المشروع</b></div><div class="projs" id="projTotals"></div></div>
+    <div class="listhead"><b>آخر العهد</b><button class="linkBtn" type="button" data-tab="listView">عرض الكل ←</button></div>
+    <div class="list" id="recent"></div>
+  </section>
 
+  <!-- TAB: CUSTODIES -->
+  <section id="listView" class="page" hidden>
+    <div class="pagehead"><h2>العهد</h2><span class="badge" id="listCount"></span></div>
+    <div class="seg" id="filt" role="tablist"><button type="button" data-f="all" aria-pressed="true">الكل</button><button type="button" data-f="open" aria-pressed="false">لسه</button><button type="button" data-f="done" aria-pressed="false">اتسلمت</button></div>
+    <div class="list" id="list"><div class="empty">العهد اللي بتسجلها هتظهر هنا.</div></div>
+    <button class="btn primary big" id="xlsBtn" type="button">📊 Excel لكل العهد</button>
+  </section>
+
+  <!-- TAB: ADD -->
+  <section id="addView" class="page" hidden>
+    <div class="pagehead"><h2>إضافة عهدة</h2></div>
     <div class="say hero">
       <div class="sayhead"><b>سجّل عهدة بصوتك</b></div>
       <button class="bigmic" id="sayMic" type="button"><span class="micIco" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="2.5" width="6" height="12" rx="3" fill="currentColor"/><path d="M5 11a7 7 0 0 0 14 0M12 18v3.5M8.5 21.5h7"/></svg></span><span>دوس واتكلم</span></button>
@@ -383,28 +464,54 @@ input:focus{background:var(--surface)}
       <button class="btn primary big" id="sayGo" type="button">✨ رتّبها</button>
       <div id="sayMsg" class="note" hidden></div>
       <div id="sayPrev" hidden></div>
-      
+    </div>
+    <div class="orline"><span>أو</span></div>
+    <button class="btn big wide" id="newBtn" type="button">✍️ اكتبها بإيدك</button>
+  </section>
+
+  <!-- TAB: ABOUT -->
+  <section id="aboutView" class="page" hidden>
+    <div class="aboutHero">
+      <span class="aLogo"><img src="icon-192.png" alt=""></span>
+      <h2>عهدة UUES</h2>
+      <p>تصفية العهدة بصوتك — من الكلام لفورم Excel</p>
+      <span class="verPill">الإصدار <b class="num" id="verTxt"></b></span>
+    </div>
+    <button class="btn primary big" id="updBtn" type="button">🔄 حدّث التطبيق</button>
+
+    <div class="panel credit">
+      <span class="cAv" aria-hidden="true">س</span>
+      <div><small>فكرة وتصميم وتطوير</small><b>م. السيد محمد</b><span class="en">Eng. Elsayed Mohamad</span><span class="en">Automation Engineer · UUES</span></div>
     </div>
 
-    <div id="dbWarn" class="warn" hidden>الحفظ مش شغال هنا (ممكن تكون فاتح تصفح خاص). اللي هتكتبه هيتمسح لما تقفل الصفحة.</div>
-    <div id="projBox" hidden><div class="listhead" style="margin-bottom:8px"><b>حسب المشروع</b></div><div class="projs" id="projTotals"></div></div>
-    <div class="listhead"><b>العهد</b><span class="badge" id="listCount"></span></div>
-    <div class="list" id="list"><div class="empty">العهد اللي بتسجلها هتظهر هنا.</div></div>
-    <div class="actions">
-      <button class="btn grow" id="newBtn">+ عهدة بالكتابة</button>
-      <button class="btn grow" id="xlsBtn">Excel لكل العهد</button>
+    <div class="panel">
+      <strong>التطبيق بيعمل إيه؟</strong>
+      <ul class="feat">
+        <li><i>🎤</i><span><b>بتقول العهدة بصوتك</b>المشروع والتاريخ والفواتير في جملة واحدة.</span></li>
+        <li><i>📅</i><span><b>بيفهم التاريخ</b>«من 29 لحد النهاردة»، «من أول الشهر لامبارح»…</span></li>
+        <li><i>🍽️</i><span><b>بيحسب الوجبات لوحده</b>عدد الأيام × 60 ريال.</span></li>
+        <li><i>📊</i><span><b>بيطلّع فورم Excel</b>نفس فورم UUES Expenses Report، صفحة لكل عهدة + ملخص السنة.</span></li>
+        <li><i>📷</i><span><b>صورة لكل فاتورة</b>بتتحفظ على الموبايل.</span></li>
+        <li><i>📴</i><span><b>بيشتغل من غير نت</b>بعد أول مرة تفتحه.</span></li>
+      </ul>
     </div>
-    <div class="tools"><button class="btn" id="bkBtn" type="button">💾 نسخة احتياطية</button><button class="btn" id="rsBtn" type="button">↩️ استرجاع</button><button class="btn" id="imBtn" type="button">📷 كود</button></div>
-    <button class="btn share" id="shBtn" type="button">📤 ابعت التطبيق لزميل</button>
+
+    <div class="panel">
+      <strong>بياناتك</strong>
+      <div class="note">بياناتك بتتحفظ على الموبايل ده بس، ومحدش غيرك يقدر يشوفها. خد «نسخة احتياطية» كل فترة وابعتها لنفسك على واتساب، وتقدر ترجّعها على أي موبايل.</div>
+      <div class="tools"><button class="btn" id="bkBtn" type="button">💾 نسخة احتياطية</button><button class="btn" id="rsBtn" type="button">↩️ استرجاع</button><button class="btn" id="imBtn" type="button">📷 كود</button></div>
+      <div id="dlNote" class="note" hidden></div>
+    </div>
     <input type="file" id="rsFile" accept=".json,application/json" hidden>
-    <div class="note">بياناتك بتتحفظ على الموبايل ده بس. خد «نسخة احتياطية» كل فترة وابعتها لنفسك على واتساب، وتقدر ترجّعها على أي موبايل.</div>
-    <div id="dlNote" class="note" hidden></div>
-    <div class="ver"><span>الإصدار <b class="num" id="verTxt"></b></span><button class="btn" id="updBtn" type="button">🔄 حدّث التطبيق</button></div>
+
+    <button class="btn share" id="shBtn" type="button">📤 ابعت التطبيق لزميل</button>
+    <button class="btn wide" id="howInstall" type="button">📲 إزاي أثبّته على الموبايل؟</button>
+    <div class="foot">صُنع لزملاء UUES · © 2026</div>
   </section>
 
   <!-- NEW CUSTODY (manual) -->
-  <section id="newView" hidden>
-    <button class="back" data-go="home">→ رجوع</button>
+  <section id="newView" class="page" hidden>
+    <button class="back" data-go="back">→ رجوع</button>
     <div class="panel">
       <strong>عهدة جديدة</strong>
       <div class="fields">
@@ -421,8 +528,8 @@ input:focus{background:var(--surface)}
   </section>
 
   <!-- CUSTODY SHEET -->
-  <section id="sheet" hidden style="display:flex;flex-direction:column;gap:14px">
-    <button class="back" data-go="home">→ كل العهد</button>
+  <section id="sheet" class="page" hidden>
+    <button class="back" data-go="back">→ رجوع</button>
     <div class="headcard">
       <div class="hcode num" id="hCode"></div>
       <div class="hp" id="hProj"></div>
@@ -476,6 +583,12 @@ input:focus{background:var(--surface)}
 <datalist id="projList"></datalist>
 <input type="file" id="phFile" accept="image/*" hidden>
 <div class="viewer" id="viewer" hidden><img id="vImg" alt="صورة الفاتورة"><div class="vbar"><button class="btn" id="vRep" type="button">استبدال</button><button class="btn" id="vDel" type="button">حذف الصورة</button><button class="btn" id="vClose" type="button">إغلاق</button></div></div>
+<nav class="tabbar" id="tabbar" aria-label="الصفحات">
+  <button type="button" data-tab="home" aria-current="page"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3 10.5 12 3l9 7.5V20a1 1 0 0 1-1 1h-5v-6h-6v6H4a1 1 0 0 1-1-1z"/></svg><span>الرئيسية</span></button>
+  <button type="button" data-tab="listView"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 3h11l3 3v15H5zM8 9h8M8 13h8M8 17h5"/></svg><span>العهد</span></button>
+  <button type="button" data-tab="addView" class="tAdd"><span class="plus" aria-hidden="true">+</span><span>إضافة</span></button>
+  <button type="button" data-tab="aboutView"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M12 11v6M12 7.5v.5"/></svg><span>عن التطبيق</span></button>
+</nav>
 <div class="bar" id="bar" hidden><div class="in"><span class="note">الإجمالي</span><span class="t num" id="sTotal">0.00</span></div></div>
 <div class="toast" id="toast" hidden></div>
 <div class="scan" id="scan" hidden>
@@ -525,13 +638,27 @@ function grouped(c){
 }
 
 /* ---------- render ---------- */
+/* pages: 4 tabs (bottom bar) + 2 sub-pages (custody sheet, manual form) that hide the bar and come back with «رجوع» / phone back */
+const TABS=['home','listView','addView','aboutView'], SUBS=['newView','sheet'];
+let curTab='home';
 function show(view){
-  ['home','newView','sheet'].forEach(v=>$(v).hidden=v!==view);
-  $('sheet').style.display=view==='sheet'?'flex':'none';
-  $('bar').hidden=view!=='sheet';
+  if(view==='back') view=curTab;
+  [...TABS,...SUBS].forEach(v=>$(v).hidden=v!==view);
+  const sub=SUBS.includes(view);
+  if(!sub){curTab=view;
+    document.querySelectorAll('#tabbar [data-tab]').forEach(b=>b.toggleAttribute('aria-current',b.dataset.tab===view));
+    if(view!=='home'||location.hash)history.replaceState(null,'',view==='home'?location.pathname:'#/'+view)}
+  else if(!history.state||!history.state.sub) history.pushState({sub:view},'',location.pathname+location.hash);
+  $('tabbar').hidden=sub; $('bar').hidden=view!=='sheet';
+  document.body.classList.toggle('subpage',sub);
   const el=$(view); el.classList.remove('enter'); void el.offsetWidth; el.classList.add('enter');
   window.scrollTo({top:0,behavior:'instant'});
 }
+/* phone back button: closes a sub-page, then goes to the home tab */
+addEventListener('popstate',()=>{
+  if(!$('scan').hidden){scanStop();return}
+  if(SUBS.some(v=>!$(v).hidden)){show(curTab);renderHome();return}
+});
 function countTo(el,to){
   const from=+(el.dataset.v||0); el.dataset.v=to;
   if(from===to||matchMedia('(prefers-reduced-motion: reduce)').matches){el.textContent=fmt(to)+' SAR';return}
@@ -555,9 +682,26 @@ function renderHome(){
   keys.forEach(k=>{const r=document.createElement('div');r.className='pr';const a=document.createElement('span');a.textContent=k;
     const sm=document.createElement('small');sm.textContent=`(${byP[k].n})`;a.appendChild(sm);
     const v=document.createElement('span');v.className='num';v.textContent=fmt(byP[k].t);r.append(a,v);PT.appendChild(r)});
+  /* summary tiles */
+  const ym=todayISO().slice(0,7), monthSum=custodies.filter(c=>(c.to||'').slice(0,7)===ym).reduce((s,c)=>s+total(c),0);
+  const openN=custodies.filter(c=>c.status!=='submitted').length, dayN=custodies.reduce((s,c)=>s+days(c),0);
+  const ST=$('stats'); ST.innerHTML='';
+  [['الشهر ده',fmt(monthSum),'SAR'],['لسه ما اتسلمتش',openN,openN===1?'عهدة':'عهد'],['أيام شغل',dayN,'يوم']].forEach(([k,v,u])=>{
+    const t=document.createElement('div');t.className='stat';const a=document.createElement('small');a.textContent=k;
+    const b=document.createElement('b');b.className='num';b.textContent=v;const s=document.createElement('span');s.textContent=u;t.append(a,b,s);ST.appendChild(t)});
+  const sorted=[...custodies].sort((a,b)=>b.no-a.no);
+  const R=$('recent'); R.innerHTML='';
+  if(!sorted.length) R.innerHTML='<div class="empty">لسه ما سجلتش عهد. دوس «سجّل عهدة جديدة» فوق.</div>';
+  sorted.slice(0,3).forEach(c=>R.appendChild(custCard(c)));
   const L=$('list'); L.innerHTML='';
-  if(!custodies.length){L.innerHTML='<div class="empty">العهد اللي بتسجلها هتظهر هنا.</div>';return}
-  [...custodies].sort((a,b)=>b.no-a.no).forEach(c=>{
+  const shown=sorted.filter(c=>listFilter==='all'||(listFilter==='done')===(c.status==='submitted'));
+  if(!shown.length){L.innerHTML=`<div class="empty">${custodies.length?'مفيش عهد هنا.':'العهد اللي بتسجلها هتظهر هنا.'}</div>`;return}
+  shown.forEach(c=>L.appendChild(custCard(c)));
+}
+let listFilter='all';
+document.querySelectorAll('#filt [data-f]').forEach(b=>b.onclick=()=>{listFilter=b.dataset.f;
+  document.querySelectorAll('#filt [data-f]').forEach(x=>x.setAttribute('aria-pressed',x===b));renderHome()});
+function custCard(c){
     const b=document.createElement('button'); b.className='card'+(c.status==='submitted'?' done':'');
     b.innerHTML=`<span class="no num"></span><span class="proj"></span><span class="amt num"></span><span class="meta"></span>`;
     b.querySelector('.no').textContent=c.no;
@@ -567,8 +711,7 @@ function renderHome(){
     const mt=b.querySelector('.meta'); mt.textContent=`${dmy(c.from).slice(0,5)} ← ${dmy(c.to).slice(0,5)} · ${daysTxt(days(c))}`;
     const pl=document.createElement('span'); pl.className='pill '+(c.status==='submitted'?'done':'open'); pl.textContent=c.status==='submitted'?'اتسلمت':'لسه'; mt.appendChild(pl);
     b.onclick=()=>openSheet(c.id);
-    L.appendChild(b);
-  });
+    return b;
 }
 function renderChips(){
   const C=$('chips'); C.innerHTML='';
@@ -640,7 +783,7 @@ function mutate(fn){
 }
 
 /* ---------- actions ---------- */
-function openSheet(id){curId=id;show('sheet');renderChips();renderSheet()}
+function openSheet(id){curId=id;if(curTab==='addView'||curTab==='home'&&!$('newView').hidden)curTab='listView';show('sheet');renderChips();renderSheet()}
 $('newBtn').onclick=()=>{
   $('nProj').value='';$('nFile').value='';
   const last=[...custodies].sort((a,b)=>b.no-a.no)[0];
@@ -649,7 +792,13 @@ $('newBtn').onclick=()=>{
   if(last&&last.project){$('nProj').value=last.project;$('nFile').value=last.fileNo||codeOf(last.project)||''}
   renderProjects(); show('newView');
 };
-document.querySelectorAll('[data-go]').forEach(b=>b.onclick=()=>{show(b.dataset.go);renderHome()});
+document.querySelectorAll('[data-go]').forEach(b=>b.onclick=()=>{if(history.state&&history.state.sub)history.back();else{show('back');renderHome()}});
+document.querySelectorAll('[data-tab]').forEach(b=>b.onclick=()=>{
+  if(history.state&&history.state.sub)history.replaceState(null,'',location.pathname);
+  show(b.dataset.tab);renderHome()});
+$('goAdd').onclick=()=>show('addView');
+$('howInstall').onclick=()=>{try{localStorage.removeItem('uues_install_x')}catch(e){}show('home');
+  if(standalone){toast('التطبيق متثبّت عندك خلاص ✓');return}installHint()};
 $('createBtn').onclick=async()=>{
   const no=custodies.reduce((m,c)=>Math.max(m,c.no||0),0)+1;
   const c={id:'c'+no+'-'+uid(),no,project:$('nProj').value.trim(),fileNo:$('nFile').value.trim(),
@@ -1059,7 +1208,8 @@ function resetDel(){$('delWrap').innerHTML='<button class="btn danger" id="delBt
 function bindDel(){const b=$('delBtn');b.onclick=()=>{const w=$('delWrap');w.innerHTML='<span class="note">متأكد؟ العهدة هتتمسح بكل فواتيرها.</span>';
   const y=document.createElement('button');y.className='btn danger';y.textContent='أيوه امسح';
   const n=document.createElement('button');n.className='btn';n.textContent='لأ';w.append(y,n);n.onclick=resetDel;
-  y.onclick=async()=>{const id=curId;custodies=custodies.filter(c=>c.id!==id);resetDel();show('home');renderHome();
+  y.onclick=async()=>{const id=curId;custodies=custodies.filter(c=>c.id!==id);resetDel();
+    if(history.state&&history.state.sub)history.replaceState(null,'',location.pathname);show('listView');renderHome();
     if(col) try{await col.doc(id).delete()}catch(e){toast('ما اتمسحتش — جرّب تاني')}}}}
 bindDel();
 
@@ -1295,7 +1445,7 @@ $('shBtn').onclick=async()=>{
 };
 if('serviceWorker' in navigator&&location.protocol==='https:')navigator.serviceWorker.register('sw.js').catch(()=>{});
 /* ---------- quick update: version.json is never cached; a newer one shows a bar, one tap reloads ---------- */
-const APP_VER='2026.10.04.3';
+const APP_VER='2026.10.04.4';
 $('verTxt').textContent=APP_VER;
 async function hardUpdate(){
   $('updBtn').disabled=true;$('updBtn').textContent='⏳ بيحدّث…';
@@ -1315,6 +1465,7 @@ $('stBtn').onclick=()=>mutate(c=>{if(c.status==='submitted'){c.status='open';del
 
 /* ---------- boot ---------- */
 renderChips(); renderHome();
+{const m=location.hash.match(/^#\/(\w+)/); if(m&&TABS.includes(m[1])) show(m[1])}
 
 /* ---------- storage: this phone only (localStorage) ---------- */
 const LS={k:'uues_pc_v1',
