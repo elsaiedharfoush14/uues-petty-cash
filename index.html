@@ -306,6 +306,13 @@ input:focus{background:var(--surface)}
 .updBar{position:fixed;z-index:30;top:calc(10px + env(safe-area-inset-top,0px));left:50%;transform:translateX(-50%);width:calc(100% - 32px);max-width:528px;
   border:0;border-radius:16px;padding:14px 16px;font:inherit;font-weight:700;font-size:15px;color:#fff;
   background:linear-gradient(140deg,#18865a,#0d5c3d);box-shadow:0 12px 30px rgba(13,92,61,.4);animation:toastIn .3s var(--ease)}
+.scan{position:fixed;inset:0;z-index:25;background:rgba(5,12,24,.94);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:16px;padding:16px}
+.scanTitle{color:#fff;font-weight:700;font-size:17px}
+.scanBox{position:relative;width:min(84vw,360px);aspect-ratio:1;border-radius:22px;overflow:hidden;background:#000}
+.scanBox video{width:100%;height:100%;object-fit:cover}
+.scanFrame{position:absolute;inset:14%;border:3px solid #6ee7b0;border-radius:18px;box-shadow:0 0 0 999px rgba(0,0,0,.25)}
+.scan .vbar{display:flex;gap:8px;flex-wrap:wrap;justify-content:center}
+.scan .btn{background:#fff;color:#111;border:0}
 .tbox{position:relative}
 .tbox textarea{display:block;padding-bottom:40px}
 .tbox .clr{position:absolute;inset-inline-start:8px;bottom:8px;border:0;border-radius:999px;background:var(--surface);color:var(--red);
@@ -365,7 +372,7 @@ input:focus{background:var(--surface)}
       <button class="btn grow" id="newBtn">+ عهدة بالكتابة</button>
       <button class="btn grow" id="xlsBtn">Excel لكل العهد</button>
     </div>
-    <div class="tools"><button class="btn" id="bkBtn" type="button">💾 نسخة احتياطية</button><button class="btn" id="rsBtn" type="button">↩️ استرجاع</button><button class="btn" id="imBtn" type="button">📥 كود</button></div>
+    <div class="tools"><button class="btn" id="bkBtn" type="button">💾 نسخة احتياطية</button><button class="btn" id="rsBtn" type="button">↩️ استرجاع</button><button class="btn" id="imBtn" type="button">📷 كود</button></div>
     <input type="file" id="rsFile" accept=".json,application/json" hidden>
     <div class="note">بياناتك بتتحفظ على الموبايل ده بس. خد «نسخة احتياطية» كل فترة وابعتها لنفسك على واتساب، وتقدر ترجّعها على أي موبايل.</div>
     <div id="dlNote" class="note" hidden></div>
@@ -448,6 +455,11 @@ input:focus{background:var(--surface)}
 <div class="viewer" id="viewer" hidden><img id="vImg" alt="صورة الفاتورة"><div class="vbar"><button class="btn" id="vRep" type="button">استبدال</button><button class="btn" id="vDel" type="button">حذف الصورة</button><button class="btn" id="vClose" type="button">إغلاق</button></div></div>
 <div class="bar" id="bar" hidden><div class="in"><span class="note">الإجمالي</span><span class="t num" id="sTotal">0.00</span></div></div>
 <div class="toast" id="toast" hidden></div>
+<div class="scan" id="scan" hidden>
+  <div class="scanTitle">وجّه الكاميرا على كود الاستيراد</div>
+  <div class="scanBox"><video id="scanVid" playsinline muted></video><span class="scanFrame"></span></div>
+  <div class="vbar"><button class="btn" id="scanPaste" type="button">📋 الصق لينك بدل الكاميرا</button><button class="btn" id="scanClose" type="button">إلغاء</button></div>
+</div>
 <button class="updBar" id="updBar" type="button" hidden>🔄 فيه تحديث جديد للتطبيق — دوس هنا</button>
 
 <script src="exceljs.min.js"></script>
@@ -1175,9 +1187,40 @@ function importCode(s){
   let d=null; try{d=decodeImport(s)}catch(e){}
   if(!d){toast('الكود ده مش مظبوط');return}
   const list=Object.values(d.custodies).map(c=>`${c.no}) ${c.project} — ${dmy(c.from)} ← ${dmy(c.to)}`).join('\n');
-  if(confirm(`هتضيف ${Object.keys(d.custodies).length} عهدة للموبايل ده:\n\n${list}\n\nموافق؟`)) mergeBackup(d);
+  if(confirm(`هتضيف ${Object.keys(d.custodies).length} عهدة للموبايل ده:\n\n${list}\n\nموافق؟`)&&mergeBackup(d)&&!standalone)
+    setTimeout(()=>alert('العهد اتضافت هنا في المتصفح.\n\nلو مش ظاهرة في التطبيق اللي على الشاشة الرئيسية: افتح التطبيق، وانزل لتحت، ودوس «📷 كود»، وصوّر نفس الكود.'),300);
 }
-$('imBtn').onclick=()=>{const s=prompt('الصق لينك أو كود الاستيراد هنا:');if(s)importCode(s)};
+/* «📷 كود»: scan the import QR from INSIDE the installed app (Chrome/Safari keep separate data from it) */
+let scanStream=null, scanRaf=0;
+function scanStop(){cancelAnimationFrame(scanRaf);if(scanStream)scanStream.getTracks().forEach(t=>t.stop());scanStream=null;$('scanVid').srcObject=null;$('scan').hidden=true}
+function loadJsQR(){return window.jsQR?Promise.resolve():new Promise((ok,no)=>{const s=document.createElement('script');s.src='jsQR.js';s.onload=ok;s.onerror=no;document.head.appendChild(s)})}
+function pasteImport(){const s=prompt('الصق لينك أو كود الاستيراد هنا:');if(s)importCode(s)}
+async function scanStart(){
+  $('scan').hidden=false;
+  try{scanStream=await navigator.mediaDevices.getUserMedia({video:{facingMode:'environment'},audio:false})}
+  catch(e){scanStop();toast('اسمح للكاميرا، أو الصق اللينك');pasteImport();return}
+  const v=$('scanVid'); v.srcObject=scanStream; try{await v.play()}catch(e){}
+  let det=null; try{if('BarcodeDetector' in window)det=new BarcodeDetector({formats:['qr_code']})}catch(e){}
+  if(!det) try{await loadJsQR()}catch(e){}
+  const cv=document.createElement('canvas'), cx=cv.getContext('2d',{willReadFrequently:true});
+  const found=t=>{if(/import=|UUES1\./.test(t)){scanStop();importCode(t);return true}return false};
+  const tick=async()=>{
+    if(!scanStream) return;
+    if(v.readyState>=2){
+      try{
+        if(det){const r=await det.detect(v);if(r.some(x=>found(x.rawValue)))return}
+        else if(window.jsQR){const k=Math.min(1,900/Math.max(v.videoWidth,v.videoHeight));cv.width=v.videoWidth*k|0;cv.height=v.videoHeight*k|0;
+          cx.drawImage(v,0,0,cv.width,cv.height);const q=jsQR(cx.getImageData(0,0,cv.width,cv.height).data,cv.width,cv.height,{inversionAttempts:'dontInvert'});
+          if(q&&found(q.data))return}
+      }catch(e){}
+    }
+    scanRaf=requestAnimationFrame(tick);
+  };
+  tick();
+}
+$('imBtn').onclick=scanStart;
+$('scanClose').onclick=scanStop;
+$('scanPaste').onclick=()=>{scanStop();pasteImport()};
 if(/^#import=/.test(location.hash)){const h=location.hash;history.replaceState(null,'',location.pathname);setTimeout(()=>importCode(h),400)}
 function mergeBackup(d){
   try{
@@ -1214,7 +1257,7 @@ $('installX').onclick=()=>{$('installBox').hidden=true;try{localStorage.setItem(
 setTimeout(installHint,1200);
 if('serviceWorker' in navigator&&location.protocol==='https:')navigator.serviceWorker.register('sw.js').catch(()=>{});
 /* ---------- quick update: version.json is never cached; a newer one shows a bar, one tap reloads ---------- */
-const APP_VER='2026.10.04.1';
+const APP_VER='2026.10.04.2';
 $('verTxt').textContent=APP_VER;
 async function hardUpdate(){
   $('updBtn').disabled=true;$('updBtn').textContent='⏳ بيحدّث…';
