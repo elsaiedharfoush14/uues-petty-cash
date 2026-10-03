@@ -190,15 +190,131 @@ body{margin:0;min-height:100%;padding-top:env(safe-area-inset-top,0px)}
 .dp label{display:flex;flex-direction:column;gap:3px;font-size:12px;color:var(--muted)}
 .tools{display:flex;gap:10px;flex-wrap:wrap}
 .tools .btn{flex:1;font-size:14px;padding:9px 10px}
+
+/* ---- v3 look ---- */
+:root{--bg:#eef2f8;--surface:#fff;--ink:#14213a;--muted:#62708a;--line:#e1e7f0;--brand:#1a5fb4;--brand-ink:#fff;--brand-soft:#e6effb;
+  --deep:#0b2a55;--hero:#1a5fb4;--amber:#c47a00;--amber-soft:#fff3dc;--ok:#18865a;--ok-soft:#e1f5ec;
+  --f-ui:"IBM Plex Sans Arabic",system-ui,-apple-system,"Segoe UI",Tahoma,sans-serif;--f-num:"IBM Plex Sans Arabic",system-ui,sans-serif;
+  --shadow:0 1px 2px rgba(20,40,80,.05),0 8px 24px rgba(20,40,80,.08);--r:20px}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){--bg:#0b111a;--surface:#141d29;--ink:#e8eef6;--muted:#93a3b8;--line:#243142;
+  --brand:#5ea4ff;--brand-ink:#06121f;--brand-soft:#16273b;--deep:#0a1d38;--hero:#1d58a6;--amber:#f2b042;--amber-soft:#3a2c12;--ok:#4fd39a;--ok-soft:#10301f;
+  --shadow:0 1px 2px rgba(0,0,0,.5),0 10px 26px rgba(0,0,0,.4)}}
+:root[data-theme="dark"]{--bg:#0b111a;--surface:#141d29;--ink:#e8eef6;--muted:#93a3b8;--line:#243142;
+  --brand:#5ea4ff;--brand-ink:#06121f;--brand-soft:#16273b;--deep:#0a1d38;--hero:#1d58a6;--amber:#f2b042;--amber-soft:#3a2c12;--ok:#4fd39a;--ok-soft:#10301f}
+body{font-family:var(--f-ui);background:var(--bg);font-size:16px}
+.num{font-family:var(--f-num);font-variant-numeric:tabular-nums lining-nums}
+.wrap{gap:16px;padding-top:6px}
+/* app bar */
+.top{position:sticky;top:0;z-index:4;margin:0 -16px;padding:10px 16px;gap:12px;background:color-mix(in srgb,var(--bg) 85%,transparent);
+  backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px)}
+.logoTile{width:46px;height:46px;border-radius:14px;background:#fff;box-shadow:var(--shadow);display:grid;place-items:center;flex:none}
+.top .logoTile img{height:34px;width:auto}
+.top .tt{flex:1;min-width:0}
+.top h1{font-size:20px;font-weight:700;letter-spacing:-.01em;line-height:1.2}
+.top .sub{font-size:13px;color:var(--muted)}
+.top .sub span{color:var(--ink);font-weight:600;direction:ltr;unicode-bidi:isolate}
+.iconBtn{width:40px;height:40px;border-radius:12px;border:0;background:var(--surface);color:var(--brand);box-shadow:var(--shadow);font-size:18px;display:grid;place-items:center}
+/* year hero */
+.year{display:block;position:relative;overflow:hidden;border-radius:24px;padding:18px 20px 16px;color:#fff;
+  background:radial-gradient(120% 140% at 0% 0%,rgba(255,255,255,.16),transparent 55%),radial-gradient(90% 120% at 100% 100%,rgba(80,200,255,.25),transparent 60%),linear-gradient(140deg,var(--hero) 0%,var(--deep) 100%);
+  box-shadow:0 14px 34px color-mix(in srgb,var(--deep) 35%,transparent)}
+.year::after{content:"";position:absolute;inset-inline-start:-40px;top:-60px;width:180px;height:180px;border-radius:50%;border:28px solid rgba(255,255,255,.06)}
+.yTop{display:flex;justify-content:space-between;align-items:center;gap:8px}
+.year .lbl{font-size:14px;opacity:.85}
+.year .cnt{font-size:12px;background:rgba(255,255,255,.16);border-radius:999px;padding:3px 10px;opacity:1}
+.year .big{font-size:34px;font-weight:700;margin:6px 0 12px;letter-spacing:-.01em;text-align:right}
+.yearSub{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin:0;opacity:1}
+.yearSub .st{background:rgba(255,255,255,.12);border-radius:14px;padding:8px 12px;display:flex;flex-direction:column;gap:2px;position:relative;padding-inline-start:22px}
+.yearSub .st::before{content:"";position:absolute;inset-inline-start:10px;top:14px;width:7px;height:7px;border-radius:50%;background:#ffc861}
+.yearSub .st.done::before{background:#6ee7b0}
+.yearSub small{font-size:12px;opacity:.85}
+.yearSub b{font-size:16px;font-weight:600;text-align:right}
+/* cards */
+.say,.panel,.headcard,.card,.projs,.install{background:var(--surface);border-radius:var(--r);box-shadow:var(--shadow);border:0;outline:0}
+.say{padding:18px;gap:12px}
+.sayhead{font-size:18px}
+.say.hero{text-align:center}
+.say.hero .sayhead{justify-content:center}
+.say.hero #sayPrev,.say.hero #sayMsg{text-align:start}
+.say .bigmic,.bigmic{flex-direction:column;gap:8px;width:auto;margin:4px auto 2px;background:transparent;color:var(--ink);box-shadow:none;padding:0;border-radius:0;font-size:15px;font-weight:600}
+.say .bigmic.on{background:transparent}
+.micIco svg{width:36px;height:36px}
+.bigmic .micIco{width:84px;height:84px;border-radius:50%;display:grid;place-items:center;font-size:34px;color:#fff;
+  background:linear-gradient(145deg,var(--hero),var(--deep));box-shadow:0 10px 26px color-mix(in srgb,var(--brand) 45%,transparent),inset 0 1px 0 rgba(255,255,255,.25);
+  transition:transform .2s var(--ease)}
+.bigmic:active .micIco{transform:scale(.94)}
+.bigmic.on{background:transparent;animation:none;color:var(--red)}
+.bigmic.on .micIco{background:linear-gradient(145deg,#ef4b55,#b3202b);animation:ring 1.4s ease-out infinite}
+@keyframes ring{0%{box-shadow:0 0 0 0 rgba(239,75,85,.5),0 10px 26px rgba(239,75,85,.4)}100%{box-shadow:0 0 0 22px rgba(239,75,85,0),0 10px 26px rgba(239,75,85,.4)}}
+.steps{display:flex;justify-content:center;gap:6px;flex-wrap:wrap}
+.steps span{background:var(--brand-soft);color:var(--brand);border-radius:999px;padding:4px 11px 4px 12px;font-size:13px;font-weight:600}
+.steps b{display:inline-grid;place-items:center;width:18px;height:18px;border-radius:50%;background:var(--brand);color:var(--brand-ink);font-size:11px;margin-inline-end:5px}
+.example{font-size:14px;color:var(--muted);background:var(--bg);border-radius:14px;padding:10px 12px;line-height:1.7;text-align:right}
+.example mark{background:color-mix(in srgb,var(--amber) 22%,transparent);color:inherit;border-radius:6px;padding:0 3px}
+.say textarea{min-height:92px;border-radius:14px;font-size:16px;text-align:right}
+.btn{border-radius:14px;font-weight:600}
+.btn.primary{background:linear-gradient(145deg,var(--brand),color-mix(in srgb,var(--brand) 70%,var(--deep)));border:0}
+.btn.big{padding:14px;font-size:17px}
+input{border-radius:12px;background:var(--bg);border-color:transparent}
+input:focus{background:var(--surface)}
+.listhead{display:flex;align-items:center;gap:8px;font-size:17px}
+.badge{background:var(--brand-soft);color:var(--brand);border-radius:999px;font-size:12px;font-weight:700;padding:1px 9px}
+.badge:empty{display:none}
+.card{grid-template-columns:auto 1fr auto;padding:14px 16px;border-radius:18px;position:relative;overflow:hidden}
+.card::before{content:"";position:absolute;inset-block:12px;inset-inline-start:0;width:4px;border-radius:0 4px 4px 0;background:var(--amber)}
+.card.done::before{background:var(--ok)}
+.card .no{width:40px;height:40px;border-radius:12px;font-size:15px}
+.card .proj{font-size:16px}
+.card .amt{font-size:17px;font-weight:700;text-align:left}
+.card .amt small{font-size:11px;color:var(--muted);font-weight:500;margin-inline-start:3px}
+.pill{padding:2px 10px}
+.pill.open{background:var(--amber-soft);color:var(--amber)}
+.pill.done{background:var(--ok-soft);color:var(--ok)}
+.projs{padding:4px 16px}
+.actions .btn,.tools .btn{background:var(--surface);border:0;box-shadow:var(--shadow);padding:12px}
+.empty{border:2px dashed var(--line);border-radius:var(--r);background:transparent}
+/* sheet */
+.back{font-size:15px;padding:6px 0}
+.headcard{padding:18px;color:#fff;position:relative;overflow:hidden;
+  background:radial-gradient(120% 140% at 0% 0%,rgba(255,255,255,.14),transparent 55%),linear-gradient(140deg,var(--hero),var(--deep))}
+.headcard .hcode{font-size:13px;opacity:.8;text-align:right}
+.headcard .hp{font-size:22px;text-align:right;margin:2px 0 8px}
+.headcard .hm{display:inline-block;color:#fff;background:rgba(255,255,255,.15);border-radius:12px;padding:6px 12px;font-size:14px;text-align:right}
+.headcard #oneXls{background:#fff;color:var(--deep);box-shadow:none}
+.headcard .status{border-top-color:rgba(255,255,255,.18)}
+.headcard .status .btn{background:rgba(255,255,255,.14);color:#fff;border:0}
+.headcard .status .btn.ok{background:#fff;color:var(--ok)}
+.headcard .pill.open{background:rgba(255,200,97,.22);color:#ffd88c}
+.headcard .pill.done{background:rgba(110,231,176,.22);color:#9ff0c9}
+.sec{font-size:12px;letter-spacing:.06em;color:var(--brand);margin-top:10px;padding-bottom:2px}
+.row{padding:11px 0}
+.bar{background:transparent;border:0;backdrop-filter:none;-webkit-backdrop-filter:none;padding-top:0}
+.bar .in{background:linear-gradient(140deg,var(--hero),var(--deep));color:#fff;border-radius:18px;padding:12px 18px;box-shadow:0 12px 30px color-mix(in srgb,var(--deep) 40%,transparent)}
+.bar .note{color:rgba(255,255,255,.8)}
+.bar .t{font-size:22px;font-weight:700}
+/* «قول التاريخ» */
+.dsay{display:grid;grid-template-columns:auto 1fr;gap:8px;align-items:center}
+.dsay .btn{white-space:nowrap;background:var(--brand-soft);color:var(--brand);border:0;padding:10px 14px}
+.dsay .btn.on{background:var(--red);color:#fff}
+.dline{font-size:14px;color:var(--brand);background:var(--brand-soft);border-radius:12px;padding:8px 12px;line-height:1.6}
+.dline:empty{display:none}
+.prev{border:0;background:var(--bg);border-radius:16px;padding:10px 14px;gap:4px}
+.prev .warn{margin-bottom:6px}
+.toast{background:var(--deep);color:#fff;border-radius:16px}
+.toast button{color:#fff}
 </style>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+Arabic:wght@400;500;600;700&display=swap" rel="stylesheet">
 
 </head>
 <body>
 <div class="wrap" id="app">
-  <div class="top">
-    <img id="logo" alt="UUES">
-    <div><h1>تصفية العهدة</h1><div class="sub"><span id="empName">—</span> · UUES <button class="amtBtn" id="nameEdit" type="button" style="font-size:13px">تغيير الاسم</button></div></div>
-  </div>
+  <header class="top">
+    <span class="logoTile"><img id="logo" alt="UUES"></span>
+    <div class="tt"><h1>عهدة UUES</h1><div class="sub">أهلاً، <span id="empName">—</span></div></div>
+    <button class="iconBtn" id="nameEdit" type="button" aria-label="تغيير الاسم" title="تغيير الاسم">✎</button>
+  </header>
 
   <!-- HOME -->
   <section id="home" class="wrap" style="padding:0;gap:14px">
@@ -209,17 +325,18 @@ body{margin:0;min-height:100%;padding-top:env(safe-area-inset-top,0px)}
       <button class="btn primary big" id="nameSave" type="button">حفظ</button>
     </div>
     <div class="year">
-      <div><div class="lbl">إجمالي السنة</div><div class="big num" id="yTotal">0.00</div></div>
-      <div class="cnt" id="yCount">لا توجد عهد بعد</div>
+      <div class="yTop"><span class="lbl">إجمالي السنة</span><span class="cnt" id="yCount">لا توجد عهد بعد</span></div>
+      <div class="big num" id="yTotal">0.00</div>
       <div class="yearSub" id="ySub"></div>
     </div>
 
-    <div class="say">
-      <div class="sayhead"><b>قول العهدة</b></div>
-      <button class="bigmic" id="sayMic" type="button">🎤 <span>دوس واتكلم</span></button>
-      <div class="note">قول المشروع والتاريخ والفواتير، مثلاً: «مدن جدة من تسعة وعشرين لحد النهاردة، فندق ميتين، تاكسي سبعة وسبعين واتناشر، بنزين مية وعشرة». وبعدين دوس «رتّبها».</div>
-      <textarea id="sayTxt" dir="rtl" placeholder="مثال: مدن جدة من 29 لحد النهاردة، فندق 200، تاكسي 77، بنزين 110"></textarea>
-      <button class="btn primary big" id="sayGo" type="button">رتّبها</button>
+    <div class="say hero">
+      <div class="sayhead"><b>سجّل عهدة بصوتك</b></div>
+      <button class="bigmic" id="sayMic" type="button"><span class="micIco" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="2.5" width="6" height="12" rx="3" fill="currentColor"/><path d="M5 11a7 7 0 0 0 14 0M12 18v3.5M8.5 21.5h7"/></svg></span><span>دوس واتكلم</span></button>
+      <div class="steps"><span><b>1</b> المشروع</span><span><b>2</b> من إمتى لإمتى</span><span><b>3</b> الفواتير</span></div>
+      <div class="example">«مدن جدة <mark>من تسعة وعشرين لحد النهاردة</mark>، فندق ميتين، تاكسي سبعة وسبعين، بنزين مية وعشرة»</div>
+      <textarea id="sayTxt" dir="rtl" placeholder="الكلام هيظهر هنا… وتقدر تكتب كمان"></textarea>
+      <button class="btn primary big" id="sayGo" type="button">✨ رتّبها</button>
       <div id="sayMsg" class="note" hidden></div>
       <div id="sayPrev" hidden></div>
       
@@ -233,7 +350,7 @@ body{margin:0;min-height:100%;padding-top:env(safe-area-inset-top,0px)}
     </div>
     <div id="dbWarn" class="warn" hidden>الحفظ مش شغال هنا (ممكن تكون فاتح تصفح خاص). اللي هتكتبه هيتمسح لما تقفل الصفحة.</div>
     <div id="projBox" hidden><div class="listhead" style="margin-bottom:8px"><b>حسب المشروع</b></div><div class="projs" id="projTotals"></div></div>
-    <div class="listhead"><b>العهد</b></div>
+    <div class="listhead"><b>العهد</b><span class="badge" id="listCount"></span></div>
     <div class="list" id="list"><div class="empty">العهد اللي بتسجلها هتظهر هنا.</div></div>
     <div class="actions">
       <button class="btn grow" id="newBtn">+ عهدة بالكتابة</button>
@@ -254,8 +371,10 @@ body{margin:0;min-height:100%;padding-top:env(safe-area-inset-top,0px)}
         <div class="full"><div class="chips" id="projChips"></div></div>
         <label class="f full">المشروع<input id="nProj" list="projList" placeholder="أو اكتب مشروع جديد"></label>
         <label class="f full">الكود<input id="nFile" placeholder="RUES25-1025" dir="ltr"></label>
+        <div class="dsay full"><button class="btn mic2" id="nDateMic" type="button">🎤 <span>قول التاريخ</span></button><input id="nDateTxt" placeholder="مثلاً: من 29 لحد النهاردة" autocomplete="off"></div>
         <label class="f">من<input id="nFrom" type="date"></label>
         <label class="f">إلى<input id="nTo" type="date"></label>
+        <div class="dline full" id="nDateLine"></div>
       </div>
       <button class="btn primary big" id="createBtn">اعمل العهدة</button>
     </div>
@@ -265,6 +384,7 @@ body{margin:0;min-height:100%;padding-top:env(safe-area-inset-top,0px)}
   <section id="sheet" hidden style="display:flex;flex-direction:column;gap:14px">
     <button class="back" data-go="home">→ كل العهد</button>
     <div class="headcard">
+      <div class="hcode num" id="hCode"></div>
       <div class="hp" id="hProj"></div>
       <div class="hm" id="hMeta"></div>
       <button class="btn primary big" id="oneXls" style="width:100%;margin-top:10px">افتح العهدة دي في Excel</button>
@@ -301,6 +421,7 @@ body{margin:0;min-height:100%;padding-top:env(safe-area-inset-top,0px)}
       <div class="fields">
         <label class="f full">المشروع<input id="sProj" list="projList"></label>
         <label class="f full">الكود<input id="sFile" dir="ltr"></label>
+        <div class="dsay full"><button class="btn mic2" id="sDateMic" type="button">🎤 <span>قول التاريخ</span></button><input id="sDateTxt" placeholder="مثلاً: من 29 لحد النهاردة" autocomplete="off"></div>
         <label class="f">من<input id="sFrom" type="date"></label>
         <label class="f">إلى<input id="sTo" type="date"></label>
       </div>
@@ -377,9 +498,11 @@ function renderHome(){
   const y=custodies.reduce((s,c)=>s+total(c),0);
   countTo($('yTotal'),y);
   $('yCount').textContent=custodies.length?custodies.length+' عهدة':'لا توجد عهد بعد';
+  $('listCount').textContent=custodies.length||'';
   const openSum=custodies.filter(c=>c.status!=='submitted').reduce((s,c)=>s+total(c),0);
   const doneSum=y-openSum;
-  $('ySub').innerHTML=''; if(custodies.length){[['لسه ما اتسلمش',openSum],['اتسلم',doneSum]].forEach(([k,v])=>{const e=document.createElement('span');e.textContent=`${k}: ${fmt(v)}`;$('ySub').appendChild(e)})}
+  $('ySub').innerHTML=''; if(custodies.length){[['لسه ما اتسلمش',openSum,'open'],['اتسلم للحسابات',doneSum,'done']].forEach(([k,v,cl])=>{const e=document.createElement('span');e.className='st '+cl;
+    const a=document.createElement('small');a.textContent=k;const b=document.createElement('b');b.className='num';b.textContent=fmt(v);e.append(a,b);$('ySub').appendChild(e)})}
   const byP={}; custodies.forEach(c=>{const k=c.project||'بدون اسم';(byP[k]=byP[k]||{t:0,n:0,code:c.fileNo||''});byP[k].t+=total(c);byP[k].n++});
   const PT=$('projTotals'); PT.innerHTML=''; const keys=Object.keys(byP).sort((a,b)=>byP[b].t-byP[a].t);
   $('projBox').hidden=keys.length<2;
@@ -389,12 +512,13 @@ function renderHome(){
   const L=$('list'); L.innerHTML='';
   if(!custodies.length){L.innerHTML='<div class="empty">العهد اللي بتسجلها هتظهر هنا.</div>';return}
   [...custodies].sort((a,b)=>b.no-a.no).forEach(c=>{
-    const b=document.createElement('button'); b.className='card';
+    const b=document.createElement('button'); b.className='card'+(c.status==='submitted'?' done':'');
     b.innerHTML=`<span class="no num"></span><span class="proj"></span><span class="amt num"></span><span class="meta"></span>`;
     b.querySelector('.no').textContent=c.no;
     b.querySelector('.proj').textContent=c.project||'بدون اسم';
     b.querySelector('.amt').textContent=fmt(total(c));
-    const mt=b.querySelector('.meta'); mt.textContent=`${c.fileNo||''} · ${dmy(c.from)} ← ${dmy(c.to)}`;
+    {const s=document.createElement('small');s.textContent='SAR';b.querySelector('.amt').appendChild(s)}
+    const mt=b.querySelector('.meta'); mt.textContent=`${dmy(c.from).slice(0,5)} ← ${dmy(c.to).slice(0,5)} · ${daysTxt(days(c))}`;
     const pl=document.createElement('span'); pl.className='pill '+(c.status==='submitted'?'done':'open'); pl.textContent=c.status==='submitted'?'اتسلمت':'لسه'; mt.appendChild(pl);
     b.onclick=()=>openSheet(c.id);
     L.appendChild(b);
@@ -414,7 +538,8 @@ function renderSheet(){
   $('stTxt').innerHTML=''; const sp=document.createElement('span'); sp.className='pill '+(sub?'done':'open');
   sp.textContent=sub?('اتسلمت للحسابات'+(c.submittedAt?' · '+dmy(c.submittedAt):'')):'لسه ما اتسلمتش'; $('stTxt').appendChild(sp);
   $('stBtn').textContent=sub?'رجّعها «لسه»':'✓ علّم إنها اتسلمت'; $('stBtn').className='btn'+(sub?'':' ok');
-  $('hMeta').textContent=`${c.fileNo||''} · ${dmy(c.from)} ← ${dmy(c.to)} · ${days(c)} يوم`;
+  $('hCode').textContent=c.fileNo||'';
+  $('hMeta').textContent=`📅 ${rangeTxt(c)} · ${daysTxt(days(c))}`;
   $('sDays').textContent=days(c); $('sMeals').textContent=fmt(meals(c));
   countTo($('sTotal'),total(c));
   const g=grouped(c), R=$('rows'); R.innerHTML='';
@@ -443,12 +568,12 @@ function renderSheet(){
     if(extra) box.appendChild(extra);
     if(!list.length&&!extra){const e=document.createElement('div');e.className='note';e.textContent='—';box.appendChild(e)}
   };
-  sec('LODGING',g.L); sec('TRANSPORTATION',g.T);
+  sec('🏨 LODGING',g.L); sec('🚕 TRANSPORTATION',g.T);
   const m=document.createElement('div');m.className='row meal';
   m.innerHTML='<span class="lab"></span><span class="num"></span><span></span>';
   m.querySelector('.lab').textContent=`${days(c)} days x ${c.mealRate||RATE} SAR`;
   m.querySelector('.num').textContent=fmt(meals(c));
-  sec('MEALS',[],m); sec('MISCELLANEOUS',g.M);
+  sec('🍽️ MEALS',[],m); sec('📦 MISCELLANEOUS',g.M);
   seen=new Set((c.items||[]).map(i=>i.id)); seenFor=c.id;
 }
 function render(){renderHome(); if(!$('sheet').hidden) renderSheet()}
@@ -473,7 +598,8 @@ function openSheet(id){curId=id;show('sheet');renderChips();renderSheet()}
 $('newBtn').onclick=()=>{
   $('nProj').value='';$('nFile').value='';
   const last=[...custodies].sort((a,b)=>b.no-a.no)[0];
-  $('nFrom').value=last&&last.to?last.to:todayISO(); $('nTo').value=todayISO();
+  $('nFrom').value=todayISO(); $('nTo').value=todayISO(); $('nDateTxt').value='';
+  dateLine($('nDateLine'),$('nFrom').value,$('nTo').value);
   if(last&&last.project){$('nProj').value=last.project;$('nFile').value=last.fileNo||codeOf(last.project)||''}
   renderProjects(); show('newView');
 };
@@ -561,47 +687,123 @@ function parseItems(txt){
 const localParse=parseItems;
 const pad2=n=>String(n).padStart(2,'0');
 const isoLocal=d=>`${d.getFullYear()}-${pad2(d.getMonth()+1)}-${pad2(d.getDate())}`;
-function dayVal(tks){
-  const j=tks.join(' ');
-  if(/النهارد|اليوم|دلوقت|الوقت/.test(j)) return {rel:0};
-  if(/امبارح|امس/.test(j)) return {rel:-1};
-  const m=j.match(/(\d{1,2})\s*[\/\-.]\s*(\d{1,2})/); if(m) return {d:+m[1],mo:+m[2]};
-  let s=0,ok=0; for(const t of tks){if(/^\d+$/.test(t)){s+=+t;ok=1}else if(NUMW[t]!=null&&NUMW[t]<100){s+=NUMW[t];ok=1}}
-  return ok&&s>=1&&s<=31?{d:s}:null;
+/* ---------- spoken dates: «من 29 لحد النهاردة», «من 25 أغسطس لـ 5 سبتمبر», «من أول الشهر لامبارح» ---------- */
+const MONW={};
+[[1,'يناير جانفي كانون2 january jan'],[2,'فبراير شباط february feb'],[3,'مارس اذار march mar'],[4,'ابريل نيسان april apr'],
+ [5,'مايو ايار may'],[6,'يونيو يونيه حزيران june jun'],[7,'يوليو يوليه تموز july jul'],[8,'اغسطس august aug'],
+ [9,'سبتمبر ايلول september sep sept'],[10,'اكتوبر october oct'],[11,'نوفمبر november nov'],[12,'ديسمبر december dec']]
+ .forEach(([v,ws])=>ws.split(' ').forEach(w=>MONW[AR_N(w)]=v));
+const REL0=/^(النهارده|النهارد|النهاردا|انهارده|اليوم|دلوقتي|دلوقت|الوقتي)$/, REL1=/^(امبارح|مبارح|امس|البارحه)$/;
+const DSEP=['لحد','لحدي','لغايه','لغايت','الي','حتي','ل','لين','للين','ولحد','وحتي','والي','لغاية'];
+const DFILL=/^(يوم|تاريخ|بتاريخ|الشهر|شهر|ده|دا|هذا|اللي|فات|الماضي|السابق|سنه|عام|م|ميلادي)$/;
+const isDateWord=w=>/^\d{1,4}$/.test(w)||/^\d{1,2}[\/\-.]\d{1,2}([\/\-.]\d{2,4})?$/.test(w)||(NUMW[w]!=null&&NUMW[w]<100)||MONW[w]!=null||REL0.test(w)||REL1.test(w)||w==='اول'||w==='اخر';
+function dateTokens(txt){
+  const out=[];
+  tokens(txt).forEach(t=>{
+    if(t.startsWith('لل')&&isDateWord('ال'+t.slice(2))){out.push('ل','ال'+t.slice(2));return}
+    if(t.length>1&&t[0]==='ل'&&!DSEP.includes(t)&&isDateWord(t.slice(1))){out.push('ل',t.slice(1));return}
+    if(t.length>1&&t[0]==='و'&&MONW[t.slice(1)]!=null){out.push(t.slice(1));return}
+    out.push(t)});
+  return out;
 }
-function dayISO(v){
+/* read one date starting at tk[i]; returns {v,end} or null. v = {rel}|{d,mo,y,last,prevMonth} */
+function readDate(tk,i){
+  const v={}; let k=i, any=false, dayDone=false, tens=0, units=0;
+  for(;k<tk.length;k++){
+    const w=tk[k];
+    if(w===','||DSEP.includes(w)&&any) break;
+    if(REL0.test(w)){if(any)break;return {v:{rel:0},end:k+1}}
+    if(REL1.test(w)){if(any)break;const two=tk[k-1]==='اول';return {v:{rel:two?-2:-1},end:k+1}}
+    if(w==='اول'&&REL1.test(tk[k+1]||'')) continue;
+    let m=w.match(/^(\d{1,2})[\/\-.](\d{1,2})(?:[\/\-.](\d{2,4}))?$/);
+    if(m){if(dayDone||v.mo)break;v.d=+m[1];v.mo=+m[2];if(m[3])v.y=+m[3]<100?2000+ +m[3]:+m[3];any=dayDone=true;continue}
+    if(/^\d{4}$/.test(w)){if(+w>=2000&&+w<=2100&&any){v.y=+w;continue}break}
+    if(/^\d{1,2}$/.test(w)){const n=+w;
+      if(tk[k-1]==='شهر'&&!v.mo&&n>=1&&n<=12){v.mo=n;any=true;continue}
+      if(!dayDone&&!tens&&!units&&n>=1&&n<=31){v.d=n;any=dayDone=true;continue}
+      if(dayDone&&!v.mo&&n>=1&&n<=12&&/^\d/.test(tk[k-1]||'')){v.mo=n;continue}
+      break}
+    if(NUMW[w]!=null&&NUMW[w]<100){const n=NUMW[w];
+      if(tk[k-1]==='شهر'&&!v.mo&&n<=12){v.mo=n;any=true;continue}
+      if(dayDone) break;
+      if(n>=20){if(tens)break;tens=n}else if(n>=10){if(tens||units)break;units=n}else{if(units)break;units=n}
+      v.d=tens+units; any=true; if(tens&&units)dayDone=true; continue}
+    if(MONW[w]!=null){if(v.mo)break;v.mo=MONW[w];any=true;continue}
+    if(w==='اول'){if(any)break;v.d=1;any=dayDone=true;continue}
+    if(w==='اخر'){if(any)break;v.last=true;any=dayDone=true;continue}
+    if(w==='الشهر'&&/^(اللي|الي)$/.test(tk[k+1]||'')&&/^(فات|الماضي)$/.test(tk[k+2]||'')){v.prevMonth=true;any=true;k+=2;continue}
+    if(DFILL.test(w)) continue;
+    break;
+  }
+  if(!any||v.d!=null&&(v.d<1||v.d>31)) return null;
+  return {v,end:k};
+}
+const dim=(y,m0)=>new Date(y,m0+1,0).getDate();
+const mk=(y,m0,d)=>{const yy=y+Math.floor(m0/12),mm=((m0%12)+12)%12;return new Date(yy,mm,Math.min(d,dim(yy,mm)),12)};
+/* resolve against a reference day: the end date is resolved against today, the start date against the end date */
+function resolveDate(v,ref,isEnd){
   const now=new Date(); now.setHours(12,0,0,0);
-  if(v.rel!=null) return isoLocal(new Date(now.getTime()+v.rel*864e5));
-  let dt=new Date(now.getFullYear(),v.mo?v.mo-1:now.getMonth(),v.d,12);
-  if(dt>now) dt=v.mo?new Date(now.getFullYear()-1,v.mo-1,v.d,12):new Date(now.getFullYear(),now.getMonth()-1,v.d,12);
-  return isoLocal(dt);
+  if(v.rel!=null) return new Date(now.getTime()+v.rel*864e5);
+  let y=v.y||ref.getFullYear(), m0=v.mo?v.mo-1:(v.prevMonth?now.getMonth()-1:ref.getMonth());
+  const day=v.last?31:(v.d!=null?v.d:(isEnd?31:1));
+  let dt=mk(y,m0,day);
+  if(v.y) return dt;
+  if(isEnd){
+    const lim=new Date(now.getTime()+(v.mo?60:7)*864e5);
+    if(!v.prevMonth&&dt>lim) dt=v.mo?mk(y-1,m0,day):mk(y,m0-1,day);
+  }else if(dt>ref){
+    dt=v.mo||v.prevMonth?mk(y-1,m0,day):mk(y,m0-1,day);
+  }
+  return dt;
 }
 function extractDates(txt){
-  const tk=tokens(txt); const SEP=['لحد','لغايه','لغايت','الي','حتي','لـ'];
+  const tk=dateTokens(txt), none={from:null,to:null,before:[],rest:tokens(txt).join(' ')};
   for(let i=0;i<tk.length;i++){
-    if(tk[i]!=='من') continue;
-    let j=-1; for(let k=i+1;k<Math.min(tk.length,i+7);k++){if(SEP.includes(tk[k])){j=k;break}}
-    if(j<0) continue;
-    const fromT=tk.slice(i+1,j); let e=j+1; const toT=[];
-    while(e<tk.length&&toT.length<4&&tk[e]!==','&&(/^\d/.test(tk[e])||NUMW[tk[e]]!=null&&NUMW[tk[e]]<100||/النهارد|اليوم|امبارح|امس|دلوقت/.test(tk[e]))){toT.push(tk[e]);e++}
-    const f=dayVal(fromT), t=dayVal(toT);
-    if(!f) continue;
-    return {from:dayISO(f),to:t?dayISO(t):todayISO(),before:tk.slice(0,i),rest:[...tk.slice(0,i),',',...tk.slice(e)].join(' ')};
+    if(tk[i]!=='من'&&tk[i]!=='ومن') continue;
+    const f=readDate(tk,i+1); if(!f) continue;
+    let e=f.end, t=null;
+    if(DSEP.includes(tk[e])){t=readDate(tk,e+1);if(t)e=t.end}
+    const toD=t?resolveDate(t.v,new Date(),true):(()=>{const d=new Date();d.setHours(12,0,0,0);return d})();
+    let fromD=resolveDate(f.v,toD,false);
+    if(fromD>toD){const x=fromD;fromD=toD;return {from:isoLocal(fromD),to:isoLocal(x),before:tk.slice(0,i),rest:[...tk.slice(0,i),',',...tk.slice(e)].join(' ')}}
+    return {from:isoLocal(fromD),to:isoLocal(toD),before:tk.slice(0,i),rest:[...tk.slice(0,i),',',...tk.slice(e)].join(' ')};
   }
-  return {from:null,to:null,before:[],rest:tk.join(' ')};
+  /* «يوم 28» / «بتاريخ 28/9» = one day */
+  for(let i=0;i<tk.length;i++){
+    if(!/^(يوم|بتاريخ|تاريخ)$/.test(tk[i])) continue;
+    const f=readDate(tk,i+1); if(!f||f.v.rel==null&&f.v.d==null) continue;
+    const d=isoLocal(resolveDate(f.v,new Date(Date.now()+7*864e5),false));
+    return {from:d,to:d,before:tk.slice(0,i),rest:[...tk.slice(0,i),',',...tk.slice(f.end)].join(' ')};
+  }
+  return none;
 }
+/* «الأحد 29 سبتمبر» */
+const AR_DATE=s=>{if(!s)return'';const [y,m,d]=s.split('-').map(Number);
+  try{return new Date(y,m-1,d,12).toLocaleDateString('ar-EG-u-nu-latn',{weekday:'long',day:'numeric',month:'long'})}catch(e){return dmy(s)}};
+const rangeTxt=c=>c.from&&c.to?`${AR_DATE(c.from)} ← ${AR_DATE(c.to)}`:'';
+const daysTxt=n=>n===1?'يوم واحد':n===2?'يومين':n<=10?`${n} أيام`:`${n} يوم`;
 function normDigits(s){return String(s).replace(/[٠-٩]/g,d=>'٠١٢٣٤٥٦٧٨٩'.indexOf(d)).replace(/٫/g,'.')}
 let pending=[];
 function parseVoice(){
   const txt=$('voiceTxt').value.trim(); const msg=$('voiceMsg');
   if(!txt){msg.hidden=false;msg.textContent='اتكلم أو اكتب الفواتير الأول.';return}
-  const items=parseItems(txt).map(i=>({...i,note:''}));
+  const dt=extractDates(txt);
+  const items=parseItems(dt.rest).map(i=>({...i,note:''}));
+  if(!items.length&&dt.from){applyDates(dt.from,dt.to);$('voiceTxt').value='';msg.hidden=true;$('voicePrev').hidden=true;return}
   if(!items.length){msg.hidden=false;msg.textContent='ما فهمتش فواتير من الكلام ده. قول النوع وبعده المبلغ، زي «بنزين مية وعشرة».';return}
-  msg.hidden=true; pending=items; renderPending();
+  msg.hidden=true; pending=items; pendingDates=dt.from?{from:dt.from,to:dt.to}:null; renderPending();
+}
+let pendingDates=null;
+function applyDates(from,to){
+  if(from>to){const x=from;from=to;to=x}
+  mutate(c=>{c.from=from;c.to=to});
+  toast(`📅 ${daysTxt(days({from,to}))}: ${dmy(from)} ← ${dmy(to)}`);
 }
 function renderPending(){
   const P=$('voicePrev'); P.hidden=false; P.innerHTML='';
   const box=document.createElement('div'); box.className='prev';
+  if(pendingDates){const d=document.createElement('div');d.className='dline';
+    d.textContent=`📅 ${rangeTxt(pendingDates)} · ${daysTxt(days(pendingDates))}`;box.appendChild(d)}
   pending.forEach((i,n)=>{const r=document.createElement('div');r.className='row';
     r.innerHTML='<span class="ar"></span><span class="lab"></span><span class="num"></span>';
     r.querySelector('.ar').textContent=(TYPES.find(t=>t.k===i.type)||{}).ar||'';
@@ -612,10 +814,11 @@ function renderPending(){
   const ok=document.createElement('button');ok.className='btn primary';ok.textContent=`أضف الـ ${pending.length} (${fmt(sum)})`;
   const no=document.createElement('button');no.className='btn';no.textContent='إلغاء';
   a.append(ok,no); P.append(box,a);
-  ok.onclick=()=>{const add=pending;pending=[];P.hidden=true;$('voiceTxt').value='';
-    mutate(c=>{c.items=[...(c.items||[]),...add.map(i=>({id:uid(),type:i.type,amount:i.amount,remark:i.note||c.project||''}))]});
-    toast(`اتضافت ${add.length} فواتير`)};
-  no.onclick=()=>{pending=[];P.hidden=true};
+  ok.onclick=()=>{const add=pending,pd=pendingDates;pending=[];pendingDates=null;P.hidden=true;$('voiceTxt').value='';
+    mutate(c=>{c.items=[...(c.items||[]),...add.map(i=>({id:uid(),type:i.type,amount:i.amount,remark:i.note||c.project||''}))];
+      if(pd){c.from=pd.from;c.to=pd.to}});
+    toast(`اتضافت ${add.length} فواتير`+(pd?' واتعدّل التاريخ':''))};
+  no.onclick=()=>{pending=[];pendingDates=null;P.hidden=true};
 }
 $('parseBtn').onclick=parseVoice;
 /* ---------- employee name (per copy) ---------- */
@@ -679,23 +882,38 @@ function findProject(txt){
 
 /* ---------- mic: browser speech recognition ---------- */
 let rec=null;
-function mic(btn,target,idle){
+function mic(btn,target,idle,done){
   if(rec){try{rec.stop()}catch(e){}return}
   const SR=window.SpeechRecognition||window.webkitSpeechRecognition;
   if(!SR){target.focus();toast('المتصفح ده مش بيدعم المايك — استخدم مايك الكيبورد 🎤');return}
   const base=target.value.trim()?target.value.trim()+' ':''; let finals='';
   let r; try{r=new SR()}catch(e){target.focus();toast('استخدم مايك الكيبورد 🎤');return}
-  rec=r; r.lang='ar-EG'; r.continuous=true; r.interimResults=true;
+  rec=r; r.lang='ar-EG'; r.continuous=!done; r.interimResults=true;
   const lab=btn.querySelector('span'); btn.classList.add('on'); lab.textContent='بسمعك… دوس لما تخلص';
   r.onresult=e=>{let interim='';for(let i=e.resultIndex;i<e.results.length;i++){const t=e.results[i][0].transcript;if(e.results[i].isFinal)finals+=t+' ';else interim+=t}
     target.value=(base+finals+interim).trim()};
   r.onerror=e=>{if(e.error==='not-allowed'||e.error==='service-not-allowed')toast('اسمح للمايك من إعدادات المتصفح، أو استخدم مايك الكيبورد 🎤');
     else if(e.error==='no-speech')toast('ما سمعتش حاجة — جرّب تاني');};
-  r.onend=()=>{rec=null;btn.classList.remove('on');lab.textContent=idle};
+  r.onend=()=>{rec=null;btn.classList.remove('on');lab.textContent=idle;if(done)done()};
   try{r.start()}catch(e){rec=null;btn.classList.remove('on');lab.textContent=idle;target.focus()}
 }
 $('sayMic').onclick=()=>mic($('sayMic'),$('sayTxt'),'دوس واتكلم');
 $('micBtn').onclick=()=>mic($('micBtn'),$('voiceTxt'),'اتكلم');
+/* «قول التاريخ»: one sentence like «من 29 لحد النهاردة» fills من / إلى */
+function speakDate(txtId,apply){
+  const t=$(txtId).value.trim(); if(!t) return;
+  const q=/(^|\s)و?من\s/.test(AR_N(t))?t:'من '+t;
+  const d=extractDates(q);
+  if(!d.from){toast('ما فهمتش التاريخ — قول مثلاً «من 29 لحد النهاردة»');return}
+  apply(d.from,d.to); $(txtId).value='';
+}
+function dateLine(el,from,to){el.textContent=from&&to?`📅 ${rangeTxt({from,to})} · ${daysTxt(days({from,to}))} · وجبات ${fmt(days({from,to})*RATE)}`:''}
+const nApply=(f,t)=>{if(f>t){const x=f;f=t;t=x}$('nFrom').value=f;$('nTo').value=t;dateLine($('nDateLine'),f,t)};
+$('nDateMic').onclick=()=>mic($('nDateMic'),$('nDateTxt'),'قول التاريخ',()=>speakDate('nDateTxt',nApply));
+$('nDateTxt').addEventListener('change',()=>speakDate('nDateTxt',nApply));
+['nFrom','nTo'].forEach(id=>$(id).addEventListener('change',()=>dateLine($('nDateLine'),$('nFrom').value,$('nTo').value)));
+$('sDateMic').onclick=()=>mic($('sDateMic'),$('sDateTxt'),'قول التاريخ',()=>speakDate('sDateTxt',applyDates));
+$('sDateTxt').addEventListener('change',()=>speakDate('sDateTxt',applyDates));
 let sayDraft=null;
 function sayParse(){
   if(rec){try{rec.stop()}catch(e){}}
@@ -710,7 +928,7 @@ function sayParse(){
   const alias=dt.before.filter(w=>w!==','&&!typeOf(w)&&!isNumTok(w)).join(' ').trim();
   const to=dt.to||todayISO(), from=dt.from||to;
   if(!items.length){msg.hidden=false;msg.textContent='ما لقيتش فواتير في الكلام. قول النوع وبعده المبلغ، زي «بنزين مية وعشرة».';return}
-  msg.hidden=true; sayDraft={project,code,from:from>to?to:from,to:from>to?from:to,items,alias:hit?'':alias}; renderSayPrev();
+  msg.hidden=true; sayDraft={project,code,from:from>to?to:from,to:from>to?from:to,items,alias:hit?'':alias,noDate:!dt.from}; renderSayPrev();
 }
 function renderSayPrev(){
   const D=sayDraft,P=$('sayPrev');P.hidden=false;P.innerHTML='';
@@ -718,11 +936,12 @@ function renderSayPrev(){
   box.innerHTML=`<div class="dp">
     <label class="full">المشروع<input id="dpProj" list="projList"></label>
     <label class="full">الكود<input id="dpCode" dir="ltr"></label>
-    <label>من<input id="dpFrom" type="date"></label><label>إلى<input id="dpTo" type="date"></label></div>
+    <label>من<input id="dpFrom" type="date"></label><label>إلى<input id="dpTo" type="date"></label><div class="dline full" id="dpLine"></div></div>
     <div class="kv" style="padding:4px 0"><span>الوجبات</span><b class="num" id="dpMeals"></b></div><div id="dpRows"></div>
     <div class="kv" style="padding:8px 0"><b>الإجمالي</b><b class="num" id="dpTot"></b></div>`;
   P.appendChild(box);
   $('dpProj').value=D.project||''; $('dpCode').value=D.code||''; $('dpFrom').value=D.from; $('dpTo').value=D.to;
+  if(D.noDate){const w=document.createElement('div');w.className='warn';w.textContent='ما سمعتش تاريخ، فاتحط النهاردة. قول «من … لحد …» أو غيّره تحت.';box.prepend(w)}
   if(D.alias&&!D.project) $('dpProj').placeholder='اسم المشروع بالإنجليزي (قلت: «'+D.alias+'»)';
   const R=$('dpRows');
   D.items.forEach(i=>{const r=document.createElement('div');r.className='row';r.style.gridTemplateColumns='auto 1fr auto';
@@ -730,7 +949,8 @@ function renderSayPrev(){
     r.querySelector('.ar').textContent=(TYPES.find(t=>t.k===i.type)||{}).ar||'';
     r.querySelector('.lab').textContent=i.type; r.querySelector('.num').textContent=fmt(i.amount); R.appendChild(r)});
   const upd=()=>{D.from=$('dpFrom').value||D.from;D.to=$('dpTo').value||D.to;const f={from:D.from,to:D.to,items:D.items,mealRate:RATE};
-    $('dpMeals').textContent=`${days(f)} × 60 = ${fmt(meals(f))}`;$('dpTot').textContent=fmt(total(f))+' SAR'};
+    $('dpMeals').textContent=`${days(f)} × 60 = ${fmt(meals(f))}`;$('dpTot').textContent=fmt(total(f))+' SAR';
+    $('dpLine').textContent=`📅 ${rangeTxt(f)} · ${daysTxt(days(f))}`};
   upd(); $('dpFrom').onchange=upd; $('dpTo').onchange=upd;
   $('dpProj').oninput=()=>{const c=codeOf($('dpProj').value);if(c)$('dpCode').value=c};
   const a=document.createElement('div');a.className='confirm';a.style.marginTop='10px';
