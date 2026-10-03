@@ -365,7 +365,7 @@ input:focus{background:var(--surface)}
       <button class="btn grow" id="newBtn">+ عهدة بالكتابة</button>
       <button class="btn grow" id="xlsBtn">Excel لكل العهد</button>
     </div>
-    <div class="tools"><button class="btn" id="bkBtn" type="button">💾 نسخة احتياطية</button><button class="btn" id="rsBtn" type="button">↩️ استرجاع</button></div>
+    <div class="tools"><button class="btn" id="bkBtn" type="button">💾 نسخة احتياطية</button><button class="btn" id="rsBtn" type="button">↩️ استرجاع</button><button class="btn" id="imBtn" type="button">📥 كود</button></div>
     <input type="file" id="rsFile" accept=".json,application/json" hidden>
     <div class="note">بياناتك بتتحفظ على الموبايل ده بس. خد «نسخة احتياطية» كل فترة وابعتها لنفسك على واتساب، وتقدر ترجّعها على أي موبايل.</div>
     <div id="dlNote" class="note" hidden></div>
@@ -1155,6 +1155,32 @@ $('bkBtn').onclick=()=>{const o=LS.read();o.app='uues-petty-cash';o.savedAt=new 
 $('rsBtn').onclick=()=>$('rsFile').click();
 $('rsFile').onchange=async e=>{const f=e.target.files&&e.target.files[0];e.target.value='';if(!f)return;
   try{const d=JSON.parse(await f.text());if(!d||typeof d!=='object'||!d.custodies)throw 0;
+    if(!mergeBackup(d))throw 0}
+  catch(err){toast('الملف ده مش نسخة احتياطية من الأبلكيشن')}};
+/* ---------- import code / link (#import=…): moves custodies to this phone without a file ----------
+   code = base64url(JSON {v:1,n:name,c:[[no,project,fileNo,from,to,submitted,[[typeIndex,amount],…]],…],p:[[name,code],…]}) */
+function decodeImport(s){
+  s=String(s||'').trim(); const m=s.match(/(?:import=|UUES1\.)([A-Za-z0-9_\-]+)/); if(!m) return null;
+  const b=atob(m[1].replace(/-/g,'+').replace(/_/g,'/')+'==='.slice((m[1].length+3)%4));
+  const j=JSON.parse(new TextDecoder().decode(Uint8Array.from(b,ch=>ch.charCodeAt(0))));
+  if(!j||j.v!==1||!Array.isArray(j.c)) return null;
+  const d={name:j.n||'',custodies:{},projects:{}};
+  j.c.forEach(([no,project,fileNo,from,to,sub,items])=>{
+    d.custodies['c'+no+'-'+String(from).replace(/-/g,'')]={no,project,fileNo,from,to,mealRate:RATE,advance:0,status:sub?'submitted':'open',createdAt:Date.now(),
+      items:(items||[]).map(([t,a])=>({id:uid(),type:(TYPES[t]||TYPES[0]).k,amount:a,remark:project}))}});
+  (j.p||[]).forEach(([name,code])=>{d.projects['p-'+String(name).toLowerCase().replace(/[^a-z0-9]+/g,'')]={name,code,aliases:[]}});
+  return d;
+}
+function importCode(s){
+  let d=null; try{d=decodeImport(s)}catch(e){}
+  if(!d){toast('الكود ده مش مظبوط');return}
+  const list=Object.values(d.custodies).map(c=>`${c.no}) ${c.project} — ${dmy(c.from)} ← ${dmy(c.to)}`).join('\n');
+  if(confirm(`هتضيف ${Object.keys(d.custodies).length} عهدة للموبايل ده:\n\n${list}\n\nموافق؟`)) mergeBackup(d);
+}
+$('imBtn').onclick=()=>{const s=prompt('الصق لينك أو كود الاستيراد هنا:');if(s)importCode(s)};
+if(/^#import=/.test(location.hash)){const h=location.hash;history.replaceState(null,'',location.pathname);setTimeout(()=>importCode(h),400)}
+function mergeBackup(d){
+  try{
     const o=LS.read();o.custodies=o.custodies||{};o.projects=o.projects||{};
     /* a restored custody whose number is already used by a different custody gets the next free number */
     let maxNo=Object.values(o.custodies).reduce((m,c)=>Math.max(m,c.no||0),0);
@@ -1168,8 +1194,9 @@ $('rsFile').onchange=async e=>{const f=e.target.files&&e.target.files[0];e.targe
     if(!LS.write(o))throw 0;
     custodies=Object.entries(o.custodies).map(([id,c])=>({...c,id}));
     projects=Object.entries(o.projects).map(([id,p])=>({...p,id})).sort((x,y)=>x.name.localeCompare(y.name));
-    setEmp(o.name||'');renderProjects();render();toast(`اترجعت ${Object.keys(d.custodies).length} عهدة`)}
-  catch(err){toast('الملف ده مش نسخة احتياطية من الأبلكيشن')}};
+    setEmp(o.name||'');renderProjects();render();toast(`اترجعت ${Object.keys(d.custodies).length} عهدة`);return true}
+  catch(err){return false}
+}
 /* install prompt */
 const standalone=matchMedia('(display-mode: standalone)').matches||navigator.standalone;
 let deferredInstall=null;
@@ -1187,7 +1214,7 @@ $('installX').onclick=()=>{$('installBox').hidden=true;try{localStorage.setItem(
 setTimeout(installHint,1200);
 if('serviceWorker' in navigator&&location.protocol==='https:')navigator.serviceWorker.register('sw.js').catch(()=>{});
 /* ---------- quick update: version.json is never cached; a newer one shows a bar, one tap reloads ---------- */
-const APP_VER='2026.10.03.6';
+const APP_VER='2026.10.04.1';
 $('verTxt').textContent=APP_VER;
 async function hardUpdate(){
   $('updBtn').disabled=true;$('updBtn').textContent='⏳ بيحدّث…';
