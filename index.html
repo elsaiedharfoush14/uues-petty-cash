@@ -888,33 +888,46 @@ function findProject(txt){
 /* ---------- mic: browser speech recognition ---------- */
 let rec=null;
 function mic(btn,target,idle,done){
-  if(rec){try{rec.stop()}catch(e){}return}
+  if(rec){rec.stop();return}
   const SR=window.SpeechRecognition||window.webkitSpeechRecognition;
   if(!SR){target.focus();toast('المتصفح ده مش بيدعم المايك — استخدم مايك الكيبورد 🎤');return}
-  /* every new recording starts with an empty box (old words are wiped) */
-  let r; try{r=new SR()}catch(e){target.focus();toast('استخدم مايك الكيبورد 🎤');return}
-  target.value=''; target.dispatchEvent(new Event('input'));
-  rec=r; r.lang='ar-EG'; r.continuous=!done; r.interimResults=true;
-  const lab=btn.querySelector('span'); btn.classList.add('on'); lab.textContent='بسمعك… دوس لما تخلص';
-  /* rebuild the text from all results each time. Android Chrome repeats earlier phrases inside later
-     results («فندق» then «فندق ميتين»), so a result that already contains the previous one replaces it */
-  r.onresult=e=>{const parts=[];
-    for(let i=0;i<e.results.length;i++){const t=e.results[i][0].transcript.trim();if(!t)continue;
-      const p=parts[parts.length-1];
-      if(p!=null&&t.startsWith(p)) parts[parts.length-1]=t;
-      else if(p!=null&&p.startsWith(t)) continue;
-      else parts.push(t)}
-    target.value=parts.join(' ').replace(/\s+/g,' ').trim(); target.dispatchEvent(new Event('input'))};
-  r.onerror=e=>{if(e.error==='not-allowed'||e.error==='service-not-allowed')toast('اسمح للمايك من إعدادات المتصفح، أو استخدم مايك الكيبورد 🎤');
-    else if(e.error==='no-speech')toast('ما سمعتش حاجة — جرّب تاني');};
-  r.onend=()=>{rec=null;btn.classList.remove('on');lab.textContent=idle;if(done)done()};
-  try{r.start()}catch(e){rec=null;btn.classList.remove('on');lab.textContent=idle;target.focus()}
+  const lab=btn.querySelector('span:not(.micIco)');
+  /* the mic stays on until the user taps again: phones stop listening after a short pause,
+     so we start it again and keep adding to what was already said (nothing is erased) */
+  let cur=null, userStop=false, dead=false, heard=false, restarts=0; const t0=Date.now();
+  const finish=()=>{if(dead)return;dead=true;rec=null;btn.classList.remove('on');lab.textContent=idle;if(done)done()};
+  const ctl={stop(){userStop=true;try{cur&&cur.stop()}catch(e){finish()}},
+             abort(){userStop=true;if(cur){cur.onresult=null;try{cur.abort()}catch(e){}}finish()}};
+  const run=()=>{
+    let r; try{r=new SR()}catch(e){finish();target.focus();toast('استخدم مايك الكيبورد 🎤');return}
+    cur=r; r.lang='ar-EG'; r.continuous=!done; r.interimResults=true;
+    const base=target.value.trim()?target.value.trim()+' ':'';
+    /* rebuild this round's text from all results. Android Chrome repeats earlier phrases inside later
+       results («فندق» then «فندق ميتين»), so a result that already contains the previous one replaces it */
+    r.onresult=e=>{const parts=[];
+      for(let i=0;i<e.results.length;i++){const t=e.results[i][0].transcript.trim();if(!t)continue;
+        const p=parts[parts.length-1];
+        if(p!=null&&t.startsWith(p)) parts[parts.length-1]=t;
+        else if(p!=null&&p.startsWith(t)) continue;
+        else parts.push(t)}
+      if(parts.length)heard=true;
+      target.value=(base+parts.join(' ')).replace(/\s+/g,' ').trim(); target.dispatchEvent(new Event('input'))};
+    r.onerror=e=>{if(e.error==='not-allowed'||e.error==='service-not-allowed'){userStop=true;toast('اسمح للمايك من إعدادات المتصفح، أو استخدم مايك الكيبورد 🎤')}
+      else if(e.error==='audio-capture'){userStop=true;toast('المايك مش شغال على الموبايل ده')}};
+    r.onend=()=>{
+      if(!userStop&&!done&&!dead&&restarts<40&&Date.now()-t0<3*60e3){restarts++;setTimeout(()=>{if(!userStop&&!dead)run();else finish()},150);return}
+      if(!heard&&!userStop)toast('ما سمعتش حاجة — جرّب تاني');
+      finish()};
+    try{r.start()}catch(e){finish();target.focus()}
+  };
+  rec=ctl; btn.classList.add('on'); lab.textContent='بسمعك… دوس تاني لما تخلص';
+  run();
 }
 /* ✕ on the text boxes */
 function clearBox(id){$(id).value='';$(id).dispatchEvent(new Event('input'))}
 document.querySelectorAll('.tbox').forEach(b=>{const ta=b.querySelector('textarea'),x=b.querySelector('.clr');
   const upd=()=>{x.hidden=!ta.value.trim()}; ta.addEventListener('input',upd); upd();
-  x.onclick=()=>{if(rec){try{rec.abort()}catch(e){}}clearBox(ta.id);ta.focus()}});
+  x.onclick=()=>{stopRec();clearBox(ta.id);ta.focus()}});
 $('sayMic').onclick=()=>mic($('sayMic'),$('sayTxt'),'دوس واتكلم');
 $('micBtn').onclick=()=>mic($('micBtn'),$('voiceTxt'),'اتكلم');
 /* «قول التاريخ»: one sentence like «من 29 لحد النهاردة» fills من / إلى */
@@ -934,7 +947,7 @@ $('sDateMic').onclick=()=>mic($('sDateMic'),$('sDateTxt'),'قول التاريخ
 $('sDateTxt').addEventListener('change',()=>speakDate('sDateTxt',applyDates));
 let sayDraft=null;
 /* pressing «رتّبها/ضيفها» while the mic is on: take what is in the box and drop late results */
-function stopRec(){if(rec){rec.onresult=null;try{rec.abort()}catch(e){}}}
+function stopRec(){if(rec)rec.abort()}
 function sayParse(){
   stopRec();
   const txt=$('sayTxt').value.trim(), msg=$('sayMsg');
