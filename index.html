@@ -461,6 +461,39 @@ html[dir=ltr] .card::before{border-radius:4px 0 0 4px}
 .aLogo{width:auto;height:auto;padding:14px 20px;border-radius:22px}
 .aLogo img{width:min(60vw,240px);height:auto}
 .tagline{font-size:16px;font-weight:700;margin:4px 0 0}
+/* ---- insights, reminders, search, changelog ---- */
+.alerts{display:flex;flex-direction:column;gap:8px}
+.alert{display:flex;align-items:center;gap:10px;width:100%;border:0;border-radius:16px;padding:12px 14px;font:inherit;text-align:start;
+  background:var(--amber-soft);color:var(--ink);box-shadow:var(--shadow)}
+.alert .aIco{font-size:20px;flex:none}
+.alert .aTxt{flex:1;font-size:14px;line-height:1.5}
+.alert .aBtn{flex:none;font-size:12.5px;font-weight:700;color:var(--amber);background:var(--surface);border-radius:999px;padding:5px 10px}
+.ana{gap:14px}
+.anaHead{display:flex;justify-content:space-between;align-items:center;gap:8px;flex-wrap:wrap}
+.anaHead b{font-size:17px}
+.anaRead{font-size:13px;font-weight:700;color:var(--brand);background:var(--brand-soft);border-radius:999px;padding:4px 11px}
+.mbars{display:grid;grid-template-columns:repeat(6,1fr);gap:8px;height:150px;align-items:end;border-bottom:1px solid var(--line);padding-bottom:0}
+.mb{border:0;background:none;font:inherit;height:100%;display:flex;flex-direction:column;align-items:center;gap:6px;padding:0;cursor:pointer}
+.mbTrack{flex:1;width:100%;display:flex;align-items:flex-end;justify-content:center}
+.mbBar{display:block;width:min(28px,70%);border-radius:4px 4px 0 0;background:color-mix(in srgb,var(--brand) 38%,var(--surface));transition:height .5s var(--ease),background .2s}
+.mb.on .mbBar{background:var(--brand)}
+.mbLbl{font-size:11.5px;color:var(--muted);padding-bottom:6px}
+.mb.on .mbLbl{color:var(--ink);font-weight:700}
+.cats{display:flex;flex-direction:column;gap:9px}
+.cat{display:grid;grid-template-columns:7.5em 1fr auto 3em;gap:10px;align-items:center;font-size:14px}
+.cTrack{height:8px;border-radius:4px;background:var(--bg);overflow:hidden}
+.cFill{display:block;height:100%;border-radius:4px;background:var(--brand);transition:width .5s var(--ease)}
+.cV{font-weight:700;text-align:end}
+.cP{color:var(--muted);font-size:12.5px;text-align:end}
+.search{background:var(--surface);box-shadow:var(--shadow);border:0;border-radius:14px;padding:12px 14px;font-size:15px}
+.log{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:10px}
+.log li{display:flex;flex-direction:column;gap:2px;padding-inline-start:14px;border-inline-start:3px solid var(--brand-soft)}
+.log b{font-size:12px;color:var(--brand)}
+.log span{font-size:13.5px;color:var(--muted);line-height:1.6}
+.foot{display:flex;flex-direction:column;gap:2px}
+.foot b{color:var(--ink)}
+.spBy{position:absolute;bottom:calc(22px + env(safe-area-inset-bottom,0px));font-size:12.5px;color:#6b7a90;letter-spacing:.01em;animation:spUp .6s .85s both}
+@media (prefers-color-scheme: dark){.spBy{color:#8c9bb0}}
 </style>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -474,13 +507,14 @@ html[dir=ltr] .card::before{border-radius:4px 0 0 4px}
   <div class="spLine" id="spLine">سجّل عهدتك بصوتك… والباقي علينا</div>
   <div class="spSub" id="spSub">قول المشروع والتاريخ والفواتير، والتطبيق يحسب الأيام والوجبات والرصيد، ويطلّعلك فورم Excel جاهز في ثواني.</div>
   <div class="spDots"><i></i><i></i><i></i></div>
+  <div class="spBy" id="spBy">تصميم وتطوير م. السيد حرفوش</div>
 </div>
 <script>
 /* opening screen: once per app launch, tap to skip */
 (function(){var s=document.getElementById('splash');try{if(sessionStorage.getItem('uues_sp')){s.remove();return}sessionStorage.setItem('uues_sp','1')}catch(e){}
   try{if(localStorage.getItem('uues_lang')==='en'){document.getElementById('spTitle').textContent='UUES Petty Cash';
     document.getElementById('spLine').textContent='Say it. We’ll do the rest.';
-    document.getElementById('spSub').textContent='Tell it the project, dates and invoices — it counts the days, meals and your balance, and hands you a ready Excel form in seconds.';s.dir='ltr'}}catch(e){}
+    document.getElementById('spSub').textContent='Tell it the project, dates and invoices — it counts the days, meals and your balance, and hands you a ready Excel form in seconds.';document.getElementById('spBy').textContent='Designed & built by Eng. Elsayed Harfoush';s.dir='ltr'}}catch(e){}
   var gone=false,hide=function(){if(gone)return;gone=true;s.classList.add('out');setTimeout(function(){s.remove()},450)};
   s.addEventListener('click',hide);setTimeout(hide,2300)})();
 </script>
@@ -513,6 +547,7 @@ html[dir=ltr] .card::before{border-radius:4px 0 0 4px}
       <div class="yearSub" id="ySub"></div>
     </div>
     <div class="stats" id="stats"></div>
+    <div class="alerts" id="alerts" hidden></div>
     <div class="bal" id="balCard">
       <div class="balTop"><b>💰 رصيد العهدة</b><button class="linkBtn" id="rcvLogBtn" type="button">السجل</button></div>
       <div class="balRows">
@@ -530,6 +565,11 @@ html[dir=ltr] .card::before{border-radius:4px 0 0 4px}
       <button class="btn rcvBtn" id="rcvBtn" type="button">＋ استلمت مبلغ من الشركة</button>
     </div>
     <button class="cta" id="goAdd" type="button"><span class="ctaIco" aria-hidden="true">+</span><span class="ctaT"><b>سجّل عهدة جديدة</b><small>بصوتك أو بالكتابة</small></span><span class="ctaArr" aria-hidden="true">←</span></button>
+    <div class="panel ana" id="anaCard" hidden>
+      <div class="anaHead"><b>📊 تحليل المصروفات</b><span class="anaRead" id="anaRead"></span></div>
+      <div class="mbars" id="mbars"></div>
+      <div class="cats" id="cats"></div>
+    </div>
     <div id="dbWarn" class="warn" hidden>الحفظ مش شغال هنا (ممكن تكون فاتح تصفح خاص). اللي هتكتبه هيتمسح لما تقفل الصفحة.</div>
     <div id="projBox" hidden><div class="listhead"><b>حسب المشروع</b></div><div class="projs" id="projTotals"></div></div>
     <div class="listhead"><b>آخر العهد</b><button class="linkBtn" type="button" data-tab="listView">عرض الكل ←</button></div>
@@ -539,6 +579,7 @@ html[dir=ltr] .card::before{border-radius:4px 0 0 4px}
   <!-- TAB: CUSTODIES -->
   <section id="listView" class="page" hidden>
     <div class="pagehead"><h2>العهد</h2><span class="badge" id="listCount"></span></div>
+    <input class="search" id="q" type="search" placeholder="دوّر بالمشروع أو الكود أو الرقم…" autocomplete="off">
     <div class="seg" id="filt" role="tablist"><button type="button" data-f="all" aria-pressed="true">الكل</button><button type="button" data-f="open" aria-pressed="false">لسه</button><button type="button" data-f="done" aria-pressed="false">اتسلمت</button></div>
     <div class="list" id="list"><div class="empty">العهد اللي بتسجلها هتظهر هنا.</div></div>
     <button class="btn primary big" id="xlsBtn" type="button">📊 Excel لكل العهد</button>
@@ -575,7 +616,7 @@ html[dir=ltr] .card::before{border-radius:4px 0 0 4px}
 
     <div class="panel credit">
       <span class="cAv" aria-hidden="true">س</span>
-      <div><small>فكرة وتصميم وتطوير</small><b>م. السيد محمد</b><span class="en">Eng. Elsayed Mohamad</span><span class="en">Automation Engineer · UUES</span></div>
+      <div><small>فكرة وتصميم وتطوير</small><b>م. السيد حرفوش</b><span class="en">Eng. Elsayed Harfoush</span><span class="en">Automation Engineer · UUES</span></div>
     </div>
 
     <div class="panel">
@@ -591,6 +632,16 @@ html[dir=ltr] .card::before{border-radius:4px 0 0 4px}
     </div>
 
     <div class="panel">
+      <strong>آخر التحديثات</strong>
+      <ul class="log">
+        <li><b class="num">2026.10.04</b><span>تحليل المصروفات بالشهور والأنواع، بحث في العهد، وتنبيهات للعهد المتأخرة والنسخة الاحتياطية.</span></li>
+        <li><b class="num">2026.10.04</b><span>رصيد العهدة: المستلم والمصروف، ومدين أو دائن — ونسخة إنجليزي كاملة.</span></li>
+        <li><b class="num">2026.10.04</b><span>صفحات وتابات، لوجو الشركة، وشاشة افتتاحية.</span></li>
+        <li><b class="num">2026.10.03</b><span>فهم التاريخ بالكلام، والمايك بيفضل شغال لحد ما تدوس.</span></li>
+      </ul>
+    </div>
+
+    <div class="panel">
       <strong>بياناتك</strong>
       <div class="note">بياناتك بتتحفظ على الموبايل ده بس، ومحدش غيرك يقدر يشوفها. خد «نسخة احتياطية» كل فترة وابعتها لنفسك على واتساب، وتقدر ترجّعها على أي موبايل.</div>
       <div class="tools"><button class="btn" id="bkBtn" type="button">💾 نسخة احتياطية</button><button class="btn" id="rsBtn" type="button">↩️ استرجاع</button><button class="btn" id="imBtn" type="button">📷 كود</button></div>
@@ -600,7 +651,7 @@ html[dir=ltr] .card::before{border-radius:4px 0 0 4px}
 
     <button class="btn share" id="shBtn" type="button">📤 ابعت التطبيق لزميل</button>
     <button class="btn wide" id="howInstall" type="button">📲 إزاي أثبّته على الموبايل؟</button>
-    <div class="foot">صُنع لزملاء UUES · © 2026</div>
+    <div class="foot"><span>تصميم وتطوير <b>م. السيد حرفوش</b></span><span>صُنع لزملاء UUES · © 2026</span></div>
   </section>
 
   <!-- NEW CUSTODY (manual) -->
@@ -731,7 +782,7 @@ const EN={
  '«مدن جدة':'“MODON Jeddah','من تسعة وعشرين لحد النهاردة':'from 29 to today','، فندق ميتين، تاكسي سبعة وسبعين، بنزين مية وعشرة»':', hotel 200, taxi 77, fuel 110”',
  'الكلام هيظهر هنا… وتقدر تكتب كمان':'Your words show up here… you can type too','امسح الكلام':'Clear text','✕ امسح':'✕ Clear','✨ رتّبها':'✨ Read it','أو':'or','✍️ اكتبها بإيدك':'✍️ Type it in',
  'سجّل عهدتك بصوتك… والباقي علينا':'Say it. We’ll do the rest.','تصفية العهدة بصوتك — من الكلام لفورم Excel':'Settle your petty cash by voice — from speech to the Excel form','الإصدار':'Version','🔄 حدّث التطبيق':'🔄 Update the app',
- 'س':'E','فكرة وتصميم وتطوير':'Idea, design and development','م. السيد محمد':'Eng. Elsayed Mohamad','Eng. Elsayed Mohamad':'م. السيد محمد',
+ 'س':'E','فكرة وتصميم وتطوير':'Idea, design and development','م. السيد حرفوش':'Eng. Elsayed Harfoush','Eng. Elsayed Harfoush':'م. السيد حرفوش',
  'التطبيق بيعمل إيه؟':'What does it do?','بتقول العهدة بصوتك':'Say your custody','المشروع والتاريخ والفواتير في جملة واحدة.':'Project, dates and invoices in one sentence.',
  'بيفهم التاريخ':'Understands dates','«من 29 لحد النهاردة»، «من أول الشهر لامبارح»…':'“from 29 to today”, “from 1/10 to yesterday”…',
  'بيحسب الوجبات لوحده':'Meals are automatic','عدد الأيام × 60 ريال.':'Days × 60 SAR.','بيطلّع فورم Excel':'Exports the Excel form',
@@ -739,7 +790,7 @@ const EN={
  'صورة لكل فاتورة':'A photo for every invoice','بتتحفظ على الموبايل.':'Kept on your phone.','بيشتغل من غير نت':'Works offline','بعد أول مرة تفتحه.':'After the first time you open it.',
  'بياناتك':'Your data','بياناتك بتتحفظ على الموبايل ده بس، ومحدش غيرك يقدر يشوفها. خد «نسخة احتياطية» كل فترة وابعتها لنفسك على واتساب، وتقدر ترجّعها على أي موبايل.':'Your data stays on this phone only — nobody else can see it. Take a «Backup» now and then and send it to yourself on WhatsApp; you can restore it on any phone.',
  '💾 نسخة احتياطية':'💾 Backup','↩️ استرجاع':'↩️ Restore','📷 كود':'📷 Code','📤 ابعت التطبيق لزميل':'📤 Send the app to a colleague','📲 إزاي أثبّته على الموبايل؟':'📲 How do I install it?',
- 'صُنع لزملاء UUES · © 2026':'Made for UUES colleagues · © 2026','→ رجوع':'← Back','عهدة جديدة':'New custody','أو اكتب مشروع جديد':'or type a new project','الكود':'Code',
+ 'صُنع لزملاء UUES · © 2026':'Made for UUES colleagues · © 2026','تصميم وتطوير':'Designed & built by','→ رجوع':'← Back','عهدة جديدة':'New custody','أو اكتب مشروع جديد':'or type a new project','الكود':'Code',
  'قول التاريخ':'Say the dates','مثلاً: من 29 لحد النهاردة':'e.g. from 29 to today','من':'From','إلى':'To','اعمل العهدة':'Create custody','افتح العهدة دي في Excel':'Open this custody in Excel',
  'زوّد فواتير بالكلام':'Add invoices by voice','فندق 200، بنزين مية وعشرة…':'hotel 200, fuel 110…','اتكلم':'Speak','ضيفها':'Add them','إضافة فاتورة بالكتابة':'Add an invoice by typing',
  'إضافة':'Add','ملاحظة (اختياري)':'Note (optional)','تعديل المشروع والتاريخ':'Edit project, dates and advance','الأيام':'Days','الوجبات (يوم × 60)':'Meals (day × 60)','حذف العهدة':'Delete custody',
@@ -762,7 +813,13 @@ const EN={
  'اتمسحت الفاتورة':'Invoice deleted','متأكد؟ العهدة هتتمسح بكل فواتيرها.':'Sure? The custody and all its invoices will be deleted.','أيوه امسح':'Yes, delete','لأ':'No',
  'ما اتمسحتش — جرّب تاني':'Not deleted — try again','تراجع':'Undo','مكتبة Excel لسه بتحمّل — جرّب كمان ثانية':'The Excel library is still loading — try again in a second','مفيش عهد لسه':'No custodies yet',
  'اتنزل الملف':'File downloaded','الملف ده مش نسخة احتياطية من الأبلكيشن':'This file is not a backup from the app','الكود ده مش مظبوط':'This code is not valid','اسمح للكاميرا، أو الصق اللينك':'Allow the camera, or paste the link',
- '⏳ بيحدّث…':'⏳ Updating…','الوجبات':'Meals','اللغة':'Language',
+ '⏳ بيحدّث…':'⏳ Updating…',
+ '📊 تحليل المصروفات':'📊 Spending insights','السكن':'Lodging','المواصلات':'Transport','متنوع':'Misc.','دوّر بالمشروع أو الكود أو الرقم…':'Search by project, code or number…',
+ 'آخر التحديثات':'What’s new','تحليل المصروفات بالشهور والأنواع، بحث في العهد، وتنبيهات للعهد المتأخرة والنسخة الاحتياطية.':'Spending insights by month and type, custody search, and reminders for late custodies and backups.',
+ 'رصيد العهدة: المستلم والمصروف، ومدين أو دائن — ونسخة إنجليزي كاملة.':'Cash balance: received vs. spent, debit or credit — plus a full English version.',
+ 'صفحات وتابات، لوجو الشركة، وشاشة افتتاحية.':'Pages and tabs, the company logo, and an opening screen.',
+ 'فهم التاريخ بالكلام، والمايك بيفضل شغال لحد ما تدوس.':'Spoken dates, and the mic keeps listening until you tap.',
+ 'آخر 6 شهور':'Last 6 months','💾 خد نسخة احتياطية':'💾 Back up now','الوجبات':'Meals','اللغة':'Language',
  /* cash balance */
  '💰 رصيد العهدة':'💰 Cash balance','السجل':'History','استلمت من الشركة':'Received from company','صرفت':'Spent','＋ استلمت مبلغ من الشركة':'＋ I received cash from the company',
  'المبلغ':'Amount','التاريخ':'Date','ملاحظة':'Note','مثلاً: عهدة أكتوبر':'e.g. October advance','سجّل':'Save','معاك للشركة':'You hold for the company','ليك عند الشركة':'The company owes you',
@@ -842,7 +899,7 @@ function countTo(el,to){
 }
 let seen=new Set(),seenFor=null;
 function renderHome(){
-  renderBalance();
+  renderBalance(); renderAlerts(); renderAnalysis();
   const y=custodies.reduce((s,c)=>s+total(c),0);
   countTo($('yTotal'),y);
   $('yCount').textContent=custodies.length?tr(custodies.length+' عهدة',custodies.length+(custodies.length===1?' custody':' custodies')):'لا توجد عهد بعد';
@@ -869,7 +926,9 @@ function renderHome(){
   if(!sorted.length) R.innerHTML='<div class="empty">لسه ما سجلتش عهد. دوس «سجّل عهدة جديدة» فوق.</div>';
   sorted.slice(0,3).forEach(c=>R.appendChild(custCard(c)));
   const L=$('list'); L.innerHTML='';
-  const shown=sorted.filter(c=>listFilter==='all'||(listFilter==='done')===(c.status==='submitted'));
+  const qq=($('q').value||'').trim().toLowerCase();
+  const shown=sorted.filter(c=>(listFilter==='all'||(listFilter==='done')===(c.status==='submitted'))&&
+    (!qq||[c.project,c.fileNo,String(c.no),fmt(total(c)),dmy(c.from),dmy(c.to)].some(s=>String(s||'').toLowerCase().includes(qq))));
   if(!shown.length){L.innerHTML=`<div class="empty">${custodies.length?'مفيش عهد هنا.':'العهد اللي بتسجلها هتظهر هنا.'}</div>`;return}
   shown.forEach(c=>L.appendChild(custCard(c)));
 }
@@ -994,6 +1053,54 @@ $('langBtn').textContent=LANG==='en'?'ع':'EN';
 ['aria-label','title'].forEach(a=>$('langBtn').setAttribute(a,LANG==='en'?'العربية':'English'));
 $('langBtn').onclick=()=>setLang(LANG==='en'?'ar':'en');
 document.querySelectorAll('.langSeg [data-l]').forEach(b=>{b.setAttribute('aria-pressed',b.dataset.l===LANG);b.onclick=()=>{if(b.dataset.l!==LANG)setLang(b.dataset.l)}});
+
+/* ---------- smart reminders: late custodies + backup ---------- */
+const buzz=()=>{try{navigator.vibrate&&navigator.vibrate(8)}catch(e){}};
+function renderAlerts(){
+  const A=$('alerts'); A.innerHTML=''; const now=Date.parse(todayISO()), out=[];
+  custodies.filter(c=>c.status!=='submitted'&&c.to).map(c=>({c,n:Math.round((now-Date.parse(c.to))/864e5)})).filter(x=>x.n>7)
+    .sort((a,b)=>b.n-a.n).slice(0,2).forEach(({c,n})=>out.push({ico:'⏰',txt:tr(`عهدة ${c.no} (${c.project||'بدون اسم'}) خلصت من ${n} يوم ولسه ما اتسلمتش للحسابات`,`Custody ${c.no} (${c.project||'no name'}) ended ${n} days ago and is not submitted yet`),go:()=>openSheet(c.id)}));
+  let bk=0; try{bk=+localStorage.getItem('uues_bk')||0}catch(e){}
+  const bd=bk?Math.floor((Date.now()-bk)/864e5):null;
+  if(custodies.length&&(bd===null||bd>14)) out.push({ico:'💾',txt:bd===null?tr('لسه ما خدتش نسخة احتياطية — لو الموبايل ضاع العهد هتضيع معاه','No backup yet — if the phone is lost, your custodies go with it'):tr(`آخر نسخة احتياطية من ${bd} يوم`,`Last backup was ${bd} days ago`),btn:'💾 خد نسخة احتياطية',go:()=>$('bkBtn').click()});
+  out.forEach(a=>{const b=document.createElement('button');b.type='button';b.className='alert';
+    const i=document.createElement('span');i.className='aIco';i.textContent=a.ico;const s=document.createElement('span');s.className='aTxt';s.textContent=a.txt;
+    b.append(i,s);if(a.btn){const k=document.createElement('span');k.className='aBtn';k.textContent=a.btn;b.appendChild(k)}
+    b.onclick=a.go;A.appendChild(b)});
+  A.hidden=!out.length;
+}
+/* ---------- spending insights: last 6 months (one hue, tap a bar to read it) + share by type ---------- */
+let anaSel=null;
+function renderAnalysis(){
+  $('anaCard').hidden=!custodies.length; if(!custodies.length) return;
+  const loc=LANG==='en'?'en-GB':'ar-EG-u-nu-latn', d0=new Date(), months=[];
+  for(let i=5;i>=0;i--){const d=new Date(d0.getFullYear(),d0.getMonth()-i,1);months.push({k:`${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}`,d,v:0})}
+  custodies.forEach(c=>{const m=months.find(x=>x.k===(c.to||'').slice(0,7));if(m)m.v+=total(c)});
+  const max=Math.max(...months.map(m=>m.v),1); if(!anaSel||!months.some(m=>m.k===anaSel)) anaSel=months[5].k;
+  const M=$('mbars'); M.innerHTML='';
+  months.forEach(m=>{const b=document.createElement('button');b.type='button';b.className='mb'+(m.k===anaSel?' on':'');
+    const lbl=m.d.toLocaleDateString(loc,{month:'long',year:'numeric'});
+    b.setAttribute('aria-label',`${lbl}: ${fmt(m.v)} SAR`);
+    const bar=document.createElement('span');bar.className='mbBar';bar.style.height=(m.v?Math.max(4,m.v/max*100):0)+'%';
+    const tk=document.createElement('span');tk.className='mbLbl';tk.textContent=m.d.toLocaleDateString(loc,{month:'short'});
+    const tr_=document.createElement('span');tr_.className='mbTrack';tr_.appendChild(bar);b.append(tr_,tk);
+    b.onclick=()=>{anaSel=m.k;buzz();renderAnalysis()};M.appendChild(b)});
+  const sel=months.find(m=>m.k===anaSel);
+  $('anaRead').textContent=`${sel.d.toLocaleDateString(loc,{month:'long'})}: ${fmt(sel.v)} SAR`;
+  const cat={L:0,T:0,F:0,M:0};
+  custodies.forEach(c=>{(c.items||[]).forEach(i=>{const s=secOf(i.type);cat[s==='L'?'L':s==='T'?'T':'M']+=+i.amount||0});cat.F+=meals(c)});
+  const all=cat.L+cat.T+cat.F+cat.M||1, C=$('cats'); C.innerHTML='';
+  [['السكن','🏨',cat.L],['المواصلات','🚕',cat.T],['الوجبات','🍽️',cat.F],['متنوع','📦',cat.M]].sort((a,b)=>b[2]-a[2]).forEach(([n,ico,v])=>{
+    const r=document.createElement('div');r.className='cat';
+    const a=document.createElement('span');a.className='cN';a.textContent=ico+' '+tx(n);
+    const tr2=document.createElement('span');tr2.className='cTrack';const f=document.createElement('span');f.className='cFill';f.style.width=(v/all*100)+'%';tr2.appendChild(f);
+    const val=document.createElement('span');val.className='cV num';val.textContent=fmt(v);
+    const pc=document.createElement('span');pc.className='cP num';pc.textContent=Math.round(v/all*100)+'%';
+    r.append(a,tr2,val,pc);C.appendChild(r)});
+}
+$('q').addEventListener('input',()=>renderHome());
+document.querySelectorAll('#tabbar [data-tab]').forEach(b=>b.addEventListener('click',buzz));
+['createBtn','rcvSave','stBtn','sayGo','parseBtn','addBtn'].forEach(id=>$(id)&&$(id).addEventListener('click',buzz));
 
 /* ---------- persistence ---------- */
 const chains={};
@@ -1579,7 +1686,7 @@ async function saveFile(name,buf,mime){
   setTimeout(()=>{URL.revokeObjectURL(a.href);a.remove()},4000);toast('اتنزل الملف');
 }
 $('xlsBtn').onclick=()=>exportXlsx();
-$('bkBtn').onclick=()=>{const o=LS.read();o.app='uues-petty-cash';o.savedAt=new Date().toISOString();
+$('bkBtn').onclick=()=>{try{localStorage.setItem('uues_bk',String(Date.now()))}catch(e){}setTimeout(renderAlerts,300);const o=LS.read();o.app='uues-petty-cash';o.savedAt=new Date().toISOString();
   saveFile(`UUES_Ohda_Backup_${todayISO()}.json`,JSON.stringify(o,null,1),'application/json')};
 $('rsBtn').onclick=()=>$('rsFile').click();
 $('rsFile').onchange=async e=>{const f=e.target.files&&e.target.files[0];e.target.value='';if(!f)return;
@@ -1699,7 +1806,7 @@ $('shBtn').onclick=async()=>{
 };
 if('serviceWorker' in navigator&&location.protocol==='https:')navigator.serviceWorker.register('sw.js').catch(()=>{});
 /* ---------- quick update: version.json is never cached; a newer one shows a bar, one tap reloads ---------- */
-const APP_VER='2026.10.04.6';
+const APP_VER='2026.10.04.7';
 $('verTxt').textContent=APP_VER;
 async function hardUpdate(){
   $('updBtn').disabled=true;$('updBtn').textContent='⏳ بيحدّث…';
