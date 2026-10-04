@@ -495,7 +495,8 @@ html[dir=ltr] .card::before{border-radius:4px 0 0 4px}
 .spBy{position:absolute;bottom:calc(22px + env(safe-area-inset-bottom,0px));font-size:12.5px;color:#6b7a90;letter-spacing:.01em;animation:spUp .6s .85s both}
 @media (prefers-color-scheme: dark){.spBy{color:#8c9bb0}}
 /* ---- tour, settings, summary, confetti ---- */
-.hBtns{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:10px}
+.hBtns{display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;margin-top:10px}
+.hBtns .btn.big{font-size:15px;padding:12px 6px}
 .headcard .hBtns .btn{width:100%}
 .headcard #sumBtn{background:rgba(255,255,255,.16);color:#fff;border:0}
 .tryBtn{align-self:center;font-size:14px}
@@ -522,6 +523,44 @@ html[dir=ltr] .card::before{border-radius:4px 0 0 4px}
 .confetti{position:fixed;inset:0;pointer-events:none;z-index:70;overflow:hidden}
 .confetti i{position:absolute;top:-12px;width:8px;height:12px;border-radius:2px;animation:conf 1.5s cubic-bezier(.2,.7,.4,1) forwards}
 @keyframes conf{0%{transform:translate(0,0) rotate(0)}100%{transform:translate(var(--dx),105vh) rotate(var(--r));opacity:.9}}
+/* ---- print / PDF ---- */
+.allBtns{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.allBtns .btn.big{font-size:15px;padding:13px 8px}
+#printArea{display:none}
+@media print{
+  @page{size:A4 portrait;margin:9mm}
+  html,body{background:#fff!important;padding:0!important;margin:0!important}
+  body>*:not(#printArea){display:none!important}
+  #printArea{display:block!important;direction:ltr;color:#000;-webkit-print-color-adjust:exact;print-color-adjust:exact}
+  .pPage{break-after:page;page-break-after:always;font-family:"Times New Roman",Times,serif}
+  .pPage:last-child{break-after:auto;page-break-after:auto}
+  .pf{width:100%;border-collapse:collapse;font-size:10.5pt;border:2.4pt solid #000}
+  .pf td{border:.7pt solid #000;padding:2.2pt 4pt;vertical-align:middle;line-height:1.25}
+  .pf .c{text-align:center}.pf .r{text-align:right}.pf .b,.pf tr.b td{font-weight:700}
+  .pf .lb{font-weight:700;text-align:center;font-size:11.5pt}.pf .lbBig{font-size:11.5pt;font-weight:700}
+  .pf .pSec{font-weight:700;text-decoration:underline;font-size:10.5pt;letter-spacing:0;color:#000}
+  .pf .th td{font-weight:700;text-align:center;font-size:11pt}
+  .pf tr.hd td{border:1.6pt solid #000;height:30mm}
+  .hLogo{display:flex;align-items:center;gap:3mm}
+  .hLogo>img{height:22mm;width:auto}
+  .hName{flex:1;display:flex;flex-direction:column;align-items:flex-end;gap:1.5mm}
+  .hName img{width:58mm;height:auto}
+  .hAddr{font-family:Arial,sans-serif;font-size:7pt;font-weight:700;text-align:right;line-height:1.5}
+  .hTitle{text-align:center;font-size:15pt;font-weight:700;white-space:nowrap}
+  .hInfo{text-align:right;font-family:Arial,sans-serif;font-size:7.6pt;font-weight:700;font-style:italic;line-height:1.55;white-space:nowrap}
+  .pf tr.gap td{height:1.6mm;padding:0;border-left:0;border-right:0}
+  .pf tr.gap2 td{height:4mm;padding:0}
+  .fileNo{font-size:11.5pt;vertical-align:top!important}
+  .sig{display:flex;justify-content:space-between;margin-top:9mm;font-weight:700;font-size:10.5pt;padding:0 2mm}
+  .sumHead{display:flex;align-items:center;gap:4mm;margin-bottom:5mm}
+  .sumHead img{height:16mm}
+  .sumHead div{display:flex;flex-direction:column}
+  .sumHead b{font-size:15pt}.sumHead span{font-size:10pt;color:#333}
+  .sumT{font-size:9pt}.sumT td.r{white-space:nowrap}.sumT .th td{background:#d9e1f2}
+  .sumT tr.yt td{background:#fff2cc;font-weight:700}
+  .sumT.sumBal{margin-top:6mm;width:72%}
+  .sumT tr.yt.cr td{background:#e2efda}.sumT tr.yt.db td{background:#fce4d6}
+}
 </style>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -610,7 +649,7 @@ html[dir=ltr] .card::before{border-radius:4px 0 0 4px}
     <input class="search" id="q" type="search" placeholder="دوّر بالمشروع أو الكود أو الرقم…" autocomplete="off">
     <div class="seg" id="filt" role="tablist"><button type="button" data-f="all" aria-pressed="true">الكل</button><button type="button" data-f="open" aria-pressed="false">لسه</button><button type="button" data-f="done" aria-pressed="false">اتسلمت</button></div>
     <div class="list" id="list"><div class="empty">العهد اللي بتسجلها هتظهر هنا.</div></div>
-    <button class="btn primary big" id="xlsBtn" type="button">📊 Excel لكل العهد</button>
+    <div class="allBtns"><button class="btn primary big" id="xlsBtn" type="button">📊 Excel لكل العهد</button><button class="btn big" id="allPdf" type="button">🖨️ PDF لكل العهد</button></div>
   </section>
 
   <!-- TAB: ADD -->
@@ -716,7 +755,7 @@ html[dir=ltr] .card::before{border-radius:4px 0 0 4px}
       <div class="hcode num" id="hCode"></div>
       <div class="hp" id="hProj"></div>
       <div class="hm" id="hMeta"></div>
-      <div class="hBtns"><button class="btn primary big" id="oneXls" type="button">📊 Excel</button><button class="btn big" id="sumBtn" type="button">📤 ابعت ملخص</button></div>
+      <div class="hBtns"><button class="btn primary big" id="oneXls" type="button">📊 Excel</button><button class="btn big" id="onePdf" type="button">🖨️ PDF</button><button class="btn big" id="sumBtn" type="button">📤 ملخص</button></div>
       <div class="status"><span id="stTxt"></span><button class="btn" id="stBtn" type="button"></button></div>
     </div>
 
@@ -777,6 +816,7 @@ html[dir=ltr] .card::before{border-radius:4px 0 0 4px}
 </nav>
 <div class="bar" id="bar" hidden><div class="in"><span class="note">الإجمالي</span><span class="t num" id="sTotal">0.00</span></div></div>
 <div class="toast" id="toast" hidden></div>
+<div id="printArea" data-noi18n></div>
 <div class="scan" id="scan" hidden>
   <div class="scanTitle">وجّه الكاميرا على كود الاستيراد</div>
   <div class="scanBox"><video id="scanVid" playsinline muted></video><span class="scanFrame"></span></div>
@@ -863,7 +903,7 @@ const EN={
  'ما اتمسحتش — جرّب تاني':'Not deleted — try again','تراجع':'Undo','مكتبة Excel لسه بتحمّل — جرّب كمان ثانية':'The Excel library is still loading — try again in a second','مفيش عهد لسه':'No custodies yet',
  'اتنزل الملف':'File downloaded','الملف ده مش نسخة احتياطية من الأبلكيشن':'This file is not a backup from the app','الكود ده مش مظبوط':'This code is not valid','اسمح للكاميرا، أو الصق اللينك':'Allow the camera, or paste the link',
  '⏳ بيحدّث…':'⏳ Updating…',
- '📊 تحليل المصروفات':'📊 Spending insights',
+ '📊 تحليل المصروفات':'📊 Spending insights','📤 ملخص':'📤 Summary','🖨️ PDF لكل العهد':'🖨️ PDF for all custodies',
  '⚙️ الإعدادات':'⚙️ Settings','بدل الوجبات في اليوم (SAR)':'Daily meal allowance (SAR)','بيتطبق على العهد الجديدة. أي عهدة قديمة تقدر تغيّر بدلها من جوه العهدة.':'Applies to new custodies. You can change it for any older custody inside it.',
  'المشاريع':'Projects','دوس على المشروع عشان تغيّر الكود':'Tap a project to change its code','👋 شوف الجولة التعريفية تاني':'👋 Show the intro tour again',
  '📤 ابعت ملخص':'📤 Send summary','✨ جرّب بالمثال ده':'✨ Try this example','عدد الأيام × بدل الوجبات بتاعك (بتظبطه من الإعدادات).':'Days × your meal allowance (set it in Settings).',
@@ -1228,6 +1268,59 @@ function confetti(){
     s.style.animationDelay=(Math.random()*.25)+'s';s.style.setProperty('--dx',(Math.random()*160-80)+'px');s.style.setProperty('--r',(Math.random()*720-360)+'deg');C.appendChild(s)}
   setTimeout(()=>C.innerHTML='',1800);
 }
+
+/* ---------- 🖨️ PDF: the same UUES form as print-ready A4 pages (browser print → «Save as PDF» / share) ---------- */
+const pE=s=>String(s==null?'':s).replace(/[&<>"]/g,ch=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[ch]));
+const pS=v=>v===''||v==null?'':'SAR '+fmt(+v||0);
+function pdfPage(c){
+  const D=days(c), rate=c.mealRate||RATE, T=total(c), adv=+c.advance||0, g=grouped(c), toD=dmy(c.to);
+  const row=(a,b,cc,e,cls)=>`<tr class="${cls||''}"><td class="c">${a}</td><td>${b}</td><td class="r">${cc}</td><td class="r"></td><td>${e}</td></tr>`;
+  const sec=n=>`<tr><td colspan="5" class="pSec">${n}</td></tr>`;
+  const items=(list,empty)=>(list.length?list:[{label:empty,amount:''}]).map(i=>row(toD,pE(i.label),pS(i.amount),pE(i.remark||''))).join('');
+  return `<section class="pPage"><table class="pf">
+  <colgroup><col style="width:11.2%"><col style="width:26.4%"><col style="width:13.4%"><col style="width:10.7%"><col style="width:38.3%"></colgroup>
+  <tr class="hd"><td colspan="2" class="hBox"><div class="hLogo"><img src="${LOGO}" alt=""><div class="hName"><img src="${NAME}" alt="">
+    <div class="hAddr">الرياض - المملكة العربية السعودية - ص.ب. 260643<br>VAT No.: 310 861 827 600 003<br>CR No.: 1010686643</div></div></div></td>
+    <td colspan="2" class="hTitle">EXPENSES REPORT</td>
+    <td class="hInfo">UUES Form info.<br>Form Ref. No.: UI-08-01-F11 - Rev: 01<br>Form Issue Date: 16-06-2024</td></tr>
+  <tr class="gap"><td colspan="5"></td></tr>
+  <tr><td class="lb">Date From:</td><td class="c b">${dmy(c.from)}</td><td class="lb">Date To:</td><td class="c b">${toD}</td><td rowspan="2" class="b fileNo">UUES File No.:<br>${pE(c.fileNo||'')}</td></tr>
+  <tr><td class="lb">Days:</td><td class="c">${D}</td><td class="lb">Nights:</td><td class="c">${Math.max(0,D-1)}</td></tr>
+  <tr><td class="b">Employee Name:</td><td colspan="4" class="b">${pE(EMP)}</td></tr>
+  <tr class="th"><td>Date</td><td>Description</td><td>Amount<br>(SAR)</td><td>VAT<br>(Inclusive)</td><td>Remarks</td></tr>
+  ${sec('LODGING')}${items(g.L,'Hotel 1')}
+  ${sec('TRANSPORTATION')}${items(g.T,'Fuel 1')}
+  ${sec('MEALS')}${row(toD,`${D} days x ${rate} SAR`,pS(D*rate),'Meals allowance')}
+  ${sec('MISCELLANEOUS')}${items(g.M,'Material 1')}
+  <tr class="b"><td colspan="2" class="c lbBig">Total Amount</td><td class="r">${pS(T)}</td><td class="r">SAR 0.00</td><td></td></tr>
+  <tr class="gap2"><td colspan="5"></td></tr>
+  <tr><td colspan="2" class="b">Total spent by Employee:</td><td class="c">${pS(T)}</td><td colspan="2"></td></tr>
+  <tr><td colspan="2" class="b">Less Advance Received:</td><td class="c">${pS(adv)}</td><td colspan="2"></td></tr>
+  <tr><td colspan="2" class="b">Balance Due to / from Employee:</td><td class="c b">${pS(T-adv)}</td><td colspan="2"></td></tr>
+  </table>
+  <div class="sig"><span>Employee Signature : _____________________</span><span>Approved by: __________________________</span></div></section>`;
+}
+function pdfSummary(list){
+  const got=receipts.reduce((s,x)=>s+(+x.amount||0),0), sumT=list.reduce((s,c)=>s+total(c),0), sumA=list.reduce((s,c)=>s+(+c.advance||0),0), d=sumT-got;
+  const rows=list.map(c=>`<tr><td class="c">${c.no}</td><td class="c">${pE(c.fileNo||'')}</td><td>${pE(c.project||'')}</td><td class="c">${dmy(c.from)}</td><td class="c">${dmy(c.to)}</td><td class="c">${days(c)}</td><td class="r">${pS(total(c))}</td><td class="r">${pS(+c.advance||0)}</td><td class="r">${pS(total(c)-(+c.advance||0))}</td><td class="c">${c.status==='submitted'?'Submitted':'Open'}</td></tr>`).join('');
+  return `<section class="pPage"><div class="sumHead"><img src="${LOGO}" alt=""><div><b>PETTY CASH LEDGER – ${pE(EMP)}</b><span>${dmy(todayISO())} · ${list.length} custodies</span></div></div>
+  <table class="pf sumT"><tr class="th"><td>No.</td><td>UUES File No.</td><td>Project</td><td>Date From</td><td>Date To</td><td>Days</td><td>Total Spent</td><td>Advance</td><td>Balance</td><td>Status</td></tr>${rows}
+  <tr class="yt"><td colspan="6" class="c">YEAR TOTAL</td><td class="r">${pS(sumT)}</td><td class="r">${pS(sumA)}</td><td class="r">${pS(sumT-sumA)}</td><td></td></tr></table>
+  ${receipts.length?`<table class="pf sumT sumBal"><tr><td>Cash received from company (all advances)</td><td class="r">${pS(got)}</td></tr><tr><td>Total spent by employee</td><td class="r">${pS(sumT)}</td></tr>
+  <tr class="yt ${d>=0?'cr':'db'}"><td>${d>=0?'Balance due TO employee (Credit)':'Balance due FROM employee (Debit)'}</td><td class="r">${pS(Math.abs(d))}</td></tr></table>`:''}
+  <div class="sig"><span>Employee Signature : _____________________</span><span>Approved by: __________________________</span></div></section>`;
+}
+function printPages(html,name){
+  const A=$('printArea'); A.innerHTML=html; const t0=document.title; document.title=name;
+  const done=()=>{document.title=t0;removeEventListener('afterprint',done)}; addEventListener('afterprint',done);
+  toast(tr('اختار «Save as PDF» أو «حفظ كـ PDF» من شاشة الطباعة','Choose «Save as PDF» in the print screen'));
+  setTimeout(()=>{try{window.print()}catch(e){toast(tr('الطباعة مش مدعومة هنا — استخدم Excel','Printing is not supported here — use Excel'))}},350);
+}
+$('onePdf').onclick=()=>{const c=custodies.find(x=>x.id===curId);if(!c)return;buzz();
+  printPages(pdfPage(c),`Petty_Cash_${c.no}_${(c.project||'').replace(/[^A-Za-z0-9]+/g,'_')}`)};
+$('allPdf').onclick=()=>{if(!custodies.length){toast('مفيش عهد لسه');return}buzz();
+  const list=[...custodies].sort((a,b)=>a.no-b.no);
+  printPages(list.map(pdfPage).join('')+pdfSummary(list),`Petty_Cash_Ledger_${(list[list.length-1].to||todayISO()).slice(0,4)}`)};
 
 /* ---------- persistence ---------- */
 const chains={};
@@ -1936,7 +2029,7 @@ $('shBtn').onclick=async()=>{
 };
 if('serviceWorker' in navigator&&location.protocol==='https:')navigator.serviceWorker.register('sw.js').catch(()=>{});
 /* ---------- quick update: version.json is never cached; a newer one shows a bar, one tap reloads ---------- */
-const APP_VER='2026.10.04.9';
+const APP_VER='2026.10.05.1';
 $('verTxt').textContent=APP_VER;
 async function hardUpdate(){
   $('updBtn').disabled=true;$('updBtn').textContent='⏳ بيحدّث…';
