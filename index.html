@@ -531,7 +531,8 @@ html[dir=ltr] .card::before{border-radius:4px 0 0 4px}
   @page{size:A4 portrait;margin:9mm}
   html,body{background:#fff!important;padding:0!important;margin:0!important}
   body>*:not(#printArea){display:none!important}
-  #printArea{display:block!important;direction:ltr;color:#000;-webkit-print-color-adjust:exact;print-color-adjust:exact}
+  #printArea{display:block!important;direction:ltr;color:#000}
+  #printArea img{filter:grayscale(1)}
   .pPage{break-after:page;page-break-after:always;font-family:"Times New Roman",Times,serif}
   .pPage:last-child{break-after:auto;page-break-after:auto}
   .pf{width:100%;border-collapse:collapse;font-size:10.5pt;border:2.4pt solid #000}
@@ -556,10 +557,10 @@ html[dir=ltr] .card::before{border-radius:4px 0 0 4px}
   .sumHead img{height:16mm}
   .sumHead div{display:flex;flex-direction:column}
   .sumHead b{font-size:15pt}.sumHead span{font-size:10pt;color:#333}
-  .sumT{font-size:9pt}.sumT td.r{white-space:nowrap}.sumT .th td{background:#d9e1f2}
-  .sumT tr.yt td{background:#fff2cc;font-weight:700}
+  .sumT{font-size:9pt}.sumT td.r{white-space:nowrap}.sumT .th td{border-bottom:1.6pt solid #000}
+  .sumT tr.yt td{font-weight:700;border-top:1.6pt solid #000}
   .sumT.sumBal{margin-top:6mm;width:72%}
-  .sumT tr.yt.cr td{background:#e2efda}.sumT tr.yt.db td{background:#fce4d6}
+
 }
 </style>
 <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -1269,6 +1270,15 @@ function confetti(){
   setTimeout(()=>C.innerHTML='',1800);
 }
 
+/* black & white output: the form logos converted to grayscale once (canvas), used by Excel and PDF */
+let grayP=null, GI={logo:LOGO,name:NAME};
+function grayImgs(){
+  const conv=src=>new Promise(ok=>{const im=new Image();im.onload=()=>{try{const c=document.createElement('canvas');c.width=im.naturalWidth;c.height=im.naturalHeight;
+    const x=c.getContext('2d');x.drawImage(im,0,0);const d=x.getImageData(0,0,c.width,c.height),a=d.data;
+    for(let i=0;i<a.length;i+=4){let y=Math.round(a[i]*.299+a[i+1]*.587+a[i+2]*.114);if(y>200)y=255;a[i]=a[i+1]=a[i+2]=y}
+    x.putImageData(d,0,0);ok(c.toDataURL('image/png'))}catch(e){ok(src)}};im.onerror=()=>ok(src);im.src=src});
+  return grayP||(grayP=Promise.all([conv(LOGO),conv(NAME)]).then(([logo,name])=>(GI={logo,name})));
+}
 /* ---------- 🖨️ PDF: the same UUES form as print-ready A4 pages (browser print → «Save as PDF» / share) ---------- */
 const pE=s=>String(s==null?'':s).replace(/[&<>"]/g,ch=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[ch]));
 const pS=v=>v===''||v==null?'':'SAR '+fmt(+v||0);
@@ -1279,7 +1289,7 @@ function pdfPage(c){
   const items=(list,empty)=>(list.length?list:[{label:empty,amount:''}]).map(i=>row(toD,pE(i.label),pS(i.amount),pE(i.remark||''))).join('');
   return `<section class="pPage"><table class="pf">
   <colgroup><col style="width:11.2%"><col style="width:26.4%"><col style="width:13.4%"><col style="width:10.7%"><col style="width:38.3%"></colgroup>
-  <tr class="hd"><td colspan="2" class="hBox"><div class="hLogo"><img src="${LOGO}" alt=""><div class="hName"><img src="${NAME}" alt="">
+  <tr class="hd"><td colspan="2" class="hBox"><div class="hLogo"><img src="${GI.logo}" alt=""><div class="hName"><img src="${GI.name}" alt="">
     <div class="hAddr">الرياض - المملكة العربية السعودية - ص.ب. 260643<br>VAT No.: 310 861 827 600 003<br>CR No.: 1010686643</div></div></div></td>
     <td colspan="2" class="hTitle">EXPENSES REPORT</td>
     <td class="hInfo">UUES Form info.<br>Form Ref. No.: UI-08-01-F11 - Rev: 01<br>Form Issue Date: 16-06-2024</td></tr>
@@ -1303,13 +1313,14 @@ function pdfPage(c){
 function pdfSummary(list){
   const got=receipts.reduce((s,x)=>s+(+x.amount||0),0), sumT=list.reduce((s,c)=>s+total(c),0), sumA=list.reduce((s,c)=>s+(+c.advance||0),0), d=sumT-got;
   const rows=list.map(c=>`<tr><td class="c">${c.no}</td><td class="c">${pE(c.fileNo||'')}</td><td>${pE(c.project||'')}</td><td class="c">${dmy(c.from)}</td><td class="c">${dmy(c.to)}</td><td class="c">${days(c)}</td><td class="r">${pS(total(c))}</td><td class="r">${pS(+c.advance||0)}</td><td class="r">${pS(total(c)-(+c.advance||0))}</td><td class="c">${c.status==='submitted'?'Submitted':'Open'}</td></tr>`).join('');
-  return `<section class="pPage"><div class="sumHead"><img src="${LOGO}" alt=""><div><b>PETTY CASH LEDGER – ${pE(EMP)}</b><span>${dmy(todayISO())} · ${list.length} custodies</span></div></div>
+  return `<section class="pPage"><div class="sumHead"><img src="${GI.logo}" alt=""><div><b>PETTY CASH LEDGER – ${pE(EMP)}</b><span>${dmy(todayISO())} · ${list.length} custodies</span></div></div>
   <table class="pf sumT"><tr class="th"><td>No.</td><td>UUES File No.</td><td>Project</td><td>Date From</td><td>Date To</td><td>Days</td><td>Total Spent</td><td>Advance</td><td>Balance</td><td>Status</td></tr>${rows}
   <tr class="yt"><td colspan="6" class="c">YEAR TOTAL</td><td class="r">${pS(sumT)}</td><td class="r">${pS(sumA)}</td><td class="r">${pS(sumT-sumA)}</td><td></td></tr></table>
   ${receipts.length?`<table class="pf sumT sumBal"><tr><td>Cash received from company (all advances)</td><td class="r">${pS(got)}</td></tr><tr><td>Total spent by employee</td><td class="r">${pS(sumT)}</td></tr>
   <tr class="yt ${d>=0?'cr':'db'}"><td>${d>=0?'Balance due TO employee (Credit)':'Balance due FROM employee (Debit)'}</td><td class="r">${pS(Math.abs(d))}</td></tr></table>`:''}
   <div class="sig"><span>Employee Signature : _____________________</span><span>Approved by: __________________________</span></div></section>`;
 }
+setTimeout(()=>grayImgs(),1500);
 function printPages(html,name){
   const A=$('printArea'); A.innerHTML=html; const t0=document.title; document.title=name;
   const done=()=>{document.title=t0;removeEventListener('afterprint',done)}; addEventListener('afterprint',done);
@@ -1853,7 +1864,8 @@ async function exportXlsx(onlyId){
   if(!window.ExcelJS){toast(tr('بيجهّز Excel…','Preparing Excel…'));try{await loadExcel()}catch(e){toast('مكتبة Excel لسه بتحمّل — جرّب كمان ثانية');return}}
   if(!custodies.length){toast('مفيش عهد لسه');return}
   const wb=new ExcelJS.Workbook(); wb.creator=EMP||'UUES';
-  const ids={logo:wb.addImage({base64:LOGO,extension:'png'}),name:wb.addImage({base64:NAME,extension:'png'})};
+  const G=await grayImgs();
+  const ids={logo:wb.addImage({base64:G.logo,extension:'png'}),name:wb.addImage({base64:G.name,extension:'png'})};
   const list=[...custodies].filter(c=>!onlyId||c.id===onlyId).sort((a,b)=>a.no-b.no), refs=[];
   list.forEach(c=>refs.push({c,...buildSheet(wb,c,ids)}));
   if(onlyId){wb.views=[{activeTab:0}];const one=list[0];const buf1=await wb.xlsx.writeBuffer();
@@ -1863,8 +1875,8 @@ async function exportXlsx(onlyId){
   sm.mergeCells('A1:J1'); const t=sm.getCell('A1'); t.value='PETTY CASH LEDGER – '+EMP; t.font={name:TNR,size:14,bold:true};
   const hd=['No.','Sheet','UUES File No.','Project','Date From','Date To','Days','Total Spent (SAR)','Advance Received (SAR)','Balance (SAR)'];
   const bx={top:thin,left:thin,bottom:thin,right:thin};
-  hd.forEach((h,i)=>{const x=sm.getRow(3).getCell(i+1);x.value=h;x.font={name:TNR,bold:true};x.border=bx;
-    x.alignment={horizontal:'center',vertical:'middle',wrapText:true};x.fill={type:'pattern',pattern:'solid',fgColor:{argb:'FFD9E1F2'}}});
+  hd.forEach((h,i)=>{const x=sm.getRow(3).getCell(i+1);x.value=h;x.font={name:TNR,bold:true};x.border={...bx,top:med,bottom:med};
+    x.alignment={horizontal:'center',vertical:'middle',wrapText:true};});
   sm.getRow(3).height=32;
   let r=4;
   refs.forEach(({c,tot,adv,T,advV})=>{const q=`'${c.no}'!`;
@@ -1877,19 +1889,19 @@ async function exportXlsx(onlyId){
     r++});
   sm.mergeCells(r,1,r,7); const yt=sm.getRow(r).getCell(1); yt.value='YEAR TOTAL';
   for(let k=1;k<=10;k++){const x=sm.getRow(r).getCell(k);x.font={name:TNR,size:12,bold:true};x.border=bx;
-    x.fill={type:'pattern',pattern:'solid',fgColor:{argb:'FFFFF2CC'}};x.alignment={horizontal:k>=8?'right':'center',vertical:'middle'}}
+    x.alignment={horizontal:k>=8?'right':'center',vertical:'middle'}}
   const sumT=refs.reduce((s,x)=>s+x.T,0), sumA=refs.reduce((s,x)=>s+x.advV,0);
   [['H',sumT],['I',sumA],['J',sumT-sumA]].forEach(([col,v])=>{const x=sm.getCell(col+r);x.value={formula:`SUM(${col}4:${col}${r-1})`,result:v};x.numFmt=SAR});
   sm.pageSetup={paperSize:9,orientation:'landscape',fitToPage:true,fitToWidth:1,fitToHeight:1,horizontalCentered:true,printArea:`A1:J${r}`};
   {const got=receipts.reduce((s,x)=>s+(+x.amount||0),0); let q=r+2;
    const lab=(rr,txt,v,bold,fill)=>{sm.mergeCells(rr,1,rr,7);const a=sm.getRow(rr).getCell(1);a.value=txt;a.font={name:TNR,size:12,bold:!!bold};a.alignment={horizontal:'right',vertical:'middle'};
-     for(let k=1;k<=10;k++){const x=sm.getRow(rr).getCell(k);x.border=bx;if(fill)x.fill={type:'pattern',pattern:'solid',fgColor:{argb:fill}}}
+     for(let k=1;k<=10;k++){const x=sm.getRow(rr).getCell(k);x.border=bx;}
      sm.mergeCells(rr,8,rr,10);const c=sm.getRow(rr).getCell(8);c.value=v;c.numFmt=SAR;c.font={name:TNR,size:12,bold:!!bold};c.alignment={horizontal:'right',vertical:'middle'}};
    lab(q,'Cash received from company (all advances)',got); lab(q+1,'Total spent by employee',{formula:`H${r}`,result:sumT});
-   const d=sumT-got; lab(q+2,d>=0?'Balance due TO employee (Credit)':'Balance due FROM employee (Debit)',{formula:`ABS(H${q+1}-H${q})`,result:Math.round(Math.abs(d)*100)/100},true,d>=0?'FFE2EFDA':'FFFCE4D6');
+   const d=sumT-got; lab(q+2,d>=0?'Balance due TO employee (Credit)':'Balance due FROM employee (Debit)',{formula:`ABS(H${q+1}-H${q})`,result:Math.round(Math.abs(d)*100)/100},true);
    sm.pageSetup.printArea=`A1:J${q+2}`;
    if(receipts.length){const ad=wb.addWorksheet('Advances');ad.columns=[{width:14},{width:18},{width:44}];
-     ['Date','Amount (SAR)','Note'].forEach((h,i)=>{const x=ad.getRow(1).getCell(i+1);x.value=h;x.font={name:TNR,bold:true};x.border=bx;x.fill={type:'pattern',pattern:'solid',fgColor:{argb:'FFD9E1F2'}}});
+     ['Date','Amount (SAR)','Note'].forEach((h,i)=>{const x=ad.getRow(1).getCell(i+1);x.value=h;x.font={name:TNR,bold:true};x.border=bx;});
      [...receipts].sort((a,b)=>(a.date||'').localeCompare(b.date||'')).forEach((x,i)=>{const row=ad.getRow(i+2);row.getCell(1).value=xdate(x.date);row.getCell(1).numFmt=DATEF;
        row.getCell(2).value=+x.amount||0;row.getCell(2).numFmt=SAR;row.getCell(3).value=x.note||'';for(let k=1;k<=3;k++){row.getCell(k).border=bx;row.getCell(k).font={name:TNR}}});
      const tr2=ad.getRow(receipts.length+2);tr2.getCell(1).value='Total';tr2.getCell(2).value={formula:`SUM(B2:B${receipts.length+1})`,result:got};tr2.getCell(2).numFmt=SAR;
@@ -2029,7 +2041,7 @@ $('shBtn').onclick=async()=>{
 };
 if('serviceWorker' in navigator&&location.protocol==='https:')navigator.serviceWorker.register('sw.js').catch(()=>{});
 /* ---------- quick update: version.json is never cached; a newer one shows a bar, one tap reloads ---------- */
-const APP_VER='2026.10.05.1';
+const APP_VER='2026.10.05.2';
 $('verTxt').textContent=APP_VER;
 async function hardUpdate(){
   $('updBtn').disabled=true;$('updBtn').textContent='⏳ بيحدّث…';
