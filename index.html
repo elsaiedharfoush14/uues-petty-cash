@@ -1698,7 +1698,7 @@ function buildSheet(wb,c,ids){
     x.alignment={horizontal:o.h||'left',vertical:'middle',wrapText:true};
     if(o.fmt)x.numFmt=o.fmt; if(o.border!==false)x.border={...box4,...(o.L?{left:med}:{})}; return x};
   // header rows 1-6
-  [20,20,16,16,16,6].forEach((h,i)=>ws.getRow(i+1).height=h);
+  [26,22,15,15,15,6].forEach((h,i)=>ws.getRow(i+1).height=h);
   ws.mergeCells('A1:A5'); ws.mergeCells('C1:D5'); ws.mergeCells('E1:E5');
   ['الرياض - المملكة العربية السعودية - ص.ب. 260643','VAT No.: 310 861 827 600 003','CR No.: 1010686643'].forEach((t,i)=>{
     const x=cell('B'+(3+i));x.value=t;x.font={name:'Arial',size:8,bold:true};x.alignment={horizontal:'right',vertical:'middle'}});
@@ -1707,9 +1707,10 @@ function buildSheet(wb,c,ids){
   fi.font={name:'Arial',size:9,bold:true,italic:true};fi.alignment={horizontal:'right',vertical:'middle',wrapText:true};
   const boxR=(c1,c2,r1,r2,s)=>{for(let r=r1;r<=r2;r++)for(let k=c1;k<=c2;k++){const x=ws.getRow(r).getCell(k);const b={...(x.border||{})};
     if(k===c1)b.left=s;if(k===c2)b.right=s;if(r===r1)b.top=s;if(r===r2)b.bottom=s;x.border=b}};
-  boxR(1,2,1,5,thin);boxR(3,4,1,5,thin);boxR(5,5,1,5,thin);boxR(1,5,1,6,med);
-  ws.addImage(ids.logo,{tl:{col:0.15,row:0.1},ext:{width:57,height:76}});
-  ws.addImage(ids.name,{tl:{col:1.02,row:0.05},ext:{width:250,height:43}});
+  boxR(1,2,1,5,med);boxR(3,4,1,5,med);boxR(5,5,1,5,med);boxR(1,5,1,6,med);
+  // logo centred in A1:A5 (≈113 × 124 px), company-name image centred at the top of B1:B2 with air above it
+  ws.addImage(ids.logo,{tl:{col:0.19,row:0.38},ext:{width:72,height:96}});
+  ws.addImage(ids.name,{tl:{col:1.025,row:0.26},ext:{width:248,height:43}});
   // info rows
   const D=days(c);
   put('A7','Date From:',{b:true,sz:12,h:'center'}); put('B7',xdate(c.from),{b:true,h:'center',fmt:DATEF});
@@ -1746,7 +1747,9 @@ function buildSheet(wb,c,ids){
    ['Balance Due to / from Employee:',{formula:`C${s0}-C${s0+1}`,result:T-adv}]].forEach(([l,v],i)=>{
     ws.mergeCells(`A${r}:B${r}`); put('A'+r,l,{b:true,L:true}); put('C'+r,v,{h:'center',fmt:SAR,b:i===2});
     ws.mergeCells(`D${r}:E${r}`); put('D'+r,null); r++});
-  ws.getRow(s0).height=21; r++;
+  ws.getRow(s0).height=21;
+  boxR(1,5,1,s0+2,{style:'thick'});   // thick frame around the whole form (header → balance)
+  r++;
   ws.mergeCells(`A${r}:C${r+2}`); put('A'+r,'Employee Signature : _____________________',{b:true,border:false});
   ws.mergeCells(`D${r}:E${r+2}`); put('D'+r,'Approved by: __________________________',{b:true,border:false});
   ws.pageSetup={paperSize:9,orientation:'portrait',fitToPage:true,fitToWidth:1,fitToHeight:1,horizontalCentered:true,
@@ -1933,7 +1936,7 @@ $('shBtn').onclick=async()=>{
 };
 if('serviceWorker' in navigator&&location.protocol==='https:')navigator.serviceWorker.register('sw.js').catch(()=>{});
 /* ---------- quick update: version.json is never cached; a newer one shows a bar, one tap reloads ---------- */
-const APP_VER='2026.10.04.8';
+const APP_VER='2026.10.04.9';
 $('verTxt').textContent=APP_VER;
 async function hardUpdate(){
   $('updBtn').disabled=true;$('updBtn').textContent='⏳ بيحدّث…';
