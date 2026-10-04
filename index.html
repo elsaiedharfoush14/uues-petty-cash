@@ -376,9 +376,9 @@ input:focus{background:var(--surface)}
 .aboutHero h2{margin:0;font-size:24px;font-weight:700}
 .aboutHero p{margin:0;font-size:14px;opacity:.85}
 .verPill{margin-top:6px;background:rgba(255,255,255,.16);border-radius:999px;padding:4px 12px;font-size:13px}
-.credit{flex-direction:row;align-items:center;gap:14px}
+.panel.credit{flex-direction:row;align-items:center;gap:14px}
 .cAv{width:52px;height:52px;border-radius:50%;flex:none;display:grid;place-items:center;font-size:22px;font-weight:700;color:#fff;background:linear-gradient(145deg,#18865a,#0d5c3d)}
-.credit div{display:flex;flex-direction:column;min-width:0}
+.panel.credit div{display:flex;flex-direction:column;min-width:0}
 .credit small{font-size:12px;color:var(--muted)}
 .credit b{font-size:18px}
 .credit .en{font-size:12px;color:var(--muted);direction:ltr;text-align:right}
@@ -403,6 +403,43 @@ input:focus{background:var(--surface)}
 .tabbar button:active{transform:scale(.95)}
 body.subpage .toast{bottom:calc(96px + env(safe-area-inset-bottom,0px))}
 .toast{bottom:calc(100px + env(safe-area-inset-bottom,0px))}
+/* ---- cash balance ---- */
+.bal{background:var(--surface);border-radius:var(--r);box-shadow:var(--shadow);padding:16px;display:flex;flex-direction:column;gap:12px}
+.balTop{display:flex;justify-content:space-between;align-items:center}
+.balTop b{font-size:17px}
+.balRows{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.balRows div{background:var(--bg);border-radius:14px;padding:10px 12px;display:flex;flex-direction:column}
+.balRows small{font-size:12px;color:var(--muted)}
+.balRows b{font-size:17px;font-weight:700}
+.balRes{border-radius:16px;padding:12px 14px;display:flex;flex-direction:column;gap:2px}
+.balRes .brTop{display:flex;justify-content:space-between;align-items:center;gap:8px;font-weight:700;font-size:15px}
+.balRes .tag{font-size:12px;font-weight:700;border-radius:999px;padding:2px 10px;background:rgba(255,255,255,.55)}
+.balRes b{font-size:26px;font-weight:700}
+.balRes small{font-size:12.5px;opacity:.85}
+.balRes.isDebit{background:var(--amber-soft);color:var(--amber)}
+.balRes.isCredit{background:var(--ok-soft);color:var(--ok)}
+.balRes.isZero{background:var(--brand-soft);color:var(--brand)}
+.rcvBtn{width:100%;background:var(--brand-soft);color:var(--brand);border:0;padding:12px}
+.rcvForm{display:grid;grid-template-columns:1fr 1fr;gap:10px;background:var(--bg);border-radius:16px;padding:12px}
+.rcvForm .full{grid-column:1/-1}
+.rcvForm input{background:var(--surface)}
+.rcvLog{display:flex;flex-direction:column;border-top:1px solid var(--line);padding-top:6px}
+.rcvRow{display:grid;grid-template-columns:auto 1fr auto auto;gap:10px;align-items:center;padding:8px 0;border-bottom:1px solid var(--line);font-size:14px}
+.rcvRow:last-child{border-bottom:0}
+.rcvRow .rn{color:var(--muted);overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.net{font-weight:700}
+.net.isDebit{color:var(--amber)} .net.isCredit{color:var(--ok)} .net.isZero{color:var(--brand)}
+#sheet .f{display:flex;flex-direction:column;gap:4px;font-size:13px;color:var(--muted)}
+/* ---- language ---- */
+.langBtn{font-size:14px;font-weight:700;color:var(--brand)}
+.langSeg{grid-template-columns:1fr 1fr}
+.langPanel{gap:10px}
+html[dir=ltr] body{direction:ltr}
+html[dir=ltr] .year .big,html[dir=ltr] .stat b,html[dir=ltr] .yearSub b,html[dir=ltr] .headcard .hp,html[dir=ltr] .headcard .hcode,
+html[dir=ltr] .headcard .hm,html[dir=ltr] .example,html[dir=ltr] .say textarea,html[dir=ltr] .credit .en,html[dir=ltr] .projs .pr span:first-child{text-align:left}
+html[dir=ltr] .card .amt{text-align:right}
+html[dir=ltr] input[type=date]{text-align:left}
+html[dir=ltr] .card::before{border-radius:4px 0 0 4px}
 </style>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -414,6 +451,7 @@ body.subpage .toast{bottom:calc(96px + env(safe-area-inset-bottom,0px))}
   <header class="top">
     <span class="logoTile"><img id="logo" alt="UUES"></span>
     <div class="tt"><h1>عهدة UUES</h1><div class="sub">أهلاً، <span id="empName">—</span></div></div>
+    <button class="iconBtn langBtn" id="langBtn" type="button" aria-label="اللغة" title="اللغة" data-noi18n>EN</button>
     <button class="iconBtn" id="nameEdit" type="button" aria-label="تغيير الاسم" title="تغيير الاسم">✎</button>
   </header>
 
@@ -429,6 +467,7 @@ body.subpage .toast{bottom:calc(96px + env(safe-area-inset-bottom,0px))}
       <div class="sayhead"><b>أهلاً بيك 👋</b></div>
       <div class="note">اكتب اسمك بالإنجليزي زي ما هيتكتب في فورم العهدة (Employee Name).</div>
       <input id="nameIn" dir="ltr" placeholder="e.g. Ahmed Ali" autocomplete="name">
+      <div class="seg langSeg" data-noi18n><button type="button" data-l="ar">العربية</button><button type="button" data-l="en">English</button></div>
       <button class="btn primary big" id="nameSave" type="button">حفظ</button>
     </div>
     <div class="year">
@@ -437,6 +476,22 @@ body.subpage .toast{bottom:calc(96px + env(safe-area-inset-bottom,0px))}
       <div class="yearSub" id="ySub"></div>
     </div>
     <div class="stats" id="stats"></div>
+    <div class="bal" id="balCard">
+      <div class="balTop"><b>💰 رصيد العهدة</b><button class="linkBtn" id="rcvLogBtn" type="button">السجل</button></div>
+      <div class="balRows">
+        <div><small>استلمت من الشركة</small><b class="num" id="balIn">0.00</b></div>
+        <div><small>صرفت</small><b class="num" id="balOut">0.00</b></div>
+      </div>
+      <div class="balRes" id="balRes"></div>
+      <div class="rcvLog" id="rcvLog" hidden></div>
+      <div class="rcvForm" id="rcvForm" hidden>
+        <label class="f">المبلغ<input id="rcvAmt" class="amount" inputmode="decimal" placeholder="0.00" autocomplete="off"></label>
+        <label class="f">التاريخ<input id="rcvDate" type="date"></label>
+        <label class="f full">ملاحظة<input id="rcvNote" placeholder="مثلاً: عهدة أكتوبر" autocomplete="off"></label>
+        <div class="confirm full"><button class="btn primary grow" id="rcvSave" type="button">سجّل</button><button class="btn" id="rcvCancel" type="button">إلغاء</button></div>
+      </div>
+      <button class="btn rcvBtn" id="rcvBtn" type="button">＋ استلمت مبلغ من الشركة</button>
+    </div>
     <button class="cta" id="goAdd" type="button"><span class="ctaIco" aria-hidden="true">+</span><span class="ctaT"><b>سجّل عهدة جديدة</b><small>بصوتك أو بالكتابة</small></span><span class="ctaArr" aria-hidden="true">←</span></button>
     <div id="dbWarn" class="warn" hidden>الحفظ مش شغال هنا (ممكن تكون فاتح تصفح خاص). اللي هتكتبه هيتمسح لما تقفل الصفحة.</div>
     <div id="projBox" hidden><div class="listhead"><b>حسب المشروع</b></div><div class="projs" id="projTotals"></div></div>
@@ -478,6 +533,7 @@ body.subpage .toast{bottom:calc(96px + env(safe-area-inset-bottom,0px))}
       <span class="verPill">الإصدار <b class="num" id="verTxt"></b></span>
     </div>
     <button class="btn primary big" id="updBtn" type="button">🔄 حدّث التطبيق</button>
+    <div class="panel langPanel"><strong>اللغة</strong><div class="seg langSeg" data-noi18n><button type="button" data-l="ar">العربية</button><button type="button" data-l="en">English</button></div></div>
 
     <div class="panel credit">
       <span class="cAv" aria-hidden="true">س</span>
@@ -574,6 +630,9 @@ body.subpage .toast{bottom:calc(96px + env(safe-area-inset-bottom,0px))}
       </div>
       <div class="kv"><span>الأيام</span><span class="num" id="sDays">0</span></div>
       <div class="kv"><span>الوجبات (يوم × 60)</span><span class="num" id="sMeals">0.00</span></div>
+      <label class="f">المستلم للتقرير ده (Advance)<input id="sAdv" class="amount" inputmode="decimal" placeholder="0.00" autocomplete="off"></label>
+      <div class="note">بيتكتب في الفورم في «Less Advance Received».</div>
+      <div class="kv"><span>الصافي في التقرير ده</span><b id="sNet"></b></div>
     </details>
 
     <div class="confirm" id="delWrap" style="justify-content:center;padding:8px 0 4px"><button class="btn danger" id="delBtn" style="width:100%">حذف العهدة</button></div>
@@ -615,6 +674,83 @@ const secOf=k=>(TYPES.find(t=>t.k===k)||{sec:'M'}).sec;
 
 let db=null, col=null, custodies=[], curId=null, curType='Hotel', memMode=false;
 const $=id=>document.getElementById(id);
+/* ---------- language: Arabic (default) / English. The page is written in Arabic; in English every UI text node,
+   placeholder and label found in EN is swapped (also for text added later, via a MutationObserver).
+   Texts built with numbers use tr(arabic, english). Switching language saves it and reloads. ---------- */
+let LANG='ar'; try{LANG=localStorage.getItem('uues_lang')==='en'?'en':'ar'}catch(e){}
+const tr=(a,e)=>LANG==='en'?e:a;
+const ARW=()=>LANG==='en'?'→':'←';
+const EN={
+ 'عهدة UUES':'UUES Petty Cash','أهلاً،':'Hi,','تغيير الاسم':'Change name','اكتب اسمك':'enter your name',
+ 'ثبّت «عهدة UUES» على موبايلك':'Install «UUES Petty Cash» on your phone','يفتح من الشاشة الرئيسية زي أي أبلكيشن، ويشتغل من غير نت':'Opens from your home screen like any app, and works offline',
+ 'إخفاء':'Hide','📲 ثبّت التطبيق':'📲 Install the app','أهلاً بيك 👋':'Welcome 👋',
+ 'اكتب اسمك بالإنجليزي زي ما هيتكتب في فورم العهدة (Employee Name).':'Type your name in English as it should appear on the expenses form (Employee Name).',
+ 'حفظ':'Save','إجمالي السنة':'Year total','لا توجد عهد بعد':'No custodies yet','سجّل عهدة جديدة':'New custody','بصوتك أو بالكتابة':'By voice or by typing',
+ 'الحفظ مش شغال هنا (ممكن تكون فاتح تصفح خاص). اللي هتكتبه هيتمسح لما تقفل الصفحة.':'Saving is off here (private browsing?). What you enter will be lost when you close the page.',
+ 'حسب المشروع':'By project','آخر العهد':'Latest custodies','عرض الكل ←':'See all →','←':'→','العهد':'Custodies','الكل':'All','لسه':'Open','اتسلمت':'Submitted',
+ 'العهد اللي بتسجلها هتظهر هنا.':'Your custodies will show up here.','📊 Excel لكل العهد':'📊 Excel for all custodies','إضافة عهدة':'Add custody',
+ 'سجّل عهدة بصوتك':'Record a custody by voice','دوس واتكلم':'Tap and speak','المشروع':'Project','من إمتى لإمتى':'From – to','الفواتير':'Invoices',
+ '«مدن جدة':'“MODON Jeddah','من تسعة وعشرين لحد النهاردة':'from 29 to today','، فندق ميتين، تاكسي سبعة وسبعين، بنزين مية وعشرة»':', hotel 200, taxi 77, fuel 110”',
+ 'الكلام هيظهر هنا… وتقدر تكتب كمان':'Your words show up here… you can type too','امسح الكلام':'Clear text','✕ امسح':'✕ Clear','✨ رتّبها':'✨ Read it','أو':'or','✍️ اكتبها بإيدك':'✍️ Type it in',
+ 'تصفية العهدة بصوتك — من الكلام لفورم Excel':'Settle your petty cash by voice — from speech to the Excel form','الإصدار':'Version','🔄 حدّث التطبيق':'🔄 Update the app',
+ 'س':'E','فكرة وتصميم وتطوير':'Idea, design and development','م. السيد محمد':'Eng. Elsayed Mohamad','Eng. Elsayed Mohamad':'م. السيد محمد',
+ 'التطبيق بيعمل إيه؟':'What does it do?','بتقول العهدة بصوتك':'Say your custody','المشروع والتاريخ والفواتير في جملة واحدة.':'Project, dates and invoices in one sentence.',
+ 'بيفهم التاريخ':'Understands dates','«من 29 لحد النهاردة»، «من أول الشهر لامبارح»…':'“from 29 to today”, “from 1/10 to yesterday”…',
+ 'بيحسب الوجبات لوحده':'Meals are automatic','عدد الأيام × 60 ريال.':'Days × 60 SAR.','بيطلّع فورم Excel':'Exports the Excel form',
+ 'نفس فورم UUES Expenses Report، صفحة لكل عهدة + ملخص السنة.':'The same UUES Expenses Report form, one sheet per custody + a year summary.',
+ 'صورة لكل فاتورة':'A photo for every invoice','بتتحفظ على الموبايل.':'Kept on your phone.','بيشتغل من غير نت':'Works offline','بعد أول مرة تفتحه.':'After the first time you open it.',
+ 'بياناتك':'Your data','بياناتك بتتحفظ على الموبايل ده بس، ومحدش غيرك يقدر يشوفها. خد «نسخة احتياطية» كل فترة وابعتها لنفسك على واتساب، وتقدر ترجّعها على أي موبايل.':'Your data stays on this phone only — nobody else can see it. Take a «Backup» now and then and send it to yourself on WhatsApp; you can restore it on any phone.',
+ '💾 نسخة احتياطية':'💾 Backup','↩️ استرجاع':'↩️ Restore','📷 كود':'📷 Code','📤 ابعت التطبيق لزميل':'📤 Send the app to a colleague','📲 إزاي أثبّته على الموبايل؟':'📲 How do I install it?',
+ 'صُنع لزملاء UUES · © 2026':'Made for UUES colleagues · © 2026','→ رجوع':'← Back','عهدة جديدة':'New custody','أو اكتب مشروع جديد':'or type a new project','الكود':'Code',
+ 'قول التاريخ':'Say the dates','مثلاً: من 29 لحد النهاردة':'e.g. from 29 to today','من':'From','إلى':'To','اعمل العهدة':'Create custody','افتح العهدة دي في Excel':'Open this custody in Excel',
+ 'زوّد فواتير بالكلام':'Add invoices by voice','فندق 200، بنزين مية وعشرة…':'hotel 200, fuel 110…','اتكلم':'Speak','ضيفها':'Add them','إضافة فاتورة بالكتابة':'Add an invoice by typing',
+ 'إضافة':'Add','ملاحظة (اختياري)':'Note (optional)','تعديل المشروع والتاريخ':'Edit project, dates and advance','الأيام':'Days','الوجبات (يوم × 60)':'Meals (day × 60)','حذف العهدة':'Delete custody',
+ 'صورة الفاتورة':'Invoice photo','استبدال':'Replace','حذف الصورة':'Delete photo','إغلاق':'Close','الصفحات':'Pages','الرئيسية':'Home','عن التطبيق':'About','الإجمالي':'Total',
+ 'وجّه الكاميرا على كود الاستيراد':'Point the camera at the import code','📋 الصق لينك بدل الكاميرا':'📋 Paste a link instead','إلغاء':'Cancel','🔄 فيه تحديث جديد للتطبيق — دوس هنا':'🔄 A new version is ready — tap here',
+ 'فندق':'Hotel','تاكسي':'Taxi','بنزين':'Fuel','إيجار عربية':'Car rent','ماتيريال':'Material','فاتورة':'Invoice','غسيل عربية':'Car wash','باركنج':'Parking','رسوم طريق':'Toll','طباعة':'Printing','شحن':'Shipping',
+ 'لسه ما اتسلمش':'Not submitted yet','اتسلم للحسابات':'Submitted','بدون اسم':'No name','الشهر ده':'This month','لسه ما اتسلمتش':'Not submitted','عهد':'custodies','عهدة':'custody','أيام شغل':'Work days','يوم':'days',
+ 'لسه ما سجلتش عهد. دوس «سجّل عهدة جديدة» فوق.':'No custodies yet. Tap «New custody» above.','مفيش عهد هنا.':'Nothing here.',
+ 'رجّعها «لسه»':'Mark as open','✓ علّم إنها اتسلمت':'✓ Mark as submitted','حذف':'Delete','دوس عشان تعدّل':'Tap to edit','اتعدّل المبلغ':'Amount updated',
+ 'المساحة امتلأت — احذف عهد قديمة':'Storage is full — delete old custodies','ما اتحفظش — جرّب تاني':'Not saved — try again','التطبيق متثبّت عندك خلاص ✓':'The app is already installed ✓',
+ 'اكتب مبلغ الفاتورة الأول.':'Enter the invoice amount first.','اتكلم أو اكتب الفواتير الأول.':'Speak or type the invoices first.',
+ 'ما فهمتش فواتير من الكلام ده. قول النوع وبعده المبلغ، زي «بنزين مية وعشرة».':'No invoices found. Say the type then the amount, like “fuel 110”.',
+ 'اتحفظ الاسم':'Name saved','اتحفظت صورة الفاتورة':'Invoice photo saved','ما اتحفظتش الصورة — المساحة ممكن تكون مليانة':'Photo not saved — storage may be full','اتمسحت الصورة':'Photo deleted',
+ 'المشاريع اللي بتستخدمها هتتحفظ هنا.':'Projects you use are saved here.','المتصفح ده مش بيدعم المايك — استخدم مايك الكيبورد 🎤':'This browser has no voice input — use the keyboard mic 🎤',
+ 'استخدم مايك الكيبورد 🎤':'Use the keyboard mic 🎤','اسمح للمايك من إعدادات المتصفح، أو استخدم مايك الكيبورد 🎤':'Allow the microphone in browser settings, or use the keyboard mic 🎤',
+ 'المايك مش شغال على الموبايل ده':'The microphone is not available on this phone','ما سمعتش حاجة — جرّب تاني':'Didn’t hear anything — try again','بسمعك… دوس تاني لما تخلص':'Listening… tap again when done',
+ 'ما فهمتش التاريخ — قول مثلاً «من 29 لحد النهاردة»':'Didn’t get the dates — say e.g. “from 29 to today”','اتكلم أو اكتب العهدة الأول.':'Speak or type the custody first.',
+ 'ما لقيتش فواتير في الكلام. قول النوع وبعده المبلغ، زي «بنزين مية وعشرة».':'No invoices found. Say the type then the amount, like “fuel 110”.',
+ 'ما سمعتش تاريخ، فاتحط النهاردة. قول «من … لحد …» أو غيّره تحت.':'No dates heard, so today was used. Say “from … to …” or change it below.',
+ 'اتمسحت الفاتورة':'Invoice deleted','متأكد؟ العهدة هتتمسح بكل فواتيرها.':'Sure? The custody and all its invoices will be deleted.','أيوه امسح':'Yes, delete','لأ':'No',
+ 'ما اتمسحتش — جرّب تاني':'Not deleted — try again','تراجع':'Undo','مكتبة Excel لسه بتحمّل — جرّب كمان ثانية':'The Excel library is still loading — try again in a second','مفيش عهد لسه':'No custodies yet',
+ 'اتنزل الملف':'File downloaded','الملف ده مش نسخة احتياطية من الأبلكيشن':'This file is not a backup from the app','الكود ده مش مظبوط':'This code is not valid','اسمح للكاميرا، أو الصق اللينك':'Allow the camera, or paste the link',
+ '⏳ بيحدّث…':'⏳ Updating…','الوجبات':'Meals','اللغة':'Language',
+ /* cash balance */
+ '💰 رصيد العهدة':'💰 Cash balance','السجل':'History','استلمت من الشركة':'Received from company','صرفت':'Spent','＋ استلمت مبلغ من الشركة':'＋ I received cash from the company',
+ 'المبلغ':'Amount','التاريخ':'Date','ملاحظة':'Note','مثلاً: عهدة أكتوبر':'e.g. October advance','سجّل':'Save','معاك للشركة':'You hold for the company','ليك عند الشركة':'The company owes you',
+ 'مدين · Debit':'Debit','دائن · Credit':'Credit','متصفّية ✓':'Settled ✓','الرصيد متساوي — مفيش عليك ولا ليك.':'Balanced — nothing owed either way.',
+ 'ده الباقي معاك من فلوس العهدة.':'This is what is left with you from the company cash.','صرفت من جيبك أكتر من اللي استلمته.':'You spent more than you received.',
+ 'لسه ما سجلتش أي مبلغ استلمته.':'No cash received recorded yet.','اكتب المبلغ الأول.':'Enter the amount first.','اتسجل المبلغ':'Amount recorded','اتمسح المبلغ':'Amount deleted',
+ 'المستلم للتقرير ده (Advance)':'Advance for this report','بيتكتب في الفورم في «Less Advance Received».':'Printed on the form as «Less Advance Received».','الصافي في التقرير ده':'Balance in this report'
+};
+const tx=s=>{if(LANG!=='en'||!s)return s;const k=s.trim();const v=EN[k];return v==null?s:s.replace(k,v)};
+const SKIP_I18N=new Set(['SCRIPT','STYLE','TEXTAREA']);
+function i18nNode(n){
+  if(LANG!=='en')return;
+  if(n.nodeType===3){const p=n.parentNode;if(!p||SKIP_I18N.has(p.nodeName)||p.closest&&p.closest('[data-noi18n]'))return;const v=tx(n.nodeValue);if(v!==n.nodeValue)n.nodeValue=v;return}
+  if(n.nodeType!==1||n.nodeName==='SCRIPT'||n.nodeName==='STYLE'||n.hasAttribute('data-noi18n'))return;
+  for(const a of ['placeholder','aria-label','title']){if(n.hasAttribute(a)){const v=tx(n.getAttribute(a));if(v!==n.getAttribute(a))n.setAttribute(a,v)}}
+  if(n.nodeName==='TEXTAREA')return;
+  for(const c of n.childNodes) i18nNode(c);
+}
+function setLang(l){try{localStorage.setItem('uues_lang',l)}catch(e){}location.reload()}
+if(LANG==='en'){
+  document.documentElement.lang='en';document.documentElement.dir='ltr';document.title='UUES Petty Cash';
+  ['sayTxt','voiceTxt'].forEach(id=>$(id).setAttribute('dir','auto'));
+  i18nNode(document.body);
+  new MutationObserver(ms=>ms.forEach(m=>{if(m.type==='characterData')i18nNode(m.target);else m.addedNodes.forEach(i18nNode)}))
+    .observe(document.body,{subtree:true,childList:true,characterData:true});
+}
 const fmt=n=>(Math.round(n*100)/100).toLocaleString('en-US',{minimumFractionDigits:2,maximumFractionDigits:2});
 const todayISO=()=>{const d=new Date();return new Date(d.getTime()-d.getTimezoneOffset()*6e4).toISOString().slice(0,10)};
 const parseISO=s=>{const [y,m,d]=s.split('-').map(Number);return Date.UTC(y,m-1,d)};
@@ -668,9 +804,10 @@ function countTo(el,to){
 }
 let seen=new Set(),seenFor=null;
 function renderHome(){
+  renderBalance();
   const y=custodies.reduce((s,c)=>s+total(c),0);
   countTo($('yTotal'),y);
-  $('yCount').textContent=custodies.length?custodies.length+' عهدة':'لا توجد عهد بعد';
+  $('yCount').textContent=custodies.length?tr(custodies.length+' عهدة',custodies.length+(custodies.length===1?' custody':' custodies')):'لا توجد عهد بعد';
   $('listCount').textContent=custodies.length||'';
   const openSum=custodies.filter(c=>c.status!=='submitted').reduce((s,c)=>s+total(c),0);
   const doneSum=y-openSum;
@@ -708,7 +845,7 @@ function custCard(c){
     b.querySelector('.proj').textContent=c.project||'بدون اسم';
     b.querySelector('.amt').textContent=fmt(total(c));
     {const s=document.createElement('small');s.textContent='SAR';b.querySelector('.amt').appendChild(s)}
-    const mt=b.querySelector('.meta'); mt.textContent=`${dmy(c.from).slice(0,5)} ← ${dmy(c.to).slice(0,5)} · ${daysTxt(days(c))}`;
+    const mt=b.querySelector('.meta'); mt.textContent=`${dmy(c.from).slice(0,5)} ${ARW()} ${dmy(c.to).slice(0,5)} · ${daysTxt(days(c))}`;
     const pl=document.createElement('span'); pl.className='pill '+(c.status==='submitted'?'done':'open'); pl.textContent=c.status==='submitted'?'اتسلمت':'لسه'; mt.appendChild(pl);
     b.onclick=()=>openSheet(c.id);
     return b;
@@ -725,11 +862,14 @@ function renderSheet(){
   $('hProj').textContent=c.project||'بدون اسم';
   const sub=c.status==='submitted';
   $('stTxt').innerHTML=''; const sp=document.createElement('span'); sp.className='pill '+(sub?'done':'open');
-  sp.textContent=sub?('اتسلمت للحسابات'+(c.submittedAt?' · '+dmy(c.submittedAt):'')):'لسه ما اتسلمتش'; $('stTxt').appendChild(sp);
+  sp.textContent=sub?(tr('اتسلمت للحسابات','Submitted')+(c.submittedAt?' · '+dmy(c.submittedAt):'')):'لسه ما اتسلمتش'; $('stTxt').appendChild(sp);
   $('stBtn').textContent=sub?'رجّعها «لسه»':'✓ علّم إنها اتسلمت'; $('stBtn').className='btn'+(sub?'':' ok');
   $('hCode').textContent=c.fileNo||'';
   $('hMeta').textContent=`📅 ${rangeTxt(c)} · ${daysTxt(days(c))}`;
   $('sDays').textContent=days(c); $('sMeals').textContent=fmt(meals(c));
+  if(document.activeElement!==$('sAdv')) $('sAdv').value=c.advance?String(c.advance):'';
+  {const d=(+c.advance||0)-total(c), n=netInfo(d); $('sNet').className='net '+n.cls;
+   $('sNet').textContent=n.cls==='isZero'?tr(n.head,'Settled ✓'):tr(n.head,n.cls==='isDebit'?'You hold':'Due to you')+' '+fmt(Math.abs(d))+(n.tag?' · '+(LANG==='en'?n.tag.split(' · ')[1]:n.tag.split(' · ')[0]):'');}
   countTo($('sTotal'),total(c));
   const g=grouped(c), R=$('rows'); R.innerHTML='';
   const sec=(name,list,extra)=>{
@@ -766,6 +906,56 @@ function renderSheet(){
   seen=new Set((c.items||[]).map(i=>i.id)); seenFor=c.id;
 }
 function render(){renderHome(); if(!$('sheet').hidden) renderSheet()}
+
+/* ---------- cash balance: money received from the company vs. money spent (all custodies) ----------
+   diff = received − spent.  > 0 → the employee still holds company cash (مدين / Debit)
+                             < 0 → the company owes the employee (دائن / Credit) */
+let receipts=[], rcol=null;
+function netInfo(diff){
+  if(diff>0.004) return {cls:'isDebit',head:'معاك للشركة',tag:'مدين · Debit',sub:'ده الباقي معاك من فلوس العهدة.'};
+  if(diff<-0.004) return {cls:'isCredit',head:'ليك عند الشركة',tag:'دائن · Credit',sub:'صرفت من جيبك أكتر من اللي استلمته.'};
+  return {cls:'isZero',head:'متصفّية ✓',tag:'',sub:'الرصيد متساوي — مفيش عليك ولا ليك.'};
+}
+function renderBalance(){
+  const got=receipts.reduce((s,r)=>s+(+r.amount||0),0), spent=custodies.reduce((s,c)=>s+total(c),0), d=got-spent, n=netInfo(d);
+  $('balIn').textContent=fmt(got); $('balOut').textContent=fmt(spent);
+  const B=$('balRes'); B.className='balRes '+n.cls; B.innerHTML='';
+  const top=document.createElement('div');top.className='brTop';
+  const h=document.createElement('span');h.textContent=n.head;top.appendChild(h);
+  if(n.tag){const g=document.createElement('span');g.className='tag';g.textContent=n.tag;top.appendChild(g)}
+  B.appendChild(top);
+  if(n.cls!=='isZero'){const v=document.createElement('b');v.className='num';v.textContent=fmt(Math.abs(d))+' SAR';B.appendChild(v)}
+  const s=document.createElement('small');s.textContent=receipts.length?n.sub:'لسه ما سجلتش أي مبلغ استلمته.';B.appendChild(s);
+  const L=$('rcvLog'); L.innerHTML='';
+  if(!receipts.length){const e=document.createElement('div');e.className='note';e.textContent='لسه ما سجلتش أي مبلغ استلمته.';L.appendChild(e)}
+  [...receipts].sort((a,b)=>(b.date||'').localeCompare(a.date||'')).forEach(r=>{
+    const row=document.createElement('div');row.className='rcvRow';
+    const a=document.createElement('span');a.className='num';a.textContent=dmy(r.date);
+    const nt=document.createElement('span');nt.className='rn';nt.textContent=r.note||'';
+    const v=document.createElement('b');v.className='num';v.textContent=fmt(+r.amount||0);
+    const x=document.createElement('button');x.className='x';x.type='button';x.setAttribute('aria-label','حذف');x.textContent='×';
+    x.onclick=()=>{const idx=receipts.findIndex(q=>q.id===r.id);if(idx<0)return;const old=receipts[idx];receipts.splice(idx,1);
+      if(rcol)rcol.doc(r.id).delete();renderBalance();
+      toast('اتمسح المبلغ',()=>{receipts.push(old);if(rcol)rcol.doc(old.id).set({date:old.date,amount:old.amount,note:old.note});renderBalance()})};
+    row.append(a,nt,v,x);L.appendChild(row)});
+}
+$('rcvBtn').onclick=()=>{$('rcvForm').hidden=false;$('rcvBtn').hidden=true;$('rcvAmt').value='';$('rcvNote').value='';$('rcvDate').value=todayISO();$('rcvAmt').focus()};
+$('rcvCancel').onclick=()=>{$('rcvForm').hidden=true;$('rcvBtn').hidden=false};
+$('rcvSave').onclick=()=>{
+  const v=parseFloat(normNum($('rcvAmt').value)); if(!(v>0)){toast('اكتب المبلغ الأول.');$('rcvAmt').focus();return}
+  const r={id:'r-'+uid(),date:$('rcvDate').value||todayISO(),amount:Math.round(v*100)/100,note:$('rcvNote').value.trim()};
+  receipts.push(r); if(rcol)rcol.doc(r.id).set({date:r.date,amount:r.amount,note:r.note});
+  $('rcvForm').hidden=true;$('rcvBtn').hidden=false;renderBalance();toast('اتسجل المبلغ');
+};
+$('rcvAmt').addEventListener('keydown',e=>{if(e.key==='Enter'){e.preventDefault();$('rcvSave').click()}});
+$('rcvLogBtn').onclick=()=>{$('rcvLog').hidden=!$('rcvLog').hidden};
+/* per-report advance (printed on the form as «Less Advance Received») */
+$('sAdv').addEventListener('change',()=>{const v=parseFloat(normNum($('sAdv').value));mutate(c=>{c.advance=v>0?Math.round(v*100)/100:0})});
+/* language buttons */
+$('langBtn').textContent=LANG==='en'?'ع':'EN';
+['aria-label','title'].forEach(a=>$('langBtn').setAttribute(a,LANG==='en'?'العربية':'English'));
+$('langBtn').onclick=()=>setLang(LANG==='en'?'ar':'en');
+document.querySelectorAll('.langSeg [data-l]').forEach(b=>{b.setAttribute('aria-pressed',b.dataset.l===LANG);b.onclick=()=>{if(b.dataset.l!==LANG)setLang(b.dataset.l)}});
 
 /* ---------- persistence ---------- */
 const chains={};
@@ -817,7 +1007,7 @@ function addItem(){
   $('addErr').hidden=true;
   mutate(c=>{c.items=[...(c.items||[]),{id:uid(),type:curType,amount:Math.round(v*100)/100,remark:$('remark').value.trim()||c.project||''}]});
   const t=TYPES.find(t=>t.k===curType);
-  toast(`اتضاف ${t.ar} — ${fmt(v)}`);
+  toast(tr(`اتضاف ${t.ar} — ${fmt(v)}`,`Added ${t.k} — ${fmt(v)}`));
   $('amt').value='';$('remark').value='';$('amt').focus();
 }
 $('addBtn').onclick=addItem;
@@ -825,7 +1015,10 @@ $('addBtn').onclick=addItem;
 const AR2K={'فندق':'Hotel','سكن':'Hotel','اوتيل':'Hotel','تاكسي':'Taxi','تكسي':'Taxi','اوبر':'Taxi','أوبر':'Taxi','كريم':'Taxi','مواصلات':'Taxi',
  'بنزين':'Fuel','وقود':'Fuel','فيول':'Fuel','ايجار':'Car Rent','إيجار':'Car Rent','عربيه':'Car Rent','عربية':'Car Rent','سياره':'Car Rent','سيارة':'Car Rent',
  'غسيل':'Car Wash','باركنج':'Parking','موقف':'Parking','رسوم':'Toll','ماتيريال':'Material','خامات':'Material','مواد':'Material',
- 'طباعه':'Printing','طباعة':'Printing','شحن':'Shipping','فاتوره':'Invoice','فاتورة':'Invoice'};
+ 'طباعه':'Printing','طباعة':'Printing','شحن':'Shipping','فاتوره':'Invoice','فاتورة':'Invoice',
+ 'hotel':'Hotel','accommodation':'Hotel','lodging':'Hotel','taxi':'Taxi','uber':'Taxi','careem':'Taxi','cab':'Taxi','transport':'Taxi',
+ 'fuel':'Fuel','petrol':'Fuel','gasoline':'Fuel','gas':'Fuel','diesel':'Fuel','rent':'Car Rent','rental':'Car Rent','wash':'Car Wash',
+ 'parking':'Parking','toll':'Toll','material':'Material','materials':'Material','invoice':'Invoice','bill':'Invoice','printing':'Printing','print':'Printing','shipping':'Shipping','courier':'Shipping'};
 const AR_N=s=>normDigits(String(s)).replace(/[ً-ْـ]/g,'').replace(/[أإآ]/g,'ا').replace(/ة/g,'ه').replace(/ى/g,'ي').toLowerCase();
 const NUMW={};
 [[1,'واحد واحده'],[2,'اتنين اثنين اثنان'],[3,'تلاته تلات ثلاثه ثلاث'],[4,'اربعه اربع'],[5,'خمسه خمس'],[6,'سته ست'],[7,'سبعه سبع'],[8,'تمانيه تمان ثمانيه ثمان'],[9,'تسعه تسع'],[10,'عشره عشر'],
@@ -888,13 +1081,13 @@ const MONW={};
  [5,'مايو ايار may'],[6,'يونيو يونيه حزيران june jun'],[7,'يوليو يوليه تموز july jul'],[8,'اغسطس august aug'],
  [9,'سبتمبر ايلول september sep sept'],[10,'اكتوبر october oct'],[11,'نوفمبر november nov'],[12,'ديسمبر december dec']]
  .forEach(([v,ws])=>ws.split(' ').forEach(w=>MONW[AR_N(w)]=v));
-const REL0=/^(النهارده|النهارد|النهاردا|انهارده|اليوم|دلوقتي|دلوقت|الوقتي)$/, REL1=/^(امبارح|مبارح|امس|البارحه)$/;
-const DSEP=['لحد','لحدي','لغايه','لغايت','الي','حتي','ل','لين','للين','ولحد','وحتي','والي','لغاية'];
-const DFILL=/^(يوم|تاريخ|بتاريخ|الشهر|شهر|ده|دا|هذا|اللي|فات|الماضي|السابق|سنه|عام|م|ميلادي)$/;
+const REL0=/^(النهارده|النهارد|النهاردا|انهارده|اليوم|دلوقتي|دلوقت|الوقتي|today|now|tonight)$/, REL1=/^(امبارح|مبارح|امس|البارحه|yesterday)$/;
+const DSEP=['لحد','لحدي','لغايه','لغايت','الي','حتي','ل','لين','للين','ولحد','وحتي','والي','لغاية','to','till','until','til','through'];
+const DFILL=/^(يوم|تاريخ|بتاريخ|الشهر|شهر|ده|دا|هذا|اللي|فات|الماضي|السابق|سنه|عام|م|ميلادي|the|of|on|day|date|this|month|year)$/;
 const isDateWord=w=>/^\d{1,4}$/.test(w)||/^\d{1,2}[\/\-.]\d{1,2}([\/\-.]\d{2,4})?$/.test(w)||(NUMW[w]!=null&&NUMW[w]<100)||MONW[w]!=null||REL0.test(w)||REL1.test(w)||w==='اول'||w==='اخر';
 function dateTokens(txt){
   const out=[];
-  tokens(txt).forEach(t=>{
+  tokens(String(txt).replace(/last\s+month/gi,' الشهر اللي فات ')).map(t=>t.replace(/^(\d{1,2})(st|nd|rd|th)$/,'$1').replace(/^first$/,'اول').replace(/^last$/,'اخر')).forEach(t=>{
     if(t.startsWith('لل')&&isDateWord('ال'+t.slice(2))){out.push('ل','ال'+t.slice(2));return}
     if(t.length>1&&t[0]==='ل'&&!DSEP.includes(t)&&isDateWord(t.slice(1))){out.push('ل',t.slice(1));return}
     if(t.length>1&&t[0]==='و'&&MONW[t.slice(1)]!=null){out.push(t.slice(1));return}
@@ -954,7 +1147,7 @@ function resolveDate(v,ref,isEnd){
 function extractDates(txt){
   const tk=dateTokens(txt), none={from:null,to:null,before:[],rest:tokens(txt).join(' ')};
   for(let i=0;i<tk.length;i++){
-    if(tk[i]!=='من'&&tk[i]!=='ومن') continue;
+    if(tk[i]!=='من'&&tk[i]!=='ومن'&&tk[i]!=='from') continue;
     const f=readDate(tk,i+1); if(!f) continue;
     let e=f.end, t=null;
     if(DSEP.includes(tk[e])){t=readDate(tk,e+1);if(t)e=t.end}
@@ -965,7 +1158,7 @@ function extractDates(txt){
   }
   /* «يوم 28» / «بتاريخ 28/9» = one day */
   for(let i=0;i<tk.length;i++){
-    if(!/^(يوم|بتاريخ|تاريخ)$/.test(tk[i])) continue;
+    if(!/^(يوم|بتاريخ|تاريخ|on)$/.test(tk[i])) continue;
     const f=readDate(tk,i+1); if(!f||f.v.rel==null&&f.v.d==null) continue;
     const d=isoLocal(resolveDate(f.v,new Date(Date.now()+7*864e5),false));
     return {from:d,to:d,before:tk.slice(0,i),rest:[...tk.slice(0,i),',',...tk.slice(f.end)].join(' ')};
@@ -974,9 +1167,9 @@ function extractDates(txt){
 }
 /* «الأحد 29 سبتمبر» */
 const AR_DATE=s=>{if(!s)return'';const [y,m,d]=s.split('-').map(Number);
-  try{return new Date(y,m-1,d,12).toLocaleDateString('ar-EG-u-nu-latn',{weekday:'long',day:'numeric',month:'long'})}catch(e){return dmy(s)}};
-const rangeTxt=c=>c.from&&c.to?`${AR_DATE(c.from)} ← ${AR_DATE(c.to)}`:'';
-const daysTxt=n=>n===1?'يوم واحد':n===2?'يومين':n<=10?`${n} أيام`:`${n} يوم`;
+  try{return new Date(y,m-1,d,12).toLocaleDateString(LANG==='en'?'en-GB':'ar-EG-u-nu-latn',{weekday:'long',day:'numeric',month:'long'})}catch(e){return dmy(s)}};
+const rangeTxt=c=>c.from&&c.to?`${AR_DATE(c.from)} ${ARW()} ${AR_DATE(c.to)}`:'';
+const daysTxt=n=>LANG==='en'?(n===1?'1 day':`${n} days`):n===1?'يوم واحد':n===2?'يومين':n<=10?`${n} أيام`:`${n} يوم`;
 function normDigits(s){return String(s).replace(/[٠-٩]/g,d=>'٠١٢٣٤٥٦٧٨٩'.indexOf(d)).replace(/٫/g,'.')}
 let pending=[];
 function parseVoice(){
@@ -993,7 +1186,7 @@ let pendingDates=null;
 function applyDates(from,to){
   if(from>to){const x=from;from=to;to=x}
   mutate(c=>{c.from=from;c.to=to});
-  toast(`📅 ${daysTxt(days({from,to}))}: ${dmy(from)} ← ${dmy(to)}`);
+  toast(`📅 ${daysTxt(days({from,to}))}: ${dmy(from)} ${ARW()} ${dmy(to)}`);
 }
 function renderPending(){
   const P=$('voicePrev'); P.hidden=false; P.innerHTML='';
@@ -1007,13 +1200,13 @@ function renderPending(){
     r.querySelector('.num').textContent=fmt(i.amount); box.appendChild(r)});
   const sum=pending.reduce((s,i)=>s+i.amount,0);
   const a=document.createElement('div');a.className='confirm';a.style.marginTop='10px';
-  const ok=document.createElement('button');ok.className='btn primary';ok.textContent=`أضف الـ ${pending.length} (${fmt(sum)})`;
+  const ok=document.createElement('button');ok.className='btn primary';ok.textContent=tr(`أضف الـ ${pending.length} (${fmt(sum)})`,`Add ${pending.length} (${fmt(sum)})`);
   const no=document.createElement('button');no.className='btn';no.textContent='إلغاء';
   a.append(ok,no); P.append(box,a);
   ok.onclick=()=>{const add=pending,pd=pendingDates;pending=[];pendingDates=null;P.hidden=true;$('voiceTxt').value='';
     mutate(c=>{c.items=[...(c.items||[]),...add.map(i=>({id:uid(),type:i.type,amount:i.amount,remark:i.note||c.project||''}))];
       if(pd){c.from=pd.from;c.to=pd.to}});
-    toast(`اتضافت ${add.length} فواتير`+(pd?' واتعدّل التاريخ':''))};
+    toast(tr(`اتضافت ${add.length} فواتير`+(pd?' واتعدّل التاريخ':''),`Added ${add.length} invoices`+(pd?' and updated the dates':'')))};
   no.onclick=()=>{pending=[];pendingDates=null;P.hidden=true};
 }
 $('parseBtn').onclick=parseVoice;
@@ -1091,7 +1284,7 @@ function mic(btn,target,idle,done){
              abort(){userStop=true;if(cur){cur.onresult=null;try{cur.abort()}catch(e){}}finish()}};
   const run=()=>{
     let r; try{r=new SR()}catch(e){finish();target.focus();toast('استخدم مايك الكيبورد 🎤');return}
-    cur=r; r.lang='ar-EG'; r.continuous=!done; r.interimResults=true;
+    cur=r; r.lang=LANG==='en'?'en-US':'ar-EG'; r.continuous=!done; r.interimResults=true;
     const base=target.value.trim()?target.value.trim()+' ':'';
     /* rebuild this round's text from all results. Android Chrome repeats earlier phrases inside later
        results («فندق» then «فندق ميتين»), so a result that already contains the previous one replaces it */
@@ -1124,12 +1317,12 @@ $('micBtn').onclick=()=>mic($('micBtn'),$('voiceTxt'),'اتكلم');
 /* «قول التاريخ»: one sentence like «من 29 لحد النهاردة» fills من / إلى */
 function speakDate(txtId,apply){
   const t=$(txtId).value.trim(); if(!t) return;
-  const q=/(^|\s)و?من\s/.test(AR_N(t))?t:'من '+t;
+  const q=/(^|\s)(و?من|from)\s/.test(AR_N(t))?t:'من '+t;
   const d=extractDates(q);
   if(!d.from){toast('ما فهمتش التاريخ — قول مثلاً «من 29 لحد النهاردة»');return}
   apply(d.from,d.to); $(txtId).value='';
 }
-function dateLine(el,from,to){el.textContent=from&&to?`📅 ${rangeTxt({from,to})} · ${daysTxt(days({from,to}))} · وجبات ${fmt(days({from,to})*RATE)}`:''}
+function dateLine(el,from,to){el.textContent=from&&to?`📅 ${rangeTxt({from,to})} · ${daysTxt(days({from,to}))} · ${tr('وجبات','meals')} ${fmt(days({from,to})*RATE)}`:''}
 const nApply=(f,t)=>{if(f>t){const x=f;f=t;t=x}$('nFrom').value=f;$('nTo').value=t;dateLine($('nDateLine'),f,t)};
 $('nDateMic').onclick=()=>mic($('nDateMic'),$('nDateTxt'),'قول التاريخ',()=>speakDate('nDateTxt',nApply));
 $('nDateTxt').addEventListener('change',()=>speakDate('nDateTxt',nApply));
@@ -1166,7 +1359,7 @@ function renderSayPrev(){
   P.appendChild(box);
   $('dpProj').value=D.project||''; $('dpCode').value=D.code||''; $('dpFrom').value=D.from; $('dpTo').value=D.to;
   if(D.noDate){const w=document.createElement('div');w.className='warn';w.textContent='ما سمعتش تاريخ، فاتحط النهاردة. قول «من … لحد …» أو غيّره تحت.';box.prepend(w)}
-  if(D.alias&&!D.project) $('dpProj').placeholder='اسم المشروع بالإنجليزي (قلت: «'+D.alias+'»)';
+  if(D.alias&&!D.project) $('dpProj').placeholder=tr('اسم المشروع بالإنجليزي (قلت: «'+D.alias+'»)','Project name in English (you said: “'+D.alias+'”)');
   const R=$('dpRows');
   D.items.forEach(i=>{const r=document.createElement('div');r.className='row';r.style.gridTemplateColumns='auto 1fr auto';
     r.innerHTML='<span class="ar"></span><span class="lab"></span><span class="num"></span>';
@@ -1190,7 +1383,7 @@ function renderSayPrev(){
       items:D.items.map(i=>({id:uid(),type:i.type,amount:i.amount,remark:D.project||''}))};
     rememberProject(c.project,c.fileNo,D.alias);
     custodies.push(c);save(c);sayDraft=null;P.hidden=true;$('sayTxt').value='';
-    toast(`اتعملت عهدة ${no_}`);openSheet(c.id);renderHome();
+    toast(tr(`اتعملت عهدة ${no_}`,`Custody ${no_} created`));openSheet(c.id);renderHome();
   };
 }
 $('sayGo').onclick=sayParse;
@@ -1320,6 +1513,19 @@ async function exportXlsx(onlyId){
   const sumT=refs.reduce((s,x)=>s+x.T,0), sumA=refs.reduce((s,x)=>s+x.advV,0);
   [['H',sumT],['I',sumA],['J',sumT-sumA]].forEach(([col,v])=>{const x=sm.getCell(col+r);x.value={formula:`SUM(${col}4:${col}${r-1})`,result:v};x.numFmt=SAR});
   sm.pageSetup={paperSize:9,orientation:'landscape',fitToPage:true,fitToWidth:1,fitToHeight:1,horizontalCentered:true,printArea:`A1:J${r}`};
+  {const got=receipts.reduce((s,x)=>s+(+x.amount||0),0); let q=r+2;
+   const lab=(rr,txt,v,bold,fill)=>{sm.mergeCells(rr,1,rr,7);const a=sm.getRow(rr).getCell(1);a.value=txt;a.font={name:TNR,size:12,bold:!!bold};a.alignment={horizontal:'right',vertical:'middle'};
+     for(let k=1;k<=10;k++){const x=sm.getRow(rr).getCell(k);x.border=bx;if(fill)x.fill={type:'pattern',pattern:'solid',fgColor:{argb:fill}}}
+     sm.mergeCells(rr,8,rr,10);const c=sm.getRow(rr).getCell(8);c.value=v;c.numFmt=SAR;c.font={name:TNR,size:12,bold:!!bold};c.alignment={horizontal:'right',vertical:'middle'}};
+   lab(q,'Cash received from company (all advances)',got); lab(q+1,'Total spent by employee',{formula:`H${r}`,result:sumT});
+   const d=sumT-got; lab(q+2,d>=0?'Balance due TO employee (Credit)':'Balance due FROM employee (Debit)',{formula:`ABS(H${q+1}-H${q})`,result:Math.round(Math.abs(d)*100)/100},true,d>=0?'FFE2EFDA':'FFFCE4D6');
+   sm.pageSetup.printArea=`A1:J${q+2}`;
+   if(receipts.length){const ad=wb.addWorksheet('Advances');ad.columns=[{width:14},{width:18},{width:44}];
+     ['Date','Amount (SAR)','Note'].forEach((h,i)=>{const x=ad.getRow(1).getCell(i+1);x.value=h;x.font={name:TNR,bold:true};x.border=bx;x.fill={type:'pattern',pattern:'solid',fgColor:{argb:'FFD9E1F2'}}});
+     [...receipts].sort((a,b)=>(a.date||'').localeCompare(b.date||'')).forEach((x,i)=>{const row=ad.getRow(i+2);row.getCell(1).value=xdate(x.date);row.getCell(1).numFmt=DATEF;
+       row.getCell(2).value=+x.amount||0;row.getCell(2).numFmt=SAR;row.getCell(3).value=x.note||'';for(let k=1;k<=3;k++){row.getCell(k).border=bx;row.getCell(k).font={name:TNR}}});
+     const tr2=ad.getRow(receipts.length+2);tr2.getCell(1).value='Total';tr2.getCell(2).value={formula:`SUM(B2:B${receipts.length+1})`,result:got};tr2.getCell(2).numFmt=SAR;
+     for(let k=1;k<=3;k++){tr2.getCell(k).border=bx;tr2.getCell(k).font={name:TNR,bold:true}}}}
   wb.views=[{activeTab:refs.length}];
   const buf=await wb.xlsx.writeBuffer();
   const year=(list[list.length-1].to||todayISO()).slice(0,4);
@@ -1359,15 +1565,15 @@ function decodeImport(s){
 function importCode(s){
   let d=null; try{d=decodeImport(s)}catch(e){}
   if(!d){toast('الكود ده مش مظبوط');return}
-  const list=Object.values(d.custodies).map(c=>`${c.no}) ${c.project} — ${dmy(c.from)} ← ${dmy(c.to)}`).join('\n');
-  if(confirm(`هتضيف ${Object.keys(d.custodies).length} عهدة للموبايل ده:\n\n${list}\n\nموافق؟`)&&mergeBackup(d)&&!standalone)
-    setTimeout(()=>alert('العهد اتضافت هنا في المتصفح.\n\nلو مش ظاهرة في التطبيق اللي على الشاشة الرئيسية: افتح التطبيق، وانزل لتحت، ودوس «📷 كود»، وصوّر نفس الكود.'),300);
+  const list=Object.values(d.custodies).map(c=>`${c.no}) ${c.project} — ${dmy(c.from)} ${ARW()} ${dmy(c.to)}`).join('\n');
+  if(confirm(tr(`هتضيف ${Object.keys(d.custodies).length} عهدة للموبايل ده:\n\n${list}\n\nموافق؟`,`Add ${Object.keys(d.custodies).length} custodies to this phone?\n\n${list}`))&&mergeBackup(d)&&!standalone)
+    setTimeout(()=>alert(tr('العهد اتضافت هنا في المتصفح.\n\nلو مش ظاهرة في التطبيق اللي على الشاشة الرئيسية: افتح التطبيق، وانزل لتحت، ودوس «📷 كود»، وصوّر نفس الكود.','Added here in the browser.\n\nIf they are not in the app on your home screen: open the app, go to About, tap «📷 Code» and scan the same code.')),300);
 }
 /* «📷 كود»: scan the import QR from INSIDE the installed app (Chrome/Safari keep separate data from it) */
 let scanStream=null, scanRaf=0;
 function scanStop(){cancelAnimationFrame(scanRaf);if(scanStream)scanStream.getTracks().forEach(t=>t.stop());scanStream=null;$('scanVid').srcObject=null;$('scan').hidden=true}
 function loadJsQR(){return window.jsQR?Promise.resolve():new Promise((ok,no)=>{const s=document.createElement('script');s.src='jsQR.js';s.onload=ok;s.onerror=no;document.head.appendChild(s)})}
-function pasteImport(){const s=prompt('الصق لينك أو كود الاستيراد هنا:');if(s)importCode(s)}
+function pasteImport(){const s=prompt(tr('الصق لينك أو كود الاستيراد هنا:','Paste the import link or code here:'));if(s)importCode(s)}
 async function scanStart(){
   $('scan').hidden=false;
   try{scanStream=await navigator.mediaDevices.getUserMedia({video:{facingMode:'environment'},audio:false})}
@@ -1406,11 +1612,13 @@ function mergeBackup(d){
     Object.entries(d.projects||{}).forEach(([id,p])=>{
       const same=Object.entries(o.projects).find(([,x])=>String(x.name).toLowerCase()===String(p.name).toLowerCase());
       if(same)o.projects[same[0]]={...same[1],code:same[1].code||p.code};else o.projects[id]=p});
+    o.receipts={...(o.receipts||{}),...(d.receipts||{})};
     if(!o.name&&d.name)o.name=d.name;
     if(!LS.write(o))throw 0;
     custodies=Object.entries(o.custodies).map(([id,c])=>({...c,id}));
+    receipts=Object.entries(o.receipts||{}).map(([id,r])=>({...r,id}));
     projects=Object.entries(o.projects).map(([id,p])=>({...p,id})).sort((x,y)=>x.name.localeCompare(y.name));
-    setEmp(o.name||'');renderProjects();render();toast(`اترجعت ${Object.keys(d.custodies).length} عهدة`);return true}
+    setEmp(o.name||'');renderProjects();render();toast(tr(`اترجعت ${Object.keys(d.custodies).length} عهدة`,`Restored ${Object.keys(d.custodies).length} custodies`));return true}
   catch(err){return false}
 }
 /* install prompt */
@@ -1428,6 +1636,14 @@ function installHint(){
   else if(ios) steps=['دوس زرار المشاركة ⬆️ تحت في Safari.','انزل واختار <bdi>Add to Home Screen</bdi>.','دوس <bdi>Add</bdi> فوق، وافتحه من الأيقونة.'];
   else if(android) steps=['دوس ⋮ فوق على اليمين في Chrome.','اختار <bdi>Install app</bdi> أو <bdi>Add to Home screen</bdi>.','افتح «عهدة UUES» من الشاشة الرئيسية.'];
   else steps=['افتح نفس اللينك من الموبايل.','وثبّته على الشاشة الرئيسية من قايمة المتصفح.'];
+  if(LANG==='en'){
+    if(inApp) steps=['The link opened inside another app (WhatsApp / Facebook…).',ios?'Tap ⋯ or the compass icon and choose <bdi>Open in Safari</bdi>.':'Tap ⋮ and choose <bdi>Open in Chrome</bdi>.','Then follow the install steps.'];
+    else if(deferredInstall) steps=['Tap «📲 Install the app» below.','Confirm <bdi>Install</bdi>.','Open «UUES Petty Cash» from your home screen.'];
+    else if(iosOther) steps=['Tap the share button ⬆️ next to the address bar.','Choose <bdi>Add to Home Screen</bdi>.','Open «UUES Petty Cash» from your home screen.'];
+    else if(ios) steps=['Tap the share button ⬆️ at the bottom of Safari.','Scroll and choose <bdi>Add to Home Screen</bdi>.','Tap <bdi>Add</bdi>, then open it from the icon.'];
+    else if(android) steps=['Tap ⋮ at the top right of Chrome.','Choose <bdi>Install app</bdi> or <bdi>Add to Home screen</bdi>.','Open «UUES Petty Cash» from your home screen.'];
+    else steps=['Open the same link on your phone.','Install it on the home screen from the browser menu.'];
+  }
   const L=$('installSteps'); L.innerHTML=''; steps.forEach(s=>{const li=document.createElement('li');li.innerHTML='<span>'+s+'</span>';L.appendChild(li)});
   $('installBtn').hidden=!deferredInstall||inApp;
   $('installBox').hidden=false;
@@ -1438,14 +1654,14 @@ $('installX').onclick=()=>{$('installBox').hidden=true;try{localStorage.setItem(
 setTimeout(installHint,600);
 /* «📤 ابعت لزميل»: phone share sheet (WhatsApp…) with a ready message and the link */
 const APP_URL='https://elsaiedharfoush14.github.io/uues-petty-cash/';
-const SHARE_TXT='عهدة UUES 📋\nسجّل فواتير العهدة بصوتك، والتطبيق يحسب الأيام والوجبات ويطلّع فورم Expenses Report على Excel.\nافتح اللينك وضيفه على الشاشة الرئيسية:';
+const SHARE_TXT=tr('عهدة UUES 📋\nسجّل فواتير العهدة بصوتك، والتطبيق يحسب الأيام والوجبات ويطلّع فورم Expenses Report على Excel.\nافتح اللينك وضيفه على الشاشة الرئيسية:','UUES Petty Cash 📋\nRecord your custody invoices by voice — the app counts days and meals and exports the Expenses Report form to Excel.\nOpen the link and add it to your home screen:');
 $('shBtn').onclick=async()=>{
   try{if(navigator.share){await navigator.share({title:'عهدة UUES',text:SHARE_TXT,url:APP_URL});return}}catch(e){if(e&&e.name==='AbortError')return}
   open('https://wa.me/?text='+encodeURIComponent(SHARE_TXT+'\n'+APP_URL),'_blank');
 };
 if('serviceWorker' in navigator&&location.protocol==='https:')navigator.serviceWorker.register('sw.js').catch(()=>{});
 /* ---------- quick update: version.json is never cached; a newer one shows a bar, one tap reloads ---------- */
-const APP_VER='2026.10.04.4';
+const APP_VER='2026.10.04.5';
 $('verTxt').textContent=APP_VER;
 async function hardUpdate(){
   $('updBtn').disabled=true;$('updBtn').textContent='⏳ بيحدّث…';
@@ -1478,7 +1694,8 @@ function lsColl(name){return{doc:id=>({
   const ok=LS.write(LS.read());
   if(!ok){$('dbWarn').hidden=false;memMode=true;setEmp('');return}
   const o=LS.read();
-  col=lsColl('custodies'); pcol=lsColl('projects');
+  col=lsColl('custodies'); pcol=lsColl('projects'); rcol=lsColl('receipts');
+  receipts=Object.entries(o.receipts||{}).map(([id,r])=>({...r,id}));
   custodies=Object.entries(o.custodies||{}).map(([id,c])=>({...c,id}));
   projects=Object.entries(o.projects||{}).map(([id,p])=>({...p,id})).sort((x,y)=>x.name.localeCompare(y.name));
   setEmp(o.name||''); renderProjects(); render();
