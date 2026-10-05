@@ -1549,7 +1549,7 @@ const daysTxt=n=>LANG==='en'?(n===1?'1 day':`${n} days`):n===1?'يوم واحد'
 function normDigits(s){return String(s).replace(/[٠-٩]/g,d=>'٠١٢٣٤٥٦٧٨٩'.indexOf(d)).replace(/٫/g,'.')}
 /* spoken command at the end of the sentence: «… ضيفها» / «add them» adds without touching the button */
 /* phones write it many ways: ضيفها ضيفيها ضيفوها ضفها أضفها اضيفهالي صيفها احفظها سجلها … («يا معلم» / «لو سمحت» after it is fine) */
-const ADD_CMD=/(?:^|[\s،,.]+)(?:و?(?:خلاص\s+)?(?:[اأإ]?ضي?ف(?:ي|و)?(?:ها|هم|ه|هوم)?(?:لي|لى)?|صي?ف(?:ي|و)?(?:ها|هم)|[اأ]?حفظ(?:ها|هم)|سج+ّ?ل(?:ها|هم))|add(?: (?:it|them))?|save(?: (?:it|them))?)(?:\s+(?:يا\s*\S+|لو سمحت|please))?[\s.!،]*$/i;
+const ADD_CMD=/(?:^|[\s،,.]+)(?:و?(?:خلاص\s+)?(?:[اأإ]?ضي?ف(?:ي|و)?(?:ها|هم|ه|هوم)?(?:لي|لى)?|[صدظز]ي?ف(?:ي|و)?(?:ها|هم)|[اأ]?حفظ(?:ها|هم)|سج+ّ?ل(?:ها|هم))|add(?: (?:it|them))?|save(?: (?:it|them))?)(?:\s+(?:يا\s*\S+|لو سمحت|please))?[\s.!،]*$/i;
 /* «ضيفها» adds straight away (the old preview's confirm button was hidden under the total bar on phones,
    so the invoices were never saved); «تراجع» in the toast takes them back out */
 function parseVoice(){
@@ -1640,7 +1640,7 @@ function findProject(txt){
 
 /* ---------- mic: browser speech recognition ---------- */
 let rec=null;
-function mic(btn,target,idle,done){
+function mic(btn,target,idle,done,after){
   if(rec){rec.stop();return}
   const SR=window.SpeechRecognition||window.webkitSpeechRecognition;
   if(!SR){target.focus();toast('المتصفح ده مش بيدعم المايك — استخدم مايك الكيبورد 🎤');return}
@@ -1648,9 +1648,10 @@ function mic(btn,target,idle,done){
   /* the mic stays on until the user taps again: phones stop listening after a short pause,
      so we start it again and keep adding to what was already said (nothing is erased) */
   let cur=null, userStop=false, dead=false, heard=false, restarts=0; const t0=Date.now();
-  const finish=()=>{if(dead)return;dead=true;rec=null;btn.classList.remove('on');lab.textContent=idle;if(done)done()};
+  /* after(): runs when the mic really ends (tap, or the phone stops it) — not when abort() is called by «ضيفها» */
+  const finish=(quiet)=>{if(dead)return;dead=true;rec=null;btn.classList.remove('on');lab.textContent=idle;if(done)done();if(after&&quiet!==true)after()};
   const ctl={stop(){userStop=true;try{cur&&cur.stop()}catch(e){finish()}},
-             abort(){userStop=true;if(cur){cur.onresult=null;try{cur.abort()}catch(e){}}finish()}};
+             abort(){userStop=true;if(cur){cur.onresult=null;cur.onend=null;try{cur.abort()}catch(e){}}finish(true)}};
   const run=()=>{
     let r; try{r=new SR()}catch(e){finish();target.focus();toast('استخدم مايك الكيبورد 🎤');return}
     cur=r; r.lang=LANG==='en'?'en-US':'ar-EG'; r.continuous=!done; r.interimResults=true;
@@ -1682,7 +1683,8 @@ document.querySelectorAll('.tbox').forEach(b=>{const ta=b.querySelector('textare
   const upd=()=>{x.hidden=!ta.value.trim()}; ta.addEventListener('input',upd); upd();
   x.onclick=()=>{stopRec();clearBox(ta.id);ta.focus()}});
 $('sayMic').onclick=()=>mic($('sayMic'),$('sayTxt'),'دوس واتكلم');
-$('micBtn').onclick=()=>mic($('micBtn'),$('voiceTxt'),'اتكلم');
+/* inside a custody: when the mic stops (tap, or the phone stops it) what was said is added right away */
+$('micBtn').onclick=()=>mic($('micBtn'),$('voiceTxt'),'اتكلم',null,()=>{if($('voiceTxt').value.replace(ADD_CMD,'').trim())parseVoice()});
 /* «قول التاريخ»: one sentence like «من 29 لحد النهاردة» fills من / إلى */
 function speakDate(txtId,apply){
   const t=$(txtId).value.trim(); if(!t) return;
@@ -2036,7 +2038,7 @@ $('shBtn').onclick=async()=>{
 };
 if('serviceWorker' in navigator&&location.protocol==='https:')navigator.serviceWorker.register('sw.js').catch(()=>{});
 /* ---------- quick update: version.json is never cached; a newer one shows a bar, one tap reloads ---------- */
-const APP_VER='2026.10.05.4';
+const APP_VER='2026.10.05.5';
 $('verTxt').textContent=APP_VER;
 async function hardUpdate(){
   $('updBtn').disabled=true;$('updBtn').textContent='⏳ بيحدّث…';
