@@ -1547,8 +1547,12 @@ const AR_DATE=s=>{if(!s)return'';const [y,m,d]=s.split('-').map(Number);
 const rangeTxt=c=>c.from&&c.to?`${AR_DATE(c.from)} ${ARW()} ${AR_DATE(c.to)}`:'';
 const daysTxt=n=>LANG==='en'?(n===1?'1 day':`${n} days`):n===1?'يوم واحد':n===2?'يومين':n<=10?`${n} أيام`:`${n} يوم`;
 /* iPhone dictation wraps numbers in invisible direction marks («‎280‎») — drop them, and odd spaces become plain ones */
-function cleanSpeech(s){return String(s).replace(/[​-‏‪-‮⁦-⁩؜﻿]/g,'').replace(/[  -   　]/g,' ')}
-function normDigits(s){return cleanSpeech(s).replace(/[٠-٩]/g,d=>'٠١٢٣٤٥٦٧٨٩'.indexOf(d)).replace(/٫/g,'.')}
+/* NFKC folds odd forms (presentation-form letters, full-width digits); \p{Cf} = every invisible format mark; \p{Zs} = every kind of space */
+function cleanSpeech(s){s=String(s).replace(/​/g,' ');try{s=s.normalize('NFKC')}catch(e){}
+  try{return s.replace(/\p{Cf}/gu,'').replace(/[\p{Zs}\t]/gu,' ')}
+  catch(e){return s.replace(/[​-‏‪-‮⁦-⁩؜﻿­]/g,'').replace(/[  -   　]/g,' ')}}
+function normDigits(s){return cleanSpeech(s).replace(/[٠-٩]/g,d=>'٠١٢٣٤٥٦٧٨٩'.indexOf(d)).replace(/[۰-۹]/g,d=>'۰۱۲۳۴۵۶۷۸۹'.indexOf(d)).replace(/[٫]/g,'.').replace(/(\d)[٬,](\d{3})(?!\d)/g,'$1$2')
+  .replace(/([ء-ي])(\d)/g,'$1 $2').replace(/(\d)([ء-ي])/g,'$1 $2')}
 /* spoken command at the end of the sentence: «… ضيفها» / «add them» adds without touching the button */
 /* phones write it many ways: ضيفها ضيفيها ضيفوها ضفها أضفها اضيفهالي صيفها احفظها سجلها … («يا معلم» / «لو سمحت» after it is fine) */
 const ADD_CMD=/(?:^|[\s،,.]+)(?:و?(?:خلاص\s+)?(?:[اأإ]?ضي?ف(?:ي|و)?(?:ها|هم|ه|هوم)?(?:لي|لى)?|[صدظز]ي?ف(?:ي|و)?(?:ها|هم)|[اأ]?حفظ(?:ها|هم)|سج+ّ?ل(?:ها|هم))|add(?: (?:it|them))?|save(?: (?:it|them))?)(?:\s+(?:يا\s*\S+|لو سمحت|please))?[\s.!،]*$/i;
@@ -1561,7 +1565,11 @@ function parseVoice(){
   const dt=extractDates(txt);
   const items=parseItems(dt.rest).map(i=>({...i,note:''}));
   if(!items.length&&dt.from){applyDates(dt.from,dt.to);clearBox('voiceTxt');msg.hidden=true;return}
-  if(!items.length){msg.hidden=false;msg.textContent='ما فهمتش فواتير من الكلام ده. قول النوع وبعده المبلغ، زي «بنزين مية وعشرة».';return}
+  if(!items.length){msg.hidden=false;msg.textContent='ما فهمتش فواتير من الكلام ده. قول النوع وبعده المبلغ، زي «بنزين مية وعشرة».';
+    /* any character the parser does not know is shown by its code, so a screenshot tells us what the phone wrote */
+    const odd=[...new Set([...cleanSpeech(txt)].filter(ch=>!/[ء-ي٠-٩a-zA-Z0-9\s.,،؛:!?؟'"«»()\-]/.test(ch)))].map(ch=>'U+'+ch.codePointAt(0).toString(16).toUpperCase());
+    if(odd.length) msg.textContent+=' ['+odd.join(' ')+']';
+    return}
   msg.hidden=true; clearBox('voiceTxt');
   const pd=dt.from?{from:dt.from<=dt.to?dt.from:dt.to,to:dt.from<=dt.to?dt.to:dt.from}:null;
   let old=null; const ids=items.map(()=>uid());
@@ -2040,7 +2048,7 @@ $('shBtn').onclick=async()=>{
 };
 if('serviceWorker' in navigator&&location.protocol==='https:')navigator.serviceWorker.register('sw.js').catch(()=>{});
 /* ---------- quick update: version.json is never cached; a newer one shows a bar, one tap reloads ---------- */
-const APP_VER='2026.10.05.6';
+const APP_VER='2026.10.05.7';
 $('verTxt').textContent=APP_VER;
 async function hardUpdate(){
   $('updBtn').disabled=true;$('updBtn').textContent='⏳ بيحدّث…';
