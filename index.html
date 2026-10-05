@@ -1547,45 +1547,36 @@ const AR_DATE=s=>{if(!s)return'';const [y,m,d]=s.split('-').map(Number);
 const rangeTxt=c=>c.from&&c.to?`${AR_DATE(c.from)} ${ARW()} ${AR_DATE(c.to)}`:'';
 const daysTxt=n=>LANG==='en'?(n===1?'1 day':`${n} days`):n===1?'يوم واحد':n===2?'يومين':n<=10?`${n} أيام`:`${n} يوم`;
 function normDigits(s){return String(s).replace(/[٠-٩]/g,d=>'٠١٢٣٤٥٦٧٨٩'.indexOf(d)).replace(/٫/g,'.')}
-let pending=[];
+/* spoken command at the end of the sentence: «… ضيفها» / «add them» adds without touching the button */
+const ADD_CMD=/[\s،,.]*(?:و?(?:ضيفها|ضيفهم|ضيفه|ضيف|أضف|اضف|اضيف|أضيف)|add(?: (?:it|them))?)[\s.!]*$/i;
+/* «ضيفها» adds straight away (the old preview's confirm button was hidden under the total bar on phones,
+   so the invoices were never saved); «تراجع» in the toast takes them back out */
 function parseVoice(){
   stopRec();
-  const txt=$('voiceTxt').value.trim(); const msg=$('voiceMsg');
+  const txt=$('voiceTxt').value.replace(ADD_CMD,'').trim(); const msg=$('voiceMsg');
   if(!txt){msg.hidden=false;msg.textContent='اتكلم أو اكتب الفواتير الأول.';return}
   const dt=extractDates(txt);
   const items=parseItems(dt.rest).map(i=>({...i,note:''}));
-  if(!items.length&&dt.from){applyDates(dt.from,dt.to);$('voiceTxt').value='';msg.hidden=true;$('voicePrev').hidden=true;return}
+  if(!items.length&&dt.from){applyDates(dt.from,dt.to);clearBox('voiceTxt');msg.hidden=true;return}
   if(!items.length){msg.hidden=false;msg.textContent='ما فهمتش فواتير من الكلام ده. قول النوع وبعده المبلغ، زي «بنزين مية وعشرة».';return}
-  msg.hidden=true; pending=items; pendingDates=dt.from?{from:dt.from,to:dt.to}:null; renderPending(); clearBox('voiceTxt');
+  msg.hidden=true; clearBox('voiceTxt');
+  const pd=dt.from?{from:dt.from<=dt.to?dt.from:dt.to,to:dt.from<=dt.to?dt.to:dt.from}:null;
+  let old=null; const ids=items.map(()=>uid());
+  mutate(c=>{old={from:c.from,to:c.to};
+    c.items=[...(c.items||[]),...items.map((i,n)=>({id:ids[n],type:i.type,amount:i.amount,remark:i.note||c.project||''}))];
+    if(pd){c.from=pd.from;c.to=pd.to}});
+  const sum=items.reduce((s,i)=>s+i.amount,0);
+  toast(tr(`✓ اتضافت ${items.length} فواتير (${fmt(sum)})`+(pd?' واتعدّل التاريخ':''),`✓ Added ${items.length} invoices (${fmt(sum)})`+(pd?' and updated the dates':'')),
+    ()=>mutate(c=>{c.items=c.items.filter(i=>!ids.includes(i.id));if(pd){c.from=old.from;c.to=old.to}}));
+  const rows=$('rows'); if(rows&&rows.lastElementChild) rows.lastElementChild.scrollIntoView({behavior:'smooth',block:'center'});
 }
-let pendingDates=null;
 function applyDates(from,to){
   if(from>to){const x=from;from=to;to=x}
   mutate(c=>{c.from=from;c.to=to});
   toast(`📅 ${daysTxt(days({from,to}))}: ${dmy(from)} ${ARW()} ${dmy(to)}`);
 }
-function renderPending(){
-  const P=$('voicePrev'); P.hidden=false; P.innerHTML='';
-  const box=document.createElement('div'); box.className='prev';
-  if(pendingDates){const d=document.createElement('div');d.className='dline';
-    d.textContent=`📅 ${rangeTxt(pendingDates)} · ${daysTxt(days(pendingDates))}`;box.appendChild(d)}
-  pending.forEach((i,n)=>{const r=document.createElement('div');r.className='row';
-    r.innerHTML='<span class="ar"></span><span class="lab"></span><span class="num"></span>';
-    r.querySelector('.ar').textContent=(TYPES.find(t=>t.k===i.type)||{}).ar||'';
-    r.querySelector('.lab').textContent=i.type+(i.note?' · '+i.note:'');
-    r.querySelector('.num').textContent=fmt(i.amount); box.appendChild(r)});
-  const sum=pending.reduce((s,i)=>s+i.amount,0);
-  const a=document.createElement('div');a.className='confirm';a.style.marginTop='10px';
-  const ok=document.createElement('button');ok.className='btn primary';ok.textContent=tr(`أضف الـ ${pending.length} (${fmt(sum)})`,`Add ${pending.length} (${fmt(sum)})`);
-  const no=document.createElement('button');no.className='btn';no.textContent='إلغاء';
-  a.append(ok,no); P.append(box,a);
-  ok.onclick=()=>{const add=pending,pd=pendingDates;pending=[];pendingDates=null;P.hidden=true;$('voiceTxt').value='';
-    mutate(c=>{c.items=[...(c.items||[]),...add.map(i=>({id:uid(),type:i.type,amount:i.amount,remark:i.note||c.project||''}))];
-      if(pd){c.from=pd.from;c.to=pd.to}});
-    toast(tr(`اتضافت ${add.length} فواتير`+(pd?' واتعدّل التاريخ':''),`Added ${add.length} invoices`+(pd?' and updated the dates':'')))};
-  no.onclick=()=>{pending=[];pendingDates=null;P.hidden=true};
-}
 $('parseBtn').onclick=parseVoice;
+$('voiceTxt').addEventListener('input',()=>{if(rec&&ADD_CMD.test($('voiceTxt').value)&&$('voiceTxt').value.replace(ADD_CMD,'').trim())parseVoice()});
 /* ---------- employee name (per copy) ---------- */
 function setEmp(n){EMP=n||'';$('empName').textContent=EMP||'اكتب اسمك';$('nameCard').hidden=!!EMP}
 $('nameEdit').onclick=()=>{$('nameCard').hidden=false;$('nameIn').value=EMP;$('nameIn').focus();show('home')};
@@ -1750,6 +1741,8 @@ function renderSayPrev(){
   const ok=document.createElement('button');ok.className='btn primary';ok.textContent='اعمل العهدة';
   const no=document.createElement('button');no.className='btn';no.textContent='إلغاء';
   a.append(ok,no);P.appendChild(a);
+  /* keep «اعمل العهدة» above the bottom bar so it is not missed */
+  setTimeout(()=>a.scrollIntoView({behavior:'smooth',block:'center'}),50);
   no.onclick=()=>{sayDraft=null;P.hidden=true};
   ok.onclick=()=>{
     D.project=$('dpProj').value.trim(); D.code=$('dpCode').value.trim(); upd();
@@ -2041,7 +2034,7 @@ $('shBtn').onclick=async()=>{
 };
 if('serviceWorker' in navigator&&location.protocol==='https:')navigator.serviceWorker.register('sw.js').catch(()=>{});
 /* ---------- quick update: version.json is never cached; a newer one shows a bar, one tap reloads ---------- */
-const APP_VER='2026.10.05.2';
+const APP_VER='2026.10.05.3';
 $('verTxt').textContent=APP_VER;
 async function hardUpdate(){
   $('updBtn').disabled=true;$('updBtn').textContent='⏳ بيحدّث…';
