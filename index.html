@@ -523,6 +523,22 @@ html[dir=ltr] .card::before{border-radius:4px 0 0 4px}
 .confetti{position:fixed;inset:0;pointer-events:none;z-index:70;overflow:hidden}
 .confetti i{position:absolute;top:-12px;width:8px;height:12px;border-radius:2px;animation:conf 1.5s cubic-bezier(.2,.7,.4,1) forwards}
 @keyframes conf{0%{transform:translate(0,0) rotate(0)}100%{transform:translate(var(--dx),105vh) rotate(var(--r));opacity:.9}}
+/* ---- 📲 install QR + get-app page ---- */
+.qrImg{width:min(220px,70%);height:auto;align-self:center;image-rendering:pixelated;border-radius:10px;background:#fff;padding:6px;box-shadow:var(--shadow)}
+.getApp{position:fixed;inset:0;z-index:130;background:linear-gradient(160deg,#0e3a74,#0a2346);display:flex;align-items:center;justify-content:center;
+  padding:calc(20px + env(safe-area-inset-top,0px)) 16px calc(70px + env(safe-area-inset-bottom,0px));overflow:auto}
+.gaCard{background:var(--surface);color:var(--ink);border-radius:22px;padding:24px 18px;width:100%;max-width:420px;display:flex;flex-direction:column;gap:12px;text-align:center;box-shadow:0 20px 50px rgba(0,0,0,.35);margin:auto}
+.gaIcon{width:84px;height:84px;border-radius:20px;align-self:center;box-shadow:var(--shadow)}
+.gaCard h2{margin:0;font-size:26px}
+.gaTag{margin:0;font-weight:700;color:var(--brand)}
+.gaSub{margin:0;color:var(--muted);font-size:14px}
+.gaBtn{font-size:17px;padding:16px}
+.gaOk{background:var(--ok);color:#fff;border-radius:12px;padding:14px;font-weight:700}
+.gaCard .wSteps{text-align:start}
+.gaSkip{background:none;border:0;color:var(--muted);text-decoration:underline;font:inherit;font-size:14px;padding:6px}
+.gaArrow{position:fixed;left:50%;bottom:calc(4px + env(safe-area-inset-bottom,0px));transform:translateX(-50%);font-size:46px;z-index:131;animation:gaB 1s ease-in-out infinite;filter:drop-shadow(0 2px 6px rgba(0,0,0,.5))}
+.gaArrow.top{top:calc(4px + env(safe-area-inset-top,0px));bottom:auto}
+@keyframes gaB{50%{transform:translate(-50%,10px)}}
 /* ---- print / PDF ---- */
 .allBtns{display:grid;grid-template-columns:1fr 1fr;gap:10px}
 .allBtns .btn.big{font-size:15px;padding:13px 8px}
@@ -694,6 +710,7 @@ html[dir=ltr] .card::before{border-radius:4px 0 0 4px}
     <div class="panel">
       <strong>آخر التحديثات</strong>
       <ul class="log">
+        <li><b class="num">2026.10.05</b><span>📲 باركود للتطبيق: زميلك يصوّره ويضيف التطبيق بزرار واحد — واللوجو بقى ملوّن في الطباعة والـ Excel.</span></li>
         <li><b class="num">2026.10.05</b><span>👁️ عرض العهدة كصورة واضحة A4 — شاركها واتساب أو اطبعها على طول، والـ PDF بقى مظبوط على ورقة A4 في أي موبايل.</span></li>
         <li><b class="num">2026.10.04</b><span>تحليل المصروفات بالشهور والأنواع، بحث في العهد، وتنبيهات للعهد المتأخرة والنسخة الاحتياطية.</span></li>
         <li><b class="num">2026.10.04</b><span>رصيد العهدة: المستلم والمصروف، ومدين أو دائن — ونسخة إنجليزي كاملة.</span></li>
@@ -710,6 +727,12 @@ html[dir=ltr] .card::before{border-radius:4px 0 0 4px}
     </div>
     <input type="file" id="rsFile" accept=".json,application/json" hidden>
 
+    <div class="panel qrPanel">
+      <strong>📲 باركود التطبيق</strong>
+      <div class="note">خلي زميلك يصوّر الكود ده بكاميرا الموبايل — هيفتح له صفحة فيها زرار يضيف التطبيق على الشاشة الرئيسية.</div>
+      <img class="qrImg" src="qr-install.png" alt="QR" width="220" height="220">
+      <button class="btn" id="qrShare" type="button">📤 شارك / اطبع الباركود</button>
+    </div>
     <button class="btn share" id="shBtn" type="button">📤 ابعت التطبيق لزميل</button>
     <button class="btn wide" id="howInstall" type="button">📲 إزاي أثبّته على الموبايل؟</button>
     <div class="foot"><span>تصميم وتطوير <b>م. السيد حرفوش</b></span><span>صُنع لزملاء UUES · © 2026</span></div>
@@ -794,6 +817,18 @@ html[dir=ltr] .card::before{border-radius:4px 0 0 4px}
 <input type="file" id="phFile" accept="image/*" hidden>
 <div class="viewer" id="viewer" hidden><img id="vImg" alt="صورة الفاتورة"><div class="vbar"><button class="btn" id="vRep" type="button">استبدال</button><button class="btn" id="vDel" type="button">حذف الصورة</button><button class="btn" id="vClose" type="button">إغلاق</button></div></div>
 <div class="viewer pv" id="pvOv" hidden><div class="pvPages" id="pvPages"></div><div class="vbar"><button class="btn primary" id="pvShare" type="button">📤 شارك</button><button class="btn" id="pvPrint" type="button">🖨️ اطبع / PDF</button><button class="btn" id="pvSave" type="button">⬇️ حفظ</button><button class="btn" id="pvClose" type="button">✕ إغلاق</button></div></div>
+<div class="getApp" id="getApp" hidden><div class="gaCard">
+  <img class="gaIcon" src="icon-192.png" alt="">
+  <h2>عهدة UUES</h2>
+  <p class="gaTag">سجّل عهدتك بصوتك… والباقي علينا</p>
+  <p class="gaSub">ضيف التطبيق على موبايلك وافتحه زي أي أبلكيشن، ويشتغل من غير نت.</p>
+  <button class="btn primary big gaBtn" id="gaBtn" type="button">📲 ضيفه على الشاشة الرئيسية</button>
+  <div class="gaOk" id="gaOk" hidden>✓ اتثبّت — افتح «عهدة UUES» من الشاشة الرئيسية</div>
+  <ol class="wSteps" id="gaSteps" hidden></ol>
+  <img class="qrImg" id="gaQr" src="qr-install.png" alt="QR" hidden>
+  <button class="btn" id="gaCopy" type="button" hidden>📋 انسخ اللينك</button>
+  <button class="gaSkip" id="gaSkip" type="button">كمّل من المتصفح</button>
+</div><div class="gaArrow" id="gaArrow" hidden>⬇️</div></div>
 <nav class="tabbar" id="tabbar" aria-label="الصفحات">
   <button type="button" data-tab="home" aria-current="page"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3 10.5 12 3l9 7.5V20a1 1 0 0 1-1 1h-5v-6h-6v6H4a1 1 0 0 1-1-1z"/></svg><span>الرئيسية</span></button>
   <button type="button" data-tab="listView"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 3h11l3 3v15H5zM8 9h8M8 13h8M8 17h5"/></svg><span>العهد</span></button>
@@ -845,6 +880,10 @@ let LANG='ar'; try{LANG=localStorage.getItem('uues_lang')==='en'?'en':'ar'}catch
 const tr=(a,e)=>LANG==='en'?e:a;
 const ARW=()=>LANG==='en'?'→':'←';
 const EN={
+ '📲 باركود التطبيق':'📲 App QR code','خلي زميلك يصوّر الكود ده بكاميرا الموبايل — هيفتح له صفحة فيها زرار يضيف التطبيق على الشاشة الرئيسية.':'Let a colleague scan this code with the phone camera — it opens a page with a button to add the app to the home screen.',
+ '📤 شارك / اطبع الباركود':'📤 Share / print the QR code','ضيف التطبيق على موبايلك وافتحه زي أي أبلكيشن، ويشتغل من غير نت.':'Add the app to your phone, open it like any app — it works offline.',
+ '📲 ضيفه على الشاشة الرئيسية':'📲 Add it to the home screen','✓ اتثبّت — افتح «عهدة UUES» من الشاشة الرئيسية':'✓ Installed — open «UUES Petty Cash» from your home screen',
+ '📋 انسخ اللينك':'📋 Copy the link','كمّل من المتصفح':'Continue in the browser',
  '👁️ عرض':'👁️ View','📤 شارك':'📤 Share','🖨️ اطبع / PDF':'🖨️ Print / PDF','⬇️ حفظ':'⬇️ Save','✕ إغلاق':'✕ Close',
  'عهدة UUES':'UUES Petty Cash','أهلاً،':'Hi,','تغيير الاسم':'Change name','اكتب اسمك':'enter your name',
  'ثبّت «عهدة UUES» على موبايلك':'Install «UUES Petty Cash» on your phone','يفتح من الشاشة الرئيسية زي أي أبلكيشن، ويشتغل من غير نت':'Opens from your home screen like any app, and works offline',
@@ -898,7 +937,7 @@ const EN={
  'راجع بلمسة':'Review in a tap','التطبيق بيرتب الفواتير ويحسب الأيام والوجبات. أي رقم تقدر تعدّله بلمسة.':'The app sorts the invoices and counts days and meals. Fix any number with a tap.',
  'طلّع Excel وتابع رصيدك':'Export Excel, track your balance','فورم UUES Expenses Report جاهز للحسابات، وتعرف دايماً ليك ولا عليك.':'A ready UUES Expenses Report for accounts — and you always know who owes whom.',
  'تخطي':'Skip','التالي':'Next','السكن':'Lodging','المواصلات':'Transport','متنوع':'Misc.','دوّر بالمشروع أو الكود أو الرقم…':'Search by project, code or number…',
- 'آخر التحديثات':'What’s new','👁️ عرض العهدة كصورة واضحة A4 — شاركها واتساب أو اطبعها على طول، والـ PDF بقى مظبوط على ورقة A4 في أي موبايل.':'👁️ View a custody as a sharp A4 picture — share it on WhatsApp or print it right away; PDF now fits A4 on every phone.','تحليل المصروفات بالشهور والأنواع، بحث في العهد، وتنبيهات للعهد المتأخرة والنسخة الاحتياطية.':'Spending insights by month and type, custody search, and reminders for late custodies and backups.',
+ 'آخر التحديثات':'What’s new','📲 باركود للتطبيق: زميلك يصوّره ويضيف التطبيق بزرار واحد — واللوجو بقى ملوّن في الطباعة والـ Excel.':'📲 App QR code: a colleague scans it and adds the app with one button — and the logo is now in colour in print and Excel.','👁️ عرض العهدة كصورة واضحة A4 — شاركها واتساب أو اطبعها على طول، والـ PDF بقى مظبوط على ورقة A4 في أي موبايل.':'👁️ View a custody as a sharp A4 picture — share it on WhatsApp or print it right away; PDF now fits A4 on every phone.','تحليل المصروفات بالشهور والأنواع، بحث في العهد، وتنبيهات للعهد المتأخرة والنسخة الاحتياطية.':'Spending insights by month and type, custody search, and reminders for late custodies and backups.',
  'رصيد العهدة: المستلم والمصروف، ومدين أو دائن — ونسخة إنجليزي كاملة.':'Cash balance: received vs. spent, debit or credit — plus a full English version.',
  'صفحات وتابات، لوجو الشركة، وشاشة افتتاحية.':'Pages and tabs, the company logo, and an opening screen.',
  'فهم التاريخ بالكلام، والمايك بيفضل شغال لحد ما تدوس.':'Spoken dates, and the mic keeps listening until you tap.',
@@ -1321,7 +1360,7 @@ const sigPart=gap=>({h:6,gap,draw(g){g.fillStyle='#000';g.direction='ltr';g.text
   const inner=A4.w-2*A4.m; g.textAlign='left';g.fillText('Employee Signature : _____________________',2*PX,4*PX);
   const t='Approved by: __________________________'; g.fillText(t,(inner-2)*PX-g.measureText(t).width,4*PX)}});
 async function custodyCanvas(c){
-  await grayImgs(); const [logo,name]=await Promise.all([loadImg(GI.logo),loadImg(GI.name)]);
+  await grayImgs(); const [logo,name]=await Promise.all([loadImg(LOGO),loadImg(GI.name)]); /* the UUES logo stays in colour, all else black & white */
   const D=days(c), rate=c.mealRate||RATE, T=total(c), adv=+c.advance||0, gr=grouped(c), toD=dmy(c.to), inner=A4.w-2*A4.m;
   const cols=[11.2,26.4,13.4,10.7,38.3].map(p=>p/100*inner);
   const lb=t=>({t,b:1,al:'c',pt:11.5,fit:1}), sec=t=>({cells:[{t,cs:5,b:1,u:1}],h:6.2,grow:1});
@@ -1357,7 +1396,7 @@ async function custodyCanvas(c){
   return layPage([drawTable(cols,rows,2.4),sigPart(9)]);
 }
 async function summaryCanvas(list){
-  await grayImgs(); const logo=await loadImg(GI.logo), inner=A4.w-2*A4.m;
+  await grayImgs(); const logo=await loadImg(LOGO), inner=A4.w-2*A4.m;
   const got=receipts.reduce((s,x)=>s+(+x.amount||0),0), sumT=list.reduce((s,c)=>s+total(c),0), sumA=list.reduce((s,c)=>s+(+c.advance||0),0), d=sumT-got;
   const top={h:21,draw(g){const lh=16,lw=logo?logo.naturalWidth/logo.naturalHeight*lh:0;if(logo)g.drawImage(logo,0,0,lw*PX,lh*PX);
     g.fillStyle='#000';g.textAlign='left';g.textBaseline='alphabetic';const tx=(lw+4)*PX, ttl='PETTY CASH LEDGER – '+EMP;
@@ -1428,6 +1467,22 @@ $('pvPrint').onclick=()=>{if(pvFiles.length)printFiles(pvFiles,pvName)};
 $('pvSave').onclick=()=>{if(pvFiles.length)saveFiles(pvFiles)};
 $('pvClose').onclick=closePreview;
 $('oneView').onclick=()=>{const c=custodies.find(x=>x.id===curId);if(!c)return;buzz();openPreview(oneJobs(c),oneName(c))};
+/* ---------- 📲 install QR (qr-install.png → …/?i=1): an A4 poster to share or print ---------- */
+async function qrPosterCanvas(){
+  const [logo,qr]=await Promise.all([loadImg(LOGO),loadImg('qr-install.png')]), inner=A4.w-2*A4.m;
+  const center=(g,s,y,pt,bold,color)=>{g.font=`${bold?'bold ':''}${pt*PT*PX}px ${F_AR}`;g.fillStyle=color||'#000';g.direction=HAS_AR(s)?'rtl':'ltr';
+    g.textAlign='left';g.textBaseline='alphabetic';g.fillText(s,(inner*PX-g.measureText(s).width)/2,y*PX)};
+  return layPage([{h:A4.h-2*A4.m,draw(g){
+    if(logo){const h=30,w=logo.naturalWidth/logo.naturalHeight*h;g.drawImage(logo,(inner-w)/2*PX,4*PX,w*PX,h*PX)}
+    center(g,'عهدة UUES',50,34,1); center(g,'UUES Petty Cash',60,16,0,'#333'); center(g,'سجّل عهدتك بصوتك… والباقي علينا',72,15,1);
+    if(qr){const q=120;g.imageSmoothingEnabled=false;g.drawImage(qr,(inner-q)/2*PX,80*PX,q*PX,q*PX);g.imageSmoothingEnabled=true}
+    center(g,'صوّر الكود بكاميرا الموبايل',216,19,1);
+    center(g,'هيفتح لك صفحة فيها زرار «ضيفه على الشاشة الرئيسية»',227,13);
+    center(g,'Scan with your phone camera, then tap «Add it to the home screen»',238,12,0,'#333');
+    center(g,APP_URL.replace(/^https:\/\//,''),250,11,0,'#333');
+    center(g,'تصميم وتطوير م. السيد حرفوش',272,10,0,'#555')}}]);
+}
+$('qrShare').onclick=()=>{buzz();openPreview([qrPosterCanvas],'UUES_Petty_Cash_QR')};
 
 /* ---------- persistence ---------- */
 const chains={};
@@ -1968,7 +2023,7 @@ async function exportXlsx(onlyId){
   if(!custodies.length){toast('مفيش عهد لسه');return}
   const wb=new ExcelJS.Workbook(); wb.creator=EMP||'UUES';
   const G=await grayImgs();
-  const ids={logo:wb.addImage({base64:G.logo,extension:'png'}),name:wb.addImage({base64:G.name,extension:'png'})};
+  const ids={logo:wb.addImage({base64:LOGO,extension:'png'}), /* logo in colour */name:wb.addImage({base64:G.name,extension:'png'})};
   const list=[...custodies].filter(c=>!onlyId||c.id===onlyId).sort((a,b)=>a.no-b.no), refs=[];
   list.forEach(c=>refs.push({c,...buildSheet(wb,c,ids)}));
   if(onlyId){wb.views=[{activeTab:0}];const one=list[0];const buf1=await wb.xlsx.writeBuffer();
@@ -2107,34 +2162,59 @@ function mergeBackup(d){
 /* install prompt */
 const standalone=matchMedia('(display-mode: standalone)').matches||navigator.standalone;
 let deferredInstall=null;
+const UA=navigator.userAgent, IOS=/iphone|ipad|ipod/i.test(UA)||(/macintosh/i.test(UA)&&navigator.maxTouchPoints>1),
+  ANDROID=/android/i.test(UA), INAPP=/FBAN|FBAV|Instagram|Line\/|Snapchat|WhatsApp|; wv\)/i.test(UA), IOS_OTHER=IOS&&/CriOS|FxiOS|EdgiOS/i.test(UA);
+/* the steps for this phone / browser */
+function stepsFor(){
+  const en=LANG==='en';
+  if(INAPP) return en?['The link opened inside another app (WhatsApp / Facebook…).',IOS?'Tap ⋯ or the compass icon and choose <bdi>Open in Safari</bdi>.':'Tap ⋮ and choose <bdi>Open in Chrome</bdi>.','Then tap the install button again.']
+    :['اللينك مفتوح جوه تطبيق تاني (واتساب / فيسبوك…).',IOS?'دوس ⋯ أو أيقونة البوصلة واختار <bdi>Open in Safari</bdi>.':'دوس ⋮ فوق واختار <bdi>Open in Chrome</bdi>.','وبعدين دوس زرار التثبيت تاني.'];
+  if(deferredInstall) return en?['Tap «📲 Install the app».','Confirm <bdi>Install</bdi>.','Open «UUES Petty Cash» from your home screen.']:['دوس «📲 ثبّت التطبيق».','وافق على <bdi>Install</bdi>.','افتح «عهدة UUES» من الشاشة الرئيسية.'];
+  if(IOS_OTHER) return en?['Tap the share button ⬆️ next to the address bar.','Choose <bdi>Add to Home Screen</bdi>.','Open «UUES Petty Cash» from your home screen.']
+    :['دوس زرار المشاركة ⬆️ جنب العنوان فوق.','اختار «إضافة إلى الشاشة الرئيسية» <bdi>Add to Home Screen</bdi>.','افتح «عهدة UUES» من الشاشة الرئيسية.'];
+  if(IOS) return en?['Tap the share button ⬆️ at the bottom of Safari (if you don’t see it, tap ⋯ first).','Choose <bdi>Add to Home Screen</bdi>.','Tap <bdi>Add</bdi> — the icon appears on your home screen.']
+    :['دوس زرار المشاركة ⬆️ تحت في Safari (لو مش ظاهر دوس ⋯ الأول).','اختار «إضافة إلى الشاشة الرئيسية» <bdi>Add to Home Screen</bdi>.','دوس «إضافة» <bdi>Add</bdi> — وهتلاقي الأيقونة على الشاشة.'];
+  if(ANDROID) return en?['Tap ⋮ at the top right of Chrome.','Choose <bdi>Install app</bdi> or <bdi>Add to Home screen</bdi>.','Open «UUES Petty Cash» from your home screen.']
+    :['دوس ⋮ فوق على اليمين في Chrome.','اختار <bdi>Install app</bdi> أو <bdi>Add to Home screen</bdi>.','افتح «عهدة UUES» من الشاشة الرئيسية.'];
+  return en?['Scan the code with your phone camera.','Then tap the install button on the page that opens.']:['صوّر الكود ده بكاميرا الموبايل.','وبعدين دوس زرار التثبيت في الصفحة اللي هتفتح.'];
+}
+const fillSteps=L=>{L.innerHTML='';stepsFor().forEach(s=>{const li=document.createElement('li');li.innerHTML='<span>'+s+'</span>';L.appendChild(li)})};
 /* first visit from a shared link: a clear «install» card with the steps for this phone */
 function installHint(){
   try{if(standalone||localStorage.getItem('uues_install_x'))return}catch(e){}
-  const ua=navigator.userAgent, ios=/iphone|ipad|ipod/i.test(ua)||(/macintosh/i.test(ua)&&navigator.maxTouchPoints>1),
-    android=/android/i.test(ua), inApp=/FBAN|FBAV|Instagram|Line\/|Snapchat|WhatsApp|; wv\)/i.test(ua), iosOther=ios&&/CriOS|FxiOS|EdgiOS/i.test(ua);
-  let steps;
-  if(inApp) steps=['اللينك مفتوح جوه تطبيق تاني (واتساب / فيسبوك…).',ios?'دوس ⋯ أو أيقونة البوصلة واختار <bdi>Open in Safari</bdi>.':'دوس ⋮ فوق واختار <bdi>Open in Chrome</bdi>.','وبعدين اتبع خطوات التثبيت اللي هتظهر.'];
-  else if(deferredInstall) steps=['دوس «📲 ثبّت التطبيق» تحت.','وافق على <bdi>Install</bdi>.','افتح «عهدة UUES» من الشاشة الرئيسية.'];
-  else if(iosOther) steps=['دوس زرار المشاركة ⬆️ جنب العنوان فوق.','اختار <bdi>Add to Home Screen</bdi>.','افتح «عهدة UUES» من الشاشة الرئيسية.'];
-  else if(ios) steps=['دوس زرار المشاركة ⬆️ تحت في Safari.','انزل واختار <bdi>Add to Home Screen</bdi>.','دوس <bdi>Add</bdi> فوق، وافتحه من الأيقونة.'];
-  else if(android) steps=['دوس ⋮ فوق على اليمين في Chrome.','اختار <bdi>Install app</bdi> أو <bdi>Add to Home screen</bdi>.','افتح «عهدة UUES» من الشاشة الرئيسية.'];
-  else steps=['افتح نفس اللينك من الموبايل.','وثبّته على الشاشة الرئيسية من قايمة المتصفح.'];
-  if(LANG==='en'){
-    if(inApp) steps=['The link opened inside another app (WhatsApp / Facebook…).',ios?'Tap ⋯ or the compass icon and choose <bdi>Open in Safari</bdi>.':'Tap ⋮ and choose <bdi>Open in Chrome</bdi>.','Then follow the install steps.'];
-    else if(deferredInstall) steps=['Tap «📲 Install the app» below.','Confirm <bdi>Install</bdi>.','Open «UUES Petty Cash» from your home screen.'];
-    else if(iosOther) steps=['Tap the share button ⬆️ next to the address bar.','Choose <bdi>Add to Home Screen</bdi>.','Open «UUES Petty Cash» from your home screen.'];
-    else if(ios) steps=['Tap the share button ⬆️ at the bottom of Safari.','Scroll and choose <bdi>Add to Home Screen</bdi>.','Tap <bdi>Add</bdi>, then open it from the icon.'];
-    else if(android) steps=['Tap ⋮ at the top right of Chrome.','Choose <bdi>Install app</bdi> or <bdi>Add to Home screen</bdi>.','Open «UUES Petty Cash» from your home screen.'];
-    else steps=['Open the same link on your phone.','Install it on the home screen from the browser menu.'];
-  }
-  const L=$('installSteps'); L.innerHTML=''; steps.forEach(s=>{const li=document.createElement('li');li.innerHTML='<span>'+s+'</span>';L.appendChild(li)});
-  $('installBtn').hidden=!deferredInstall||inApp;
+  fillSteps($('installSteps'));
+  $('installBtn').hidden=!deferredInstall||INAPP;
   $('installBox').hidden=false;
 }
-addEventListener('beforeinstallprompt',e=>{e.preventDefault();deferredInstall=e;installHint()});
-$('installBtn').onclick=async()=>{if(!deferredInstall)return;deferredInstall.prompt();try{await deferredInstall.userChoice}catch(e){}deferredInstall=null;$('installBox').hidden=true};
+async function doInstall(){if(!deferredInstall)return false;const d=deferredInstall;deferredInstall=null;d.prompt();
+  let ok=false;try{ok=(await d.userChoice).outcome==='accepted'}catch(e){}$('installBox').hidden=true;if(ok)gaDone();return true}
+addEventListener('beforeinstallprompt',e=>{e.preventDefault();deferredInstall=e;installHint();gaRender()});
+addEventListener('appinstalled',()=>{deferredInstall=null;$('installBox').hidden=true;gaDone()});
+$('installBtn').onclick=doInstall;
 $('installX').onclick=()=>{$('installBox').hidden=true;try{localStorage.setItem('uues_install_x','1')}catch(e){}};
 setTimeout(installHint,600);
+/* ---------- 📲 «get the app» page: what the install QR (…/?i=1) opens — one big button for this phone ---------- */
+const GA=/[?&]i=1\b/.test(location.search);
+if(GA) try{history.replaceState(history.state,'',location.pathname+location.hash)}catch(e){}  /* the home-screen icon keeps the clean link */
+function gaRender(){
+  if($('getApp').hidden)return;
+  const desk=!IOS&&!ANDROID, b=$('gaBtn');
+  b.textContent=deferredInstall?tr('📲 ثبّت التطبيق','📲 Install the app'):tr('📲 ضيفه على الشاشة الرئيسية','📲 Add it to the home screen');
+  b.hidden=desk; $('gaQr').hidden=!desk; $('gaCopy').hidden=!INAPP;
+  if(desk){fillSteps($('gaSteps'));$('gaSteps').hidden=false}
+}
+function gaShow(){if(standalone)return;$('getApp').hidden=false;$('gaSteps').hidden=true;$('gaArrow').hidden=true;gaRender()}
+function gaDone(){if($('getApp').hidden)return;$('gaSteps').hidden=true;$('gaArrow').hidden=true;$('gaBtn').hidden=true;
+  const d=$('gaOk');d.hidden=false}
+$('gaBtn').onclick=async()=>{buzz();
+  if(await doInstall())return;
+  fillSteps($('gaSteps'));$('gaSteps').hidden=false;
+  /* iPhone: Apple lets only the user add it, so point at Safari's share button */
+  const A=$('gaArrow'); A.hidden=!(IOS&&!INAPP); A.classList.toggle('top',IOS_OTHER); A.textContent=IOS_OTHER?'⬆️':'⬇️';
+  $('gaSteps').scrollIntoView({behavior:'smooth',block:'center'})};
+$('gaCopy').onclick=async()=>{try{await navigator.clipboard.writeText(APP_URL);toast(tr('اتنسخ اللينك — الصقه في Safari أو Chrome','Link copied — paste it in Safari or Chrome'))}catch(e){prompt(tr('انسخ اللينك:','Copy the link:'),APP_URL)}};
+$('gaSkip').onclick=()=>{$('getApp').hidden=true;$('gaArrow').hidden=true};
+if(GA) gaShow();
 /* «📤 ابعت لزميل»: phone share sheet (WhatsApp…) with a ready message and the link */
 const APP_URL='https://elsaiedharfoush14.github.io/uues-petty-cash/';
 const SHARE_TXT=tr('عهدة UUES 📋\nسجّل فواتير العهدة بصوتك، والتطبيق يحسب الأيام والوجبات ويطلّع فورم Expenses Report على Excel.\nافتح اللينك وضيفه على الشاشة الرئيسية:','UUES Petty Cash 📋\nRecord your custody invoices by voice — the app counts days and meals and exports the Expenses Report form to Excel.\nOpen the link and add it to your home screen:');
@@ -2144,7 +2224,7 @@ $('shBtn').onclick=async()=>{
 };
 if('serviceWorker' in navigator&&location.protocol==='https:')navigator.serviceWorker.register('sw.js').catch(()=>{});
 /* ---------- quick update: version.json is never cached; a newer one shows a bar, one tap reloads ---------- */
-const APP_VER='2026.10.05.8';
+const APP_VER='2026.10.05.9';
 $('verTxt').textContent=APP_VER;
 async function hardUpdate(){
   $('updBtn').disabled=true;$('updBtn').textContent='⏳ بيحدّث…';
