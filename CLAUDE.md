@@ -7,6 +7,11 @@ terms on their own lines. He is not a CLI user: **do the work yourself** (run gi
 shell commands to paste.
 
 ## Status
+- **v2026.10.06.1**: .10 never went live — GitHub Pages build failed on GitHub's side («job was not acquired by
+  Runner»); check `gh run list --repo elsaiedharfoush14/uues-petty-cash` after a push, rerun if it failed.
+  In-app mic on iPhone: iOS speech has no ar-EG → `micLang` = ar-SA on iPhone (and fallback on
+  «language-not-supported»); other mic errors are shown with their code instead of a silent «on» mic.
+  His earlier success was the iOS KEYBOARD mic (text with ‎ marks) + «ضيفها», not the in-app mic.
 - **v2026.10.05.10** (his picks 1,2,3,5,6 of my suggestions):
   ✍️ signature pad in ⚙️ (`sigOpen`, trimmed PNG in data `o.sig` → backups carry it) drawn on `sigPart` + Excel `ids.sig`;
   🧾 receipt photos (IndexedDB `PDB`) as extra A4 pages after each form, 2 per page, grayscale (`photoJobs`/`photoCanvas`);

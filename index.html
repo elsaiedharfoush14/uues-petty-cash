@@ -1993,6 +1993,10 @@ function findProject(txt){
 
 /* ---------- mic: browser speech recognition ---------- */
 let rec=null;
+/* iPhone speech has Saudi Arabic but not Egyptian: ar-EG there gives «language-not-supported» and the mic
+   looked on while nothing was written. iPhone → ar-SA; any phone that refuses ar-EG switches to ar-SA too */
+const ON_IOS=/iphone|ipad|ipod/i.test(navigator.userAgent)||(/macintosh/i.test(navigator.userAgent)&&navigator.maxTouchPoints>1);
+let micLang=ON_IOS?'ar-SA':'ar-EG';
 function mic(btn,target,idle,done,after){
   if(rec){rec.stop();return}
   const SR=window.SpeechRecognition||window.webkitSpeechRecognition;
@@ -2000,14 +2004,14 @@ function mic(btn,target,idle,done,after){
   const lab=btn.querySelector('span:not(.micIco)');
   /* the mic stays on until the user taps again: phones stop listening after a short pause,
      so we start it again and keep adding to what was already said (nothing is erased) */
-  let cur=null, userStop=false, dead=false, heard=false, restarts=0; const t0=Date.now();
+  let cur=null, userStop=false, dead=false, heard=false, restarts=0, errs=0; const t0=Date.now();
   /* after(): runs when the mic really ends (tap, or the phone stops it) — not when abort() is called by «ضيفها» */
   const finish=(quiet)=>{if(dead)return;dead=true;rec=null;btn.classList.remove('on');lab.textContent=idle;if(done)done();if(after&&quiet!==true)after()};
   const ctl={stop(){userStop=true;try{cur&&cur.stop()}catch(e){finish()}},
              abort(){userStop=true;if(cur){cur.onresult=null;cur.onend=null;try{cur.abort()}catch(e){}}finish(true)}};
   const run=()=>{
     let r; try{r=new SR()}catch(e){finish();target.focus();toast('استخدم مايك الكيبورد 🎤');return}
-    cur=r; r.lang=LANG==='en'?'en-US':'ar-EG'; r.continuous=!done; r.interimResults=true;
+    cur=r; r.lang=LANG==='en'?'en-US':micLang; r.continuous=!done; r.interimResults=true;
     const base=target.value.trim()?target.value.trim()+' ':'';
     /* rebuild this round's text from all results. Android Chrome repeats earlier phrases inside later
        results («فندق» then «فندق ميتين»), so a result that already contains the previous one replaces it */
@@ -2020,10 +2024,14 @@ function mic(btn,target,idle,done,after){
       if(parts.length)heard=true;
       target.value=(base+parts.join(' ')).replace(/\s+/g,' ').trim(); target.dispatchEvent(new Event('input'))};
     r.onerror=e=>{if(e.error==='not-allowed'||e.error==='service-not-allowed'){userStop=true;toast('اسمح للمايك من إعدادات المتصفح، أو استخدم مايك الكيبورد 🎤')}
-      else if(e.error==='audio-capture'){userStop=true;toast('المايك مش شغال على الموبايل ده')}};
+      else if(e.error==='audio-capture'){userStop=true;toast('المايك مش شغال على الموبايل ده')}
+      else if(e.error==='language-not-supported'&&LANG!=='en'&&micLang!=='ar-SA'){micLang='ar-SA'}   /* onend restarts in ar-SA */
+      else if(e.error!=='no-speech'&&e.error!=='aborted'){
+        /* any other refusal is shown (with its code) instead of a mic that looks on but writes nothing */
+        if(++errs>=2||e.error==='language-not-supported'){userStop=true;toast(tr('المايك ما اشتغلش ('+e.error+') — دوس على المربع واستخدم مايك الكيبورد 🎤','The mic did not work ('+e.error+') — tap the box and use the keyboard mic 🎤'));target.focus()}}};
     r.onend=()=>{
       if(!userStop&&!done&&!dead&&restarts<40&&Date.now()-t0<3*60e3){restarts++;setTimeout(()=>{if(!userStop&&!dead)run();else finish()},150);return}
-      if(!heard&&!userStop)toast('ما سمعتش حاجة — جرّب تاني');
+      if(!heard&&!errs)toast(tr('ما سمعتش حاجة — جرّب تاني، أو دوس على المربع واستخدم مايك الكيبورد 🎤','Heard nothing — try again, or tap the box and use the keyboard mic 🎤'));
       finish()};
     try{r.start()}catch(e){finish();target.focus()}
   };
@@ -2426,7 +2434,7 @@ $('shBtn').onclick=async()=>{
 };
 if('serviceWorker' in navigator&&location.protocol==='https:')navigator.serviceWorker.register('sw.js').catch(()=>{});
 /* ---------- quick update: version.json is never cached; a newer one shows a bar, one tap reloads ---------- */
-const APP_VER='2026.10.05.10';
+const APP_VER='2026.10.06.1';
 $('verTxt').textContent=APP_VER;
 async function hardUpdate(){
   $('updBtn').disabled=true;$('updBtn').textContent='⏳ بيحدّث…';
