@@ -7,6 +7,11 @@ terms on their own lines. He is not a CLI user: **do the work yourself** (run gi
 shell commands to paste.
 
 ## Status
+- **v2026.10.06.2**: his iPhone showed Safari «FetchEvent.respondWith received an error: Returned response is null»
+  — the old «حدّث» deleted ALL caches, then the network failed, and the SW answered `caches.match()` = undefined.
+  Now `sw.js` never answers empty (saved page → built-in «النت مش واصل» page), caches only ok/basic pages,
+  and `hardUpdate()` checks the network first and no longer deletes caches. NEVER tell him to clear Safari
+  website data — that deletes his custodies (localStorage).
 - **v2026.10.06.1**: .10 never went live — GitHub Pages build failed on GitHub's side («job was not acquired by
   Runner»); check `gh run list --repo elsaiedharfoush14/uues-petty-cash` after a push, rerun if it failed.
   In-app mic on iPhone: iOS speech has no ar-EG → `micLang` = ar-SA on iPhone (and fallback on

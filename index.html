@@ -2434,13 +2434,17 @@ $('shBtn').onclick=async()=>{
 };
 if('serviceWorker' in navigator&&location.protocol==='https:')navigator.serviceWorker.register('sw.js').catch(()=>{});
 /* ---------- quick update: version.json is never cached; a newer one shows a bar, one tap reloads ---------- */
-const APP_VER='2026.10.06.1';
+const APP_VER='2026.10.06.2';
 $('verTxt').textContent=APP_VER;
+/* update = check the internet first, then let the new service worker take over; the saved copy is NOT deleted
+   (deleting it and then losing the connection left Safari with «FetchEvent.respondWith … Returned response is null»);
+   the page itself is always fetched fresh, and the new worker removes the old caches on its own */
 async function hardUpdate(){
-  $('updBtn').disabled=true;$('updBtn').textContent='⏳ بيحدّث…';
+  const b=$('updBtn'), t0=b.textContent; b.disabled=true; b.textContent=tr('⏳ بيحدّث…','⏳ Updating…');
+  try{const r=await fetch('./?u='+Date.now(),{cache:'no-store'});if(!r.ok)throw 0;await r.text()}
+  catch(e){b.disabled=false;b.textContent=t0;toast(tr('النت مش واصل — التطبيق شغال عادي، حدّث لما النت يرجع','No internet — the app still works; update when you are back online'));return}
   try{const rs=await navigator.serviceWorker?.getRegistrations?.()||[];await Promise.all(rs.map(r=>r.update().catch(()=>{})))}catch(e){}
-  try{const ks=await caches.keys();await Promise.all(ks.map(k=>caches.delete(k)))}catch(e){}
-  location.replace(location.pathname+'?u='+Date.now());
+  setTimeout(()=>location.replace(location.pathname+'?u='+Date.now()),400);
 }
 async function checkUpdate(){
   try{const r=await fetch('version.json?t='+Date.now(),{cache:'no-store'});if(!r.ok)return;
