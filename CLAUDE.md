@@ -7,7 +7,28 @@ terms on their own lines. He is not a CLI user: **do the work yourself** (run gi
 shell commands to paste.
 
 ## Status
-- **STABLE / FROZEN at v2026.10.05.2**, git tag `v2026.10.05-stable` (previous: `v2026.10.04-stable`).
+- **v2026.10.05.10** (his picks 1,2,3,5,6 of my suggestions):
+  ✍️ signature pad in ⚙️ (`sigOpen`, trimmed PNG in data `o.sig` → backups carry it) drawn on `sigPart` + Excel `ids.sig`;
+  🧾 receipt photos (IndexedDB `PDB`) as extra A4 pages after each form, 2 per page, grayscale (`photoJobs`/`photoCanvas`);
+  📅 `item.date` per invoice: voice «… يوم 3» / «امبارح …» (`parseItems` markers → `dd`, `splitDates`, `itemDate`), date chip
+  with native picker on each row, manual-add date, form/Excel Date column uses it, items sorted by date inside a type;
+  a lone «يوم 30» with no invoices still sets the custody date (old behaviour);
+  📷 receipt reader = Tesseract.js 5.1.1 from jsdelivr (eng+ara, ~10 MB first time, he CHOSE free over Claude API) →
+  `readReceipt()` (total/type/date/merchant) → editable card → item + photo; 💾 weekly backup screen `#bkOv`
+  (`uues_bk` > 7 days, «بعدين» = `uues_bk_snooze` today) → `bkBtn` share sheet. He declined Google-Drive auto backup.
+- **v2026.10.05.9**: .9 = install QR `qr-install.png` (→ `…/?i=1`, made by
+  `E:\Work\Automation_Tools\petty_cash_app\qrgen.py`, verify with jsQR) in About + A4 poster (`qrPosterCanvas`);
+  `?i=1` opens the `#getApp` page (Android: native `beforeinstallprompt` button; iPhone: Apple allows no install
+  button → steps + arrow to Safari's share button; in-app browser: open in Safari/Chrome + copy link).
+  He wants ONLY the UUES logo in colour in printed output (picture/PDF + Excel use `LOGO`); the rest stays B&W.
+- .8 = PDF + «👁️ عرض» are now canvas pictures (see Exports).
+- (earlier) **v2026.10.05.7** (.6/.7 = HE USES AN iPHONE: iOS dictation wraps numbers in invisible bidi
+  marks «‎280‎» → `cleanSpeech()` in `normDigits` (NFKC, drop \p{Cf}, Persian digits, «فندق280» split); «ما فهمتش»
+  shows unknown char codes [U+…] — ask him for a screenshot of it) (tag `v2026.10.05-stable` = .2; .3–.5 = voice-add fix in a custody:
+  no preview — «ضيفها» (button or said, `ADD_CMD` regex) adds at once with «تراجع»; and when the custody mic
+  STOPS (tap, or the phone ends it) the box is added automatically (`mic(...,after)`; ✕ / abort = no add).
+  Lesson: he tests on a real Android phone, where the mic stops after pauses — test that path (onend), not only
+  a happy-path mock, and click through the real UI (العهد ← custody ← اتكلم) before saying it works.
   He said «نثبت على كده» — change nothing unless he asks; when he asks, keep every feature below working.
 - Live: https://elsaiedharfoush14.github.io/uues-petty-cash/ — repo `elsaiedharfoush14/uues-petty-cash` (public),
   GitHub Pages from `main` / root. Shared with colleagues; every push reaches all of them.
@@ -53,9 +74,14 @@ Creating new public repos/sites needs his explicit OK; pushing updates to this r
   receipt photos in IndexedDB. Backup = JSON file; import also via `#import=<base64url JSON>` link / in-app QR scan.
   Nobody (including Claude) can read a phone's data — ask for a backup file.
 - **Exports**: `exportXlsx(id?)` (one custody, or all + `Summary` + `Advances` sheets);
-  `pdfPage()` / `pdfSummary()` → `#printArea` + `@media print` + `window.print()` («Save as PDF»).
-  **Printed output must stay BLACK & WHITE** (no fills, grayscale logos via `grayImgs()`), same layout as the
-  original UUES form, thick frame around the form. Print CSS classes must not reuse app class names.
+  PDF / preview: `custodyCanvas(c)` / `summaryCanvas(list)` DRAW the form on a 300-dpi A4 canvas (`drawTable`
+  helper, sizes in mm, `fit` shrinks a cell's font, rows grow for wrapped text, `layPage` scales a too-long page
+  to fit) → `makePages()` PNG files → «🖨️ PDF» = `printFiles()` puts the PNGs in `#printArea` (@page margin 0,
+  img width 100%, one per page) + `window.print()`; «👁️ عرض» = `#pvOv` overlay with Share (navigator.share
+  files → WhatsApp / Print / Save Image on iPhone), Print / PDF, Save. Replaced the old HTML print because it
+  overflowed the page on iPhone. **Output must stay BLACK & WHITE** (grayscale logos via `grayImgs()`), same
+  layout as the original UUES form, thick frame. Test: `makePages(...)` → POST blob to savesrv → view PNG;
+  print check = HTML with the same print CSS + PNGs → headless Edge `--print-to-pdf` (own --user-data-dir) → page count.
 
 ## Testing (Windows PC, tools in `E:\Work\Automation_Tools\petty_cash_app`)
 - `python savesrv.py` → serves this folder on http://localhost:8765 and saves `POST /save?name=x` bodies to `out\`.

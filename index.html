@@ -523,6 +523,28 @@ html[dir=ltr] .card::before{border-radius:4px 0 0 4px}
 .confetti{position:fixed;inset:0;pointer-events:none;z-index:70;overflow:hidden}
 .confetti i{position:absolute;top:-12px;width:8px;height:12px;border-radius:2px;animation:conf 1.5s cubic-bezier(.2,.7,.4,1) forwards}
 @keyframes conf{0%{transform:translate(0,0) rotate(0)}100%{transform:translate(var(--dx),105vh) rotate(var(--r));opacity:.9}}
+/* ---- ✍️ signature, 📷 receipt reader, 📅 invoice date, 💾 weekly backup ---- */
+.sigRow{display:flex;align-items:center;gap:10px;flex-wrap:wrap}
+.sigT{flex:1;min-width:150px;display:flex;flex-direction:column;gap:2px}.sigT small{color:var(--muted);font-size:12px}
+#sigPrev{height:42px;max-width:120px;object-fit:contain;background:#fff;border-radius:8px;padding:2px 6px;border:1px solid var(--line)}
+.sigOv{z-index:40}
+.sigBox{background:#fff;color:#111;border-radius:16px;padding:14px;width:100%;max-width:560px;display:flex;flex-direction:column;gap:10px;text-align:center}
+#sigPad{width:100%;height:220px;border:2px dashed #9aa7b8;border-radius:12px;touch-action:none;background:#fff;cursor:crosshair}
+.sigBar{display:grid;grid-template-columns:1fr 1fr 1.3fr;gap:8px}
+.sigOv .btn{background:#eef2f7;color:#111;border-color:#dfe5ee}.sigOv .btn.primary{background:var(--brand);color:#fff;border-color:var(--brand)}
+.sigOv .gaSkip{color:#a33}
+.ocrBtn{width:100%;margin-top:8px;background:var(--brand-soft);color:var(--brand);border:0;font-weight:700;padding:12px}
+.ocrCard{display:flex;flex-direction:column;gap:10px}
+.ocrThumb{max-height:180px;max-width:100%;align-self:center;border-radius:8px;object-fit:contain;background:#fff}
+.ocrForm{display:grid;grid-template-columns:1fr 1fr;gap:8px}.ocrForm .full{grid-column:1/-1}
+.ocrForm select,.ocrForm input{width:100%;font:inherit;color:var(--ink);background:var(--surface);border:1px solid var(--line);border-radius:10px;padding:10px 12px;min-width:0}
+.ocrForm #ocAmt{font-size:18px;font-weight:700;direction:ltr}
+.dtc{position:relative;display:inline-flex;align-items:center;font-size:12px;color:var(--brand);margin-inline-start:6px;padding:1px 6px;border-radius:8px;background:var(--brand-soft);vertical-align:middle}
+.dtc.auto{color:var(--muted);background:transparent;border:1px dashed var(--line)}
+.dtc input{position:absolute;inset:0;width:100%;height:100%;opacity:0;cursor:pointer;font-size:16px}
+.bkOv{z-index:45}
+.bkCard{background:var(--surface);color:var(--ink);border-radius:20px;padding:22px 18px;width:100%;max-width:420px;display:flex;flex-direction:column;gap:10px;text-align:center}
+.bkIco{font-size:44px}.bkCard b{font-size:19px}.bkCard p{margin:0;color:var(--muted);font-size:14px}.bkCard .wSteps{text-align:start}
 /* ---- 📲 install QR + get-app page ---- */
 .qrImg{width:min(220px,70%);height:auto;align-self:center;image-rendering:pixelated;border-radius:10px;background:#fff;padding:6px;box-shadow:var(--shadow)}
 .getApp{position:fixed;inset:0;z-index:130;background:linear-gradient(160deg,#0e3a74,#0a2346);display:flex;align-items:center;justify-content:center;
@@ -686,6 +708,8 @@ html[dir=ltr] .card::before{border-radius:4px 0 0 4px}
       <div class="note">بيتطبق على العهد الجديدة. أي عهدة قديمة تقدر تغيّر بدلها من جوه العهدة.</div>
       <div class="projHead"><b>المشاريع</b><small>دوس على المشروع عشان تغيّر الكود</small></div>
       <div class="projMgr" id="projMgr"></div>
+      <div class="sigRow"><div class="sigT"><b>✍️ توقيعي</b><small>بيتحط في «Employee Signature» في الـ PDF والصورة والـ Excel</small></div>
+        <img id="sigPrev" alt="" hidden><button class="btn" id="sigBtn" type="button">✍️ وقّع</button></div>
       <button class="linkBtn" id="tourBtn" type="button">👋 شوف الجولة التعريفية تاني</button>
     </div>
     <div class="panel langPanel"><strong>اللغة</strong><div class="seg langSeg" data-noi18n><button type="button" data-l="ar">العربية</button><button type="button" data-l="en">English</button></div></div>
@@ -710,6 +734,7 @@ html[dir=ltr] .card::before{border-radius:4px 0 0 4px}
     <div class="panel">
       <strong>آخر التحديثات</strong>
       <ul class="log">
+        <li><b class="num">2026.10.05</b><span>✍️ توقيعك على الفورم، 🧾 صور الفواتير بعد الفورم في الـ PDF، 📅 تاريخ لكل فاتورة («بنزين 110 يوم 3»)، 📷 صوّر الفاتورة والتطبيق يقراها، 💾 نسخة احتياطية كل أسبوع بدوسة.</span></li>
         <li><b class="num">2026.10.05</b><span>📲 باركود للتطبيق: زميلك يصوّره ويضيف التطبيق بزرار واحد — واللوجو بقى ملوّن في الطباعة والـ Excel.</span></li>
         <li><b class="num">2026.10.05</b><span>👁️ عرض العهدة كصورة واضحة A4 — شاركها واتساب أو اطبعها على طول، والـ PDF بقى مظبوط على ورقة A4 في أي موبايل.</span></li>
         <li><b class="num">2026.10.04</b><span>تحليل المصروفات بالشهور والأنواع، بحث في العهد، وتنبيهات للعهد المتأخرة والنسخة الاحتياطية.</span></li>
@@ -771,6 +796,7 @@ html[dir=ltr] .card::before{border-radius:4px 0 0 4px}
       <div class="sayhead"><b>زوّد فواتير بالكلام</b></div>
       <div class="tbox"><textarea id="voiceTxt" dir="rtl" placeholder="فندق 200، بنزين مية وعشرة…"></textarea><button class="clr" type="button" aria-label="امسح الكلام" hidden>✕ امسح</button></div>
       <div class="confirm"><button class="btn mic2" id="micBtn" type="button">🎤 <span>اتكلم</span></button><button class="btn primary big grow" id="parseBtn" style="flex:1">ضيفها</button></div>
+      <button class="btn ocrBtn" id="ocrBtn" type="button">📷 صوّر الفاتورة — والتطبيق يقراها</button><input type="file" id="ocrFile" accept="image/*" hidden>
       <div id="voiceMsg" class="note" hidden></div>
       <div id="voicePrev" hidden></div>
       
@@ -789,6 +815,7 @@ html[dir=ltr] .card::before{border-radius:4px 0 0 4px}
         <button class="btn primary" id="addBtn">إضافة</button>
       </div>
       <input id="remark" placeholder="ملاحظة (اختياري)">
+      <label class="f">تاريخ الفاتورة (اختياري)<input id="itDate" type="date"></label>
       <div id="addErr" class="note" hidden></div>
     </details>
 
@@ -817,6 +844,14 @@ html[dir=ltr] .card::before{border-radius:4px 0 0 4px}
 <input type="file" id="phFile" accept="image/*" hidden>
 <div class="viewer" id="viewer" hidden><img id="vImg" alt="صورة الفاتورة"><div class="vbar"><button class="btn" id="vRep" type="button">استبدال</button><button class="btn" id="vDel" type="button">حذف الصورة</button><button class="btn" id="vClose" type="button">إغلاق</button></div></div>
 <div class="viewer pv" id="pvOv" hidden><div class="pvPages" id="pvPages"></div><div class="vbar"><button class="btn primary" id="pvShare" type="button">📤 شارك</button><button class="btn" id="pvPrint" type="button">🖨️ اطبع / PDF</button><button class="btn" id="pvSave" type="button">⬇️ حفظ</button><button class="btn" id="pvClose" type="button">✕ إغلاق</button></div></div>
+<div class="viewer sigOv" id="sigOv" hidden><div class="sigBox"><b>وقّع بصباعك جوه المربع</b>
+  <canvas id="sigPad"></canvas>
+  <div class="sigBar"><button class="btn" id="sigClear" type="button">🧽 امسح</button><button class="btn" id="sigCancel" type="button">إلغاء</button><button class="btn primary" id="sigSave" type="button">✓ احفظ</button></div>
+  <button class="gaSkip" id="sigDel" type="button" hidden>🗑️ احذف التوقيع المحفوظ</button></div></div>
+<div class="viewer bkOv" id="bkOv" hidden><div class="bkCard"><div class="bkIco">💾</div><b>النسخة الاحتياطية الأسبوعية</b>
+  <p>عهدك متسجلة على الموبايل ده بس. خد نسخة في ثانية واحفظها في iCloud Drive أو ابعتها لنفسك على واتساب.</p>
+  <ol class="wSteps"><li><span>دوس «💾 احفظ النسخة».</span></li><li><span id="bkStep2"></span></li></ol>
+  <button class="btn primary big" id="bkNow" type="button">💾 احفظ النسخة</button><button class="gaSkip" id="bkLater" type="button">بعدين</button></div></div>
 <div class="getApp" id="getApp" hidden><div class="gaCard">
   <img class="gaIcon" src="icon-192.png" alt="">
   <h2>عهدة UUES</h2>
@@ -880,6 +915,10 @@ let LANG='ar'; try{LANG=localStorage.getItem('uues_lang')==='en'?'en':'ar'}catch
 const tr=(a,e)=>LANG==='en'?e:a;
 const ARW=()=>LANG==='en'?'→':'←';
 const EN={
+ '📷 صوّر الفاتورة — والتطبيق يقراها':'📷 Snap the receipt — the app reads it','✍️ توقيعي':'✍️ My signature','بيتحط في «Employee Signature» في الـ PDF والصورة والـ Excel':'Placed on «Employee Signature» in the PDF, picture and Excel',
+ '✍️ وقّع':'✍️ Sign','وقّع بصباعك جوه المربع':'Sign with your finger inside the box','🧽 امسح':'🧽 Clear','✓ احفظ':'✓ Save','🗑️ احذف التوقيع المحفوظ':'🗑️ Delete the saved signature',
+ 'النسخة الاحتياطية الأسبوعية':'Weekly backup','عهدك متسجلة على الموبايل ده بس. خد نسخة في ثانية واحفظها في iCloud Drive أو ابعتها لنفسك على واتساب.':'Your custodies live only on this phone. Take a copy in a second and keep it in iCloud Drive or send it to yourself on WhatsApp.',
+ 'دوس «💾 احفظ النسخة».':'Tap «💾 Save the backup».','💾 احفظ النسخة':'💾 Save the backup','بعدين':'Later','تاريخ الفاتورة (اختياري)':'Invoice date (optional)',
  '📲 باركود التطبيق':'📲 App QR code','خلي زميلك يصوّر الكود ده بكاميرا الموبايل — هيفتح له صفحة فيها زرار يضيف التطبيق على الشاشة الرئيسية.':'Let a colleague scan this code with the phone camera — it opens a page with a button to add the app to the home screen.',
  '📤 شارك / اطبع الباركود':'📤 Share / print the QR code','ضيف التطبيق على موبايلك وافتحه زي أي أبلكيشن، ويشتغل من غير نت.':'Add the app to your phone, open it like any app — it works offline.',
  '📲 ضيفه على الشاشة الرئيسية':'📲 Add it to the home screen','✓ اتثبّت — افتح «عهدة UUES» من الشاشة الرئيسية':'✓ Installed — open «UUES Petty Cash» from your home screen',
@@ -937,7 +976,7 @@ const EN={
  'راجع بلمسة':'Review in a tap','التطبيق بيرتب الفواتير ويحسب الأيام والوجبات. أي رقم تقدر تعدّله بلمسة.':'The app sorts the invoices and counts days and meals. Fix any number with a tap.',
  'طلّع Excel وتابع رصيدك':'Export Excel, track your balance','فورم UUES Expenses Report جاهز للحسابات، وتعرف دايماً ليك ولا عليك.':'A ready UUES Expenses Report for accounts — and you always know who owes whom.',
  'تخطي':'Skip','التالي':'Next','السكن':'Lodging','المواصلات':'Transport','متنوع':'Misc.','دوّر بالمشروع أو الكود أو الرقم…':'Search by project, code or number…',
- 'آخر التحديثات':'What’s new','📲 باركود للتطبيق: زميلك يصوّره ويضيف التطبيق بزرار واحد — واللوجو بقى ملوّن في الطباعة والـ Excel.':'📲 App QR code: a colleague scans it and adds the app with one button — and the logo is now in colour in print and Excel.','👁️ عرض العهدة كصورة واضحة A4 — شاركها واتساب أو اطبعها على طول، والـ PDF بقى مظبوط على ورقة A4 في أي موبايل.':'👁️ View a custody as a sharp A4 picture — share it on WhatsApp or print it right away; PDF now fits A4 on every phone.','تحليل المصروفات بالشهور والأنواع، بحث في العهد، وتنبيهات للعهد المتأخرة والنسخة الاحتياطية.':'Spending insights by month and type, custody search, and reminders for late custodies and backups.',
+ 'آخر التحديثات':'What’s new','✍️ توقيعك على الفورم، 🧾 صور الفواتير بعد الفورم في الـ PDF، 📅 تاريخ لكل فاتورة («بنزين 110 يوم 3»)، 📷 صوّر الفاتورة والتطبيق يقراها، 💾 نسخة احتياطية كل أسبوع بدوسة.':'✍️ Your signature on the form, 🧾 receipt photos after the form in the PDF, 📅 a date per invoice («fuel 110 day 3»), 📷 snap a receipt and the app reads it, 💾 one-tap weekly backup.','📲 باركود للتطبيق: زميلك يصوّره ويضيف التطبيق بزرار واحد — واللوجو بقى ملوّن في الطباعة والـ Excel.':'📲 App QR code: a colleague scans it and adds the app with one button — and the logo is now in colour in print and Excel.','👁️ عرض العهدة كصورة واضحة A4 — شاركها واتساب أو اطبعها على طول، والـ PDF بقى مظبوط على ورقة A4 في أي موبايل.':'👁️ View a custody as a sharp A4 picture — share it on WhatsApp or print it right away; PDF now fits A4 on every phone.','تحليل المصروفات بالشهور والأنواع، بحث في العهد، وتنبيهات للعهد المتأخرة والنسخة الاحتياطية.':'Spending insights by month and type, custody search, and reminders for late custodies and backups.',
  'رصيد العهدة: المستلم والمصروف، ومدين أو دائن — ونسخة إنجليزي كاملة.':'Cash balance: received vs. spent, debit or credit — plus a full English version.',
  'صفحات وتابات، لوجو الشركة، وشاشة افتتاحية.':'Pages and tabs, the company logo, and an opening screen.',
  'فهم التاريخ بالكلام، والمايك بيفضل شغال لحد ما تدوس.':'Spoken dates, and the mic keeps listening until you tap.',
@@ -982,6 +1021,7 @@ const uid=()=>Math.random().toString(36).slice(2,10);
 function grouped(c){
   const it=c.items||[], out={L:[],T:[],M:[]};
   const byType={}; it.forEach(i=>(byType[i.type]=byType[i.type]||[]).push(i));
+  for(const k in byType) byType[k].sort((a,b)=>(a.date||c.to||'').localeCompare(b.date||c.to||''));
   const push=(sec,type)=>(byType[type]||[]).forEach((i,n)=>out[sec].push({...i,label:type+' '+(n+1)}));
   push('L','Hotel');
   T_ORDER.forEach(t=>push('T',t));
@@ -1102,6 +1142,11 @@ function renderSheet(){
       { const pb=r.querySelector('.ph'); if(photoKeys.has(i.id)){pb.classList.add('has');pb.textContent='🧾'} pb.onclick=()=>photoTap(i.id); }
       r.querySelector('.lab').textContent=i.label;
       if(i.remark){const s=document.createElement('small');s.textContent=i.remark;r.querySelector('.lab').appendChild(s)}
+      { const d=document.createElement('label'); d.className='dtc'+(i.date?'':' auto'); const sp=document.createElement('span');
+        sp.textContent='📅 '+dmy(i.date||c.to).slice(0,5); const di=document.createElement('input'); di.type='date'; di.value=i.date||c.to||'';
+        di.setAttribute('aria-label',tr('تاريخ الفاتورة','Invoice date'));
+        di.onchange=()=>mutate(cc=>{cc.items=cc.items.map(x=>{if(x.id!==i.id)return x;const y={...x};if(di.value)y.date=di.value;else delete y.date;return y})});
+        d.append(sp,di); r.querySelector('.lab').appendChild(d) }
       { const n=r.querySelector('.num'); n.textContent='';
         const ab=document.createElement('button'); ab.className='amtBtn num'; ab.type='button'; ab.title='دوس عشان تعدّل'; ab.textContent=fmt(+i.amount||0);
         ab.onclick=()=>{const inp=document.createElement('input');inp.className='amtEdit';inp.inputMode='decimal';inp.value=String(+i.amount||0);
@@ -1356,8 +1401,12 @@ function layPage(parts){
   const P=newPage(); P.g.translate((A4.m+inner*(1-k)/2)*PX,A4.m*PX); P.g.scale(k,k);
   let y=0; parts.forEach(p=>{y+=p.gap||0;P.g.save();P.g.translate(0,y*PX);p.draw(P.g);P.g.restore();y+=p.h}); return P.cv;
 }
-const sigPart=gap=>({h:6,gap,draw(g){g.fillStyle='#000';g.direction='ltr';g.textBaseline='alphabetic';g.font=`bold ${10.5*PT*PX}px ${F_TNR}`;
+const sigPart=(gap,sig)=>({h:6,gap,draw(g){g.fillStyle='#000';g.direction='ltr';g.textBaseline='alphabetic';g.font=`bold ${10.5*PT*PX}px ${F_TNR}`;
   const inner=A4.w-2*A4.m; g.textAlign='left';g.fillText('Employee Signature : _____________________',2*PX,4*PX);
+  /* ✍️ the saved signature sits on the line */
+  if(sig){const x0=2+g.measureText('Employee Signature : ').width/PX, bw=g.measureText('_____________________').width/PX, bh=13;
+    const s=Math.min(bw/sig.naturalWidth,bh/sig.naturalHeight), w=sig.naturalWidth*s, h=sig.naturalHeight*s;
+    g.drawImage(sig,(x0+(bw-w)/2)*PX,(4.6-h)*PX,w*PX,h*PX)}
   const t='Approved by: __________________________'; g.fillText(t,(inner-2)*PX-g.measureText(t).width,4*PX)}});
 async function custodyCanvas(c){
   await grayImgs(); const [logo,name]=await Promise.all([loadImg(LOGO),loadImg(GI.name)]); /* the UUES logo stays in colour, all else black & white */
@@ -1365,7 +1414,7 @@ async function custodyCanvas(c){
   const cols=[11.2,26.4,13.4,10.7,38.3].map(p=>p/100*inner);
   const lb=t=>({t,b:1,al:'c',pt:11.5,fit:1}), sec=t=>({cells:[{t,cs:5,b:1,u:1}],h:6.2,grow:1});
   const item=(a,b,cc,e)=>({cells:[{t:a,al:'c'},{t:b},{t:cc,al:'r',fit:1},{t:''},{t:e}],h:6.2,grow:1});
-  const items=(list,empty)=>(list.length?list:[{label:empty,amount:''}]).map(i=>item(toD,i.label,pS(i.amount),i.remark||''));
+  const items=(list,empty)=>(list.length?list:[{label:empty,amount:''}]).map(i=>item(i.date?dmy(i.date):toD,i.label,pS(i.amount),i.remark||''));
   const head=(g,x,y,w,h)=>{const pad=1.4, lh=logo?22:0, lw=logo?logo.naturalWidth/logo.naturalHeight*lh:0;
     if(logo)g.drawImage(logo,(x+pad)*PX,(y+(h-lh)/2)*PX,lw*PX,lh*PX);
     const right=x+w-pad, room=w-2*pad-lw-3, nw=Math.min(58,room), nh=name?name.naturalHeight/name.naturalWidth*nw:0;
@@ -1393,7 +1442,8 @@ async function custodyCanvas(c){
     {cells:[{t:'Total spent by Employee:',cs:2,b:1},{t:pS(T),al:'c',fit:1},{t:'',cs:2}],h:6.6},
     {cells:[{t:'Less Advance Received:',cs:2,b:1},{t:pS(adv),al:'c',fit:1},{t:'',cs:2}],h:6.6},
     {cells:[{t:'Balance Due to / from Employee:',cs:2,b:1},{t:pS(T-adv),al:'c',b:1,fit:1},{t:'',cs:2}],h:6.6}];
-  return layPage([drawTable(cols,rows,2.4),sigPart(9)]);
+  const sig=SIG?await loadImg(SIG):null;
+  return layPage([drawTable(cols,rows,2.4),sigPart(9,sig)]);
 }
 async function summaryCanvas(list){
   await grayImgs(); const logo=await loadImg(LOGO), inner=A4.w-2*A4.m;
@@ -1414,7 +1464,7 @@ async function summaryCanvas(list){
     {h:6.2,cells:[n9({t:'Cash received from company (all advances)'}),n9({t:pS(got),al:'r',fit:1})]},
     {h:6.2,cells:[n9({t:'Total spent by employee'}),n9({t:pS(sumT),al:'r',fit:1})]},
     {h:6.4,top:1.6,cells:[n9({t:d>=0?'Balance due TO employee (Credit)':'Balance due FROM employee (Debit)',b:1}),n9({t:pS(Math.abs(d)),al:'r',b:1,fit:1})]}],2.4),gap:6})}
-  parts.push(sigPart(9));
+  parts.push(sigPart(9,SIG?await loadImg(SIG):null));
   return layPage(parts);
 }
 setTimeout(()=>grayImgs(),1500);
@@ -1427,8 +1477,8 @@ async function makePages(jobs,base){
   return files;
 }
 const sortedC=()=>[...custodies].sort((a,b)=>a.no-b.no);
-const oneJobs=c=>[()=>custodyCanvas(c)], oneName=c=>`Petty_Cash_${c.no}_${(c.project||'').replace(/[^A-Za-z0-9]+/g,'_')}`.replace(/_+$/,'');
-const allJobs=()=>{const list=sortedC();return [...list.map(c=>()=>custodyCanvas(c)),()=>summaryCanvas(list)]};
+const oneJobs=async c=>[()=>custodyCanvas(c),...await photoJobs(c)], oneName=c=>`Petty_Cash_${c.no}_${(c.project||'').replace(/[^A-Za-z0-9]+/g,'_')}`.replace(/_+$/,'');
+const allJobs=async()=>{const list=sortedC(),jobs=[];for(const c of list)jobs.push(()=>custodyCanvas(c),...await photoJobs(c));return [...jobs,()=>summaryCanvas(list)]};
 const allName=()=>`Petty_Cash_Ledger_${((sortedC().pop()||{}).to||todayISO()).slice(0,4)}`;
 /* print = the pictures, each one filling one A4 page */
 async function printFiles(files,name){
@@ -1442,7 +1492,7 @@ async function printFiles(files,name){
 }
 let pdfBusy=false;
 async function runPdf(jobs,name){if(pdfBusy)return;pdfBusy=true;toast(tr('بجهّز الصفحات…','Preparing the pages…'));
-  try{await printFiles(await makePages(jobs,name),name)}catch(e){toast(tr('ما قدرتش أجهّز الصفحات — جرّب تاني','Could not prepare the pages — try again'))}finally{pdfBusy=false}}
+  try{await printFiles(await makePages(await jobs,name),name)}catch(e){toast(tr('ما قدرتش أجهّز الصفحات — جرّب تاني','Could not prepare the pages — try again'))}finally{pdfBusy=false}}
 $('onePdf').onclick=()=>{const c=custodies.find(x=>x.id===curId);if(!c)return;buzz();runPdf(oneJobs(c),oneName(c))};
 $('allPdf').onclick=()=>{if(!custodies.length){toast('مفيش عهد لسه');return}buzz();runPdf(allJobs(),allName())};
 /* ---------- 👁️ preview: the page as a sharp picture → share (WhatsApp, Print, Save Image…) / print / save ---------- */
@@ -1451,7 +1501,7 @@ async function openPreview(jobs,name){
   if(pdfBusy)return; pdfBusy=true; pvName=name; pvFiles=[];
   const P=$('pvPages'); P.innerHTML=''; const w=document.createElement('div'); w.className='pvWait'; w.textContent=tr('بجهّز الصورة…','Preparing the picture…'); P.appendChild(w);
   $('pvOv').hidden=false;
-  try{pvFiles=await makePages(jobs,name)}catch(e){pvFiles=[]}
+  try{pvFiles=await makePages(await jobs,name)}catch(e){pvFiles=[]}
   pdfBusy=false; if($('pvOv').hidden){pvFiles=[];return}
   pvUrls.forEach(u=>URL.revokeObjectURL(u)); pvUrls=pvFiles.map(f=>URL.createObjectURL(f)); P.innerHTML='';
   if(!pvFiles.length){w.textContent=tr('ما قدرتش أجهّز الصورة — جرّب تاني','Could not prepare the picture — try again');P.appendChild(w);return}
@@ -1532,7 +1582,7 @@ function addItem(){
   const v=parseFloat(normNum($('amt').value));
   if(!(v>0)){$('addErr').hidden=false;$('addErr').textContent='اكتب مبلغ الفاتورة الأول.';$('amt').focus();return}
   $('addErr').hidden=true;
-  mutate(c=>{c.items=[...(c.items||[]),{id:uid(),type:curType,amount:Math.round(v*100)/100,remark:$('remark').value.trim()||c.project||''}]});
+  mutate(c=>{c.items=[...(c.items||[]),{id:uid(),type:curType,amount:Math.round(v*100)/100,remark:$('remark').value.trim()||c.project||'',...($('itDate').value?{date:$('itDate').value}:{})}]});
   const t=TYPES.find(t=>t.k===curType);
   toast(tr(`اتضاف ${t.ar} — ${fmt(v)}`,`Added ${t.k} — ${fmt(v)}`));
   $('amt').value='';$('remark').value='';$('amt').focus();
@@ -1562,11 +1612,14 @@ function cleanTok(t){
   return t;
 }
 function tokens(txt){return AR_N(txt).replace(/[،,؛;:\n]+/g,' , ').split(/\s+/).map(cleanTok).filter(Boolean)}
+/* «بنزين 110 يوم 3» / «امبارح فندق 200»: a «يوم …» next to invoices is their own date (item.dd) —
+   after invoices it dates those invoices, before them it dates the ones that follow */
 function parseItems(txt){
-  const tk=tokens(txt), out=[]; let type=null, A=null;
+  const tk=tokens(txt), out=[]; let type=null, A=null, curDay=null, pend=[];
+  const push=o=>{if(curDay)o.dd=curDay;else pend.push(o);out.push(o)};
   const NA=()=>({int:0,h:0,t:0,u:0,fm:0,frac:0,ft:0,fu:0,den:100,half:0,cents:0,any:0});
   const flush=()=>{if(A&&A.any&&type){let v=A.cents&&!A.fm?A.int/100:A.int+(A.fm?A.frac/A.den:0);if(A.half)v+=0.5;
-      v=Math.round(v*100)/100; if(v>0) out.push({type,amount:v})} A=null};
+      v=Math.round(v*100)/100; if(v>0) push({type,amount:v})} A=null};
   const feed=v=>{
     if(!A)A=NA(); A.any=1;
     if(v>=1000){if(A.int>0&&A.int<1000&&!A.fm){A.int*=v/1000*1000;A.h=A.t=A.u=0}else if(A.int>=1000){flush();feed(v)}else A.int+=v;return}
@@ -1585,7 +1638,10 @@ function parseItems(txt){
   for(let i=0;i<tk.length;i++){
     const w=tk[i];
     if(w===','){flush();continue}
-    if(/^\d+(\.\d+)?$/.test(w)){flush();if(type){const v=Math.round(parseFloat(w)*100)/100;if(v>0)out.push({type,amount:v})}continue}
+    if(/^(يوم|بتاريخ|تاريخ|on)$/.test(w)||REL0.test(w)||REL1.test(w)){
+      const rel=!/^(يوم|بتاريخ|تاريخ|on)$/.test(w), f=readDate(tk,rel?i:i+1);
+      if(f&&(f.v.rel!=null||f.v.d!=null)){flush();if(pend.length){pend.forEach(o=>o.dd=f.v);pend=[]}else curDay=f.v;i=f.end-1;continue}}
+    if(/^\d+(\.\d+)?$/.test(w)){flush();if(type){const v=Math.round(parseFloat(w)*100)/100;if(v>0)push({type,amount:v})}continue}
     if(w==='من'&&A&&A.any){const n=tk[i+1];if(n==='ميه'||n==='مائه'){A.den=100;i++;continue}if(n==='عشره'||n==='عشر'){A.den=10;i++;continue}}
     if(w==='نص'||w==='ونص'){if(A)A.half=1;continue}
     if(/^(قرش|قروش|هلله|هللات|هلل)$/.test(w)){if(A)A.cents=1;flush();continue}
@@ -1688,7 +1744,7 @@ function extractDates(txt){
     if(!/^(يوم|بتاريخ|تاريخ|on)$/.test(tk[i])) continue;
     const f=readDate(tk,i+1); if(!f||f.v.rel==null&&f.v.d==null) continue;
     const d=isoLocal(resolveDate(f.v,new Date(Date.now()+7*864e5),false));
-    return {from:d,to:d,before:tk.slice(0,i),rest:[...tk.slice(0,i),',',...tk.slice(f.end)].join(' ')};
+    return {from:d,to:d,single:true,before:tk.slice(0,i),rest:[...tk.slice(0,i),',',...tk.slice(f.end)].join(' ')};
   }
   return none;
 }
@@ -1709,12 +1765,18 @@ function normDigits(s){return cleanSpeech(s).replace(/[٠-٩]/g,d=>'٠١٢٣٤٥
 const ADD_CMD=/(?:^|[\s،,.]+)(?:و?(?:خلاص\s+)?(?:[اأإ]?ضي?ف(?:ي|و)?(?:ها|هم|ه|هوم)?(?:لي|لى)?|[صدظز]ي?ف(?:ي|و)?(?:ها|هم)|[اأ]?حفظ(?:ها|هم)|سج+ّ?ل(?:ها|هم))|add(?: (?:it|them))?|save(?: (?:it|them))?)(?:\s+(?:يا\s*\S+|لو سمحت|please))?[\s.!،]*$/i;
 /* «ضيفها» adds straight away (the old preview's confirm button was hidden under the total bar on phones,
    so the invoices were never saved); «تراجع» in the toast takes them back out */
+/* dates + invoices of one sentence; a single «يوم 3» that comes with invoices dates the invoices, not the custody */
+function splitDates(txt){
+  let dt=extractDates(txt), items=parseItems(dt.rest);
+  if(dt.single){const all=parseItems(txt);if(all.length&&all.some(i=>i.dd)){dt={from:null,to:null,before:[],rest:txt};items=all}}
+  return {dt,items:items.map(i=>({...i,note:''}))};
+}
+const itemDate=(dd,ref)=>dd?isoLocal(resolveDate(dd,new Date((ref||todayISO())+'T12:00:00'),false)):'';
 function parseVoice(){
   stopRec();
   const txt=$('voiceTxt').value.replace(ADD_CMD,'').trim(); const msg=$('voiceMsg');
   if(!txt){msg.hidden=false;msg.textContent='اتكلم أو اكتب الفواتير الأول.';return}
-  const dt=extractDates(txt);
-  const items=parseItems(dt.rest).map(i=>({...i,note:''}));
+  const {dt,items}=splitDates(txt);
   if(!items.length&&dt.from){applyDates(dt.from,dt.to);clearBox('voiceTxt');msg.hidden=true;return}
   if(!items.length){msg.hidden=false;msg.textContent='ما فهمتش فواتير من الكلام ده. قول النوع وبعده المبلغ، زي «بنزين مية وعشرة».';
     /* any character the parser does not know is shown by its code, so a screenshot tells us what the phone wrote */
@@ -1724,8 +1786,8 @@ function parseVoice(){
   msg.hidden=true; clearBox('voiceTxt');
   const pd=dt.from?{from:dt.from<=dt.to?dt.from:dt.to,to:dt.from<=dt.to?dt.to:dt.from}:null;
   let old=null; const ids=items.map(()=>uid());
-  mutate(c=>{old={from:c.from,to:c.to};
-    c.items=[...(c.items||[]),...items.map((i,n)=>({id:ids[n],type:i.type,amount:i.amount,remark:i.note||c.project||''}))];
+  mutate(c=>{old={from:c.from,to:c.to}; const ref=pd?pd.to:c.to;
+    c.items=[...(c.items||[]),...items.map((i,n)=>{const o={id:ids[n],type:i.type,amount:i.amount,remark:i.note||c.project||''};const d=itemDate(i.dd,ref);if(d)o.date=d;return o})];
     if(pd){c.from=pd.from;c.to=pd.to}});
   const sum=items.reduce((s,i)=>s+i.amount,0);
   toast(tr((items.length===1?'✓ اتضافت فاتورة':`✓ اتضافت ${items.length} فواتير`)+` (${fmt(sum)})`+(pd?' واتعدّل التاريخ':''),
@@ -1768,6 +1830,136 @@ $('phFile').onchange=async e=>{const f=e.target.files&&e.target.files[0];e.targe
 $('vClose').onclick=()=>{$('viewer').hidden=true};
 $('vRep').onclick=()=>$('phFile').click();
 $('vDel').onclick=async()=>{try{await PDB.del(phTarget)}catch(e){}photoKeys.delete(phTarget);$('viewer').hidden=true;renderSheet();toast('اتمسحت الصورة')};
+/* ---------- ✍️ my signature: drawn once with a finger, stored in the data (so backups carry it), printed on every form ---------- */
+let SIG='';
+function setSig(u){SIG=u||'';const p=$('sigPrev');p.hidden=!SIG;if(SIG)p.src=SIG;$('sigBtn').textContent=SIG?tr('✍️ غيّر التوقيع','✍️ Change signature'):tr('✍️ وقّع','✍️ Sign')}
+function sigOpen(){
+  $('sigOv').hidden=false; $('sigDel').hidden=!SIG;
+  const cv=$('sigPad'), r=cv.getBoundingClientRect(), k=Math.min(3,window.devicePixelRatio||1);
+  cv.width=Math.round(r.width*k); cv.height=Math.round(r.height*k);
+  const g=cv.getContext('2d'); g.setTransform(k,0,0,k,0,0); g.lineWidth=2.6; g.lineCap=g.lineJoin='round'; g.strokeStyle=g.fillStyle='#000';
+  let last=null; const pt=e=>{const b=cv.getBoundingClientRect();return {x:e.clientX-b.left,y:e.clientY-b.top}};
+  cv.onpointerdown=e=>{e.preventDefault();try{cv.setPointerCapture(e.pointerId)}catch(_){}last=pt(e);g.beginPath();g.arc(last.x,last.y,1.3,0,7);g.fill()};
+  cv.onpointermove=e=>{if(!last)return;let evs=e.getCoalescedEvents?e.getCoalescedEvents():[];if(!evs.length)evs=[e];
+    evs.forEach(v=>{const p=pt(v);g.beginPath();g.moveTo(last.x,last.y);g.lineTo(p.x,p.y);g.stroke();last=p})};
+  cv.onpointerup=cv.onpointercancel=()=>{last=null};
+}
+/* keep only the inked part, transparent background */
+function sigTrim(cv){
+  const g=cv.getContext('2d'), d=g.getImageData(0,0,cv.width,cv.height).data; let x0=cv.width,y0=cv.height,x1=-1,y1=-1;
+  for(let y=0;y<cv.height;y++)for(let x=0;x<cv.width;x++)if(d[(y*cv.width+x)*4+3]>20){if(x<x0)x0=x;if(x>x1)x1=x;if(y<y0)y0=y;if(y>y1)y1=y}
+  if(x1<0)return '';
+  const p=6, o=document.createElement('canvas'); o.width=x1-x0+1+2*p; o.height=y1-y0+1+2*p;
+  o.getContext('2d').drawImage(cv,x0-p,y0-p,o.width,o.height,0,0,o.width,o.height); return o.toDataURL('image/png');
+}
+const sigStore=u=>{const o=LS.read();if(u)o.sig=u;else delete o.sig;LS.write(o);setSig(u)};
+$('sigBtn').onclick=()=>{buzz();sigOpen()};
+$('sigClear').onclick=()=>{const cv=$('sigPad');cv.getContext('2d').clearRect(0,0,cv.width,cv.height)};
+$('sigCancel').onclick=()=>{$('sigOv').hidden=true};
+$('sigSave').onclick=()=>{const u=sigTrim($('sigPad'));if(!u){toast(tr('وقّع جوه المربع الأول','Sign inside the box first'));return}
+  sigStore(u);$('sigOv').hidden=true;toast(tr('✓ اتحفظ التوقيع — هيظهر في الـ PDF والصورة والـ Excel','✓ Signature saved — it appears on the PDF, picture and Excel'))};
+$('sigDel').onclick=()=>{sigStore('');$('sigOv').hidden=true;toast(tr('اتمسح التوقيع','Signature removed'))};
+
+/* ---------- 🧾 receipt photos after the form: 2 per A4 page, labelled like the form, black & white ---------- */
+async function photoJobs(c){
+  const g=grouped(c), list=[...g.L,...g.T,...g.M].filter(i=>photoKeys.has(i.id)), n=Math.ceil(list.length/2), jobs=[];
+  for(let k=0;k<list.length;k+=2){const two=list.slice(k,k+2),pg=k/2+1;jobs.push(()=>photoCanvas(c,two,pg,n))}
+  return jobs;
+}
+function drawGray(g,im,x,y,w,h){const t=document.createElement('canvas');t.width=Math.max(1,Math.round(w*PX));t.height=Math.max(1,Math.round(h*PX));
+  const tg=t.getContext('2d');tg.drawImage(im,0,0,t.width,t.height);const d=tg.getImageData(0,0,t.width,t.height),a=d.data;
+  for(let p=0;p<a.length;p+=4){const v=a[p]*.299+a[p+1]*.587+a[p+2]*.114;a[p]=a[p+1]=a[p+2]=v}
+  tg.putImageData(d,0,0);g.drawImage(t,x*PX,y*PX);t.width=t.height=0}
+async function photoCanvas(c,two,pg,n){
+  const inner=A4.w-2*A4.m, maxH=A4.h-2*A4.m, gap=6, colW=(inner-gap)/2, top=17;
+  const imgs=await Promise.all(two.map(async i=>{const b=await PDB.get(i.id).catch(()=>null);if(!b)return null;
+    const u=URL.createObjectURL(b);const im=await loadImg(u);URL.revokeObjectURL(u);return im}));
+  return layPage([{h:maxH,draw(g){
+    g.fillStyle=g.strokeStyle='#000';g.textAlign='left';g.textBaseline='alphabetic';
+    const fitF=(s,pt,bold,w)=>{let f=pt;do{g.font=`${bold?'bold ':''}${f*PT*PX}px ${F_TNR}`;f-=.5}while(f>6&&g.measureText(s).width/PX>w)};
+    const head=`RECEIPTS — Custody ${c.no}${c.project?' · '+c.project:''}${c.fileNo?' · '+c.fileNo:''}`, pn=`${pg} / ${n}`;
+    g.direction='ltr';g.font=`${10*PT*PX}px ${F_TNR}`;const pw=g.measureText(pn).width/PX;g.fillText(pn,(inner-pw)*PX,6*PX);
+    fitF(head,13,1,inner-pw-6);g.direction=HAS_AR(head)?'rtl':'ltr';g.fillText(head,0,6*PX);g.direction='ltr';
+    g.lineWidth=1.2*PT*PX;g.beginPath();g.moveTo(0,9*PX);g.lineTo(inner*PX,9*PX);g.stroke();
+    two.forEach((i,k)=>{const x=k*(colW+gap), im=imgs[k], cap=`${i.label} — ${pS(i.amount)} — ${dmy(i.date||c.to)}`;
+      fitF(cap,11,1,colW);g.direction='ltr';g.fillText(cap,x*PX,(top-3)*PX);
+      if(i.remark){fitF(i.remark,9,0,colW);g.direction=HAS_AR(i.remark)?'rtl':'ltr';g.fillText(i.remark,x*PX,(top+1)*PX);g.direction='ltr'}
+      const bh=maxH-top-5, by=top+3;
+      if(!im){g.lineWidth=.7*PT*PX;g.strokeRect(x*PX,by*PX,colW*PX,bh*PX);return}
+      const s=Math.min(colW/im.naturalWidth,bh/im.naturalHeight), w=im.naturalWidth*s, h=im.naturalHeight*s, ix=x+(colW-w)/2;
+      drawGray(g,im,ix,by,w,h);g.lineWidth=.7*PT*PX;g.strokeRect(ix*PX,by*PX,w*PX,h*PX)})}}]);
+}
+
+/* ---------- 📷 read a receipt photo: Tesseract.js (free, runs on the phone; the first use downloads ~10 MB) ---------- */
+let ocrW=null, ocrP=null;
+const loadScript=src=>new Promise((ok,no)=>{const s=document.createElement('script');s.src=src;s.onload=ok;s.onerror=no;document.head.appendChild(s)});
+async function ocrRead(blob){
+  if(!window.Tesseract) await loadScript('https://cdn.jsdelivr.net/npm/tesseract.js@5.1.1/dist/tesseract.min.js');
+  if(!ocrW) ocrW=await Tesseract.createWorker(['eng','ara'],1,{logger:m=>ocrP&&ocrP(m)});
+  const r=await ocrW.recognize(blob); return (r&&r.data&&r.data.text)||'';
+}
+/* the text of a receipt → {amount, type, date, merchant} */
+const RC_TYPES=[['Hotel',/hotel|\binn\b|suites|resort|residence|فندق|شقق|اوتيل|أوتيل|نزل/i],
+  ['Fuel',/fuel|petrol|gasoline|diesel|\bstation\b|aldrees|sasco|petromin|naft|بنزين|وقود|محطة|محطه|الدريس|ساسكو|بترومين|نفط|ديزل/i],
+  ['Taxi',/uber|careem|taxi|bolt|jeeny|تاكسي|اوبر|أوبر|كريم|جيني/i],['Parking',/parking|مواقف|باركنج/i],
+  ['Car Wash',/car\s*wash|\bwash\b|مغسلة|مغسله|غسيل/i],['Car Rent',/rent\s*a\s*car|car\s*rental|yelo|budget|hertz|theeb|تأجير|تاجير|ايجار|إيجار/i],
+  ['Toll',/\btoll\b/i],['Printing',/printing|\bprint\b|طباعة|طباعه/i],['Shipping',/aramex|smsa|\bdhl\b|shipping|شحن/i]];
+function readReceipt(raw){
+  const t=normDigits(raw).replace(/\d+(?:\.\d+)?\s*%/g,' ');
+  const lines=t.split(/\n+/).map(s=>s.replace(/\s+/g,' ').trim()).filter(Boolean);
+  const nums=s=>{const out=[];(s.replace(/(\d)\s*[.,]\s*(\d{2})(?!\d)/g,'$1.$2').match(/\d+(?:\.\d{1,2})?/g)||[]).forEach(x=>{
+      const v=parseFloat(x); if(!(v>0)||/^\d{6,}$/.test(x)||(!x.includes('.')&&v>=2000&&v<=2100))return; out.push(v)});return out};
+  const KEY=/(grand\s*total|total|net\s*amount|amount\s*due|\bnet\b|الإجمالي|الاجمالي|إجمالي|اجمالي|المجموع|الصافي|المستحق)/i, SUB=/sub\s*-?\s*total|قبل|before/i;
+  let cands=[];
+  lines.forEach((l,k)=>{if(!KEY.test(l)||SUB.test(l))return;let ns=nums(l);if(!ns.length&&lines[k+1])ns=nums(lines[k+1]);cands.push(...ns)});
+  let amount=cands.length?Math.max(...cands):null;
+  if(amount==null){const dec=[];lines.forEach(l=>(l.match(/\d+\.\d{2}(?!\d)/g)||[]).forEach(x=>dec.push(+x)));if(dec.length)amount=Math.max(...dec)}
+  const hit=RC_TYPES.find(([,re])=>re.test(t)), type=hit?hit[0]:'Invoice';
+  let date='', m=t.match(/(\d{1,2})\s*[\/\-.]\s*(\d{1,2})\s*[\/\-.]\s*(20\d{2})/);
+  if(m){let d=+m[1],mo=+m[2];if(mo>12&&d<=12){const x=d;d=mo;mo=x}if(mo>=1&&mo<=12&&d>=1&&d<=31)date=`${m[3]}-${pad2(mo)}-${pad2(d)}`}
+  else if((m=t.match(/(20\d{2})\s*[\/\-.]\s*(\d{1,2})\s*[\/\-.]\s*(\d{1,2})/))&&+m[2]<=12&&+m[3]<=31)date=`${m[1]}-${pad2(+m[2])}-${pad2(+m[3])}`;
+  const merchant=(lines.find(l=>(l.match(/[A-Za-zء-ي]/g)||[]).length>=3&&!/\d{3,}/.test(l)&&!KEY.test(l))||'').slice(0,40);
+  return {amount,type,date,merchant};
+}
+async function ocrStart(file){
+  const c=custodies.find(x=>x.id===curId); if(!c||!file) return;
+  const P=$('voicePrev'); P.hidden=false; P.innerHTML='';
+  const box=document.createElement('div'); box.className='prev ocrCard'; P.appendChild(box);
+  const img=document.createElement('img'); img.className='ocrThumb'; img.alt=''; box.appendChild(img);
+  const st=document.createElement('div'); st.className='note'; st.textContent=tr('بقرا الفاتورة…','Reading the receipt…'); box.appendChild(st);
+  box.scrollIntoView({behavior:'smooth',block:'center'});
+  const blob=await shrink(file); const u=URL.createObjectURL(blob); img.src=u;
+  ocrP=m=>{if(m&&typeof m.progress==='number'){const p=Math.round(m.progress*100);
+    st.textContent=/recogni/.test(m.status||'')?tr(`بقرا الفاتورة… ${p}%`,`Reading the receipt… ${p}%`):tr(`بجهّز القارئ (أول مرة بس)… ${p}%`,`Preparing the reader (first time only)… ${p}%`)}};
+  let r={amount:null,type:'Invoice',date:'',merchant:''}, ok=true;
+  try{r=readReceipt(await ocrRead(blob))}catch(e){ok=false}
+  ocrP=null;
+  st.textContent=!ok?tr('ما قدرتش أقرا الصورة (أول مرة محتاج نت) — اكتب المبلغ بإيدك، والصورة هتتحفظ مع الفاتورة.','Could not read the photo (the first time needs internet) — type the amount; the photo is kept with the invoice.')
+    :r.amount?tr('راجع اللي قريته وعدّل لو فيه حاجة غلط:','Check what I read and fix anything wrong:'):tr('ما لقيتش المبلغ — اكتبه بإيدك:','I could not find the amount — type it:');
+  const f=document.createElement('div'); f.className='ocrForm';
+  f.innerHTML=`<label class="f">${tr('النوع','Type')}<select id="ocType"></select></label>
+    <label class="f">${tr('المبلغ (SAR)','Amount (SAR)')}<input id="ocAmt" inputmode="decimal" autocomplete="off"></label>
+    <label class="f">${tr('تاريخ الفاتورة','Invoice date')}<input id="ocDate" type="date"></label>
+    <label class="f full">${tr('ملاحظة','Remark')}<input id="ocRem" autocomplete="off"></label>`;
+  box.appendChild(f);
+  TYPES.forEach(t=>{const o=document.createElement('option');o.value=t.k;o.textContent=LANG==='en'?t.k:`${t.ar} · ${t.k}`;$('ocType').appendChild(o)});
+  $('ocType').value=r.type; $('ocAmt').value=r.amount?String(r.amount):''; $('ocDate').value=r.date||''; $('ocRem').value=r.merchant||c.project||'';
+  const a=document.createElement('div'); a.className='confirm';
+  const add=document.createElement('button'); add.className='btn primary big grow'; add.textContent=tr('✓ أضف الفاتورة','✓ Add the invoice');
+  const no=document.createElement('button'); no.className='btn'; no.textContent=tr('إلغاء','Cancel');
+  a.append(add,no); box.appendChild(a); if(!r.amount) $('ocAmt').focus();
+  no.onclick=()=>{P.hidden=true;P.innerHTML='';URL.revokeObjectURL(u)};
+  add.onclick=async()=>{const v=parseFloat(normNum($('ocAmt').value));
+    if(!(v>0)){$('ocAmt').focus();toast(tr('اكتب المبلغ الأول','Type the amount first'));return}
+    const id=uid(), it={id,type:$('ocType').value,amount:Math.round(v*100)/100,remark:$('ocRem').value.trim()||c.project||''};
+    if($('ocDate').value) it.date=$('ocDate').value;
+    mutate(cc=>{cc.items=[...(cc.items||[]),it]});
+    try{await PDB.put(id,blob);photoKeys.add(id)}catch(e){}
+    P.hidden=true;P.innerHTML='';URL.revokeObjectURL(u);renderSheet();
+    toast(tr(`✓ اتضافت الفاتورة وصورتها (${fmt(it.amount)})`,`✓ Invoice and photo added (${fmt(it.amount)})`),()=>mutate(cc=>{cc.items=cc.items.filter(x=>x.id!==id)}))};
+}
+$('ocrBtn').onclick=()=>{buzz();$('ocrFile').click()};
+$('ocrFile').onchange=e=>{const f=e.target.files&&e.target.files[0];e.target.value='';if(f)ocrStart(f)};
 /* ---------- projects: name <-> fixed code ---------- */
 let projects=[], pcol=null;
 const codeOf=n=>{const p=projects.find(p=>p.name.trim().toLowerCase()===String(n).trim().toLowerCase());return p?p.code:null};
@@ -1868,16 +2060,17 @@ function sayParse(){
   stopRec();
   const txt=$('sayTxt').value.trim(), msg=$('sayMsg');
   if(!txt){msg.hidden=false;msg.textContent='اتكلم أو اكتب العهدة الأول.';return}
-  const dt=extractDates(txt);
-  const items=parseItems(dt.rest).map(i=>({...i,note:''}));
+  const {dt,items}=splitDates(txt);
+  items.forEach(i=>{const d=itemDate(i.dd,dt.to);if(d)i.date=d});
   const last=[...custodies].sort((a,b)=>b.no-a.no)[0];
   const hit=findProject(txt);
   const project=hit?hit.name:(last?last.project:'');
   const code=hit?hit.code:(codeOf(project)||'');
   const alias=dt.before.filter(w=>w!==','&&!typeOf(w)&&!isNumTok(w)).join(' ').trim();
-  const to=dt.to||todayISO(), from=dt.from||to;
+  const ds=items.map(i=>i.date).filter(Boolean).sort();
+  const to=dt.to||ds[ds.length-1]||todayISO(), from=dt.from||ds[0]||to;
   if(!items.length){msg.hidden=false;msg.textContent='ما لقيتش فواتير في الكلام. قول النوع وبعده المبلغ، زي «بنزين مية وعشرة».';return}
-  msg.hidden=true; sayDraft={project,code,from:from>to?to:from,to:from>to?from:to,items,alias:hit?'':alias,noDate:!dt.from}; renderSayPrev(); clearBox('sayTxt');
+  msg.hidden=true; sayDraft={project,code,from:from>to?to:from,to:from>to?from:to,items,alias:hit?'':alias,noDate:!dt.from&&!ds.length}; renderSayPrev(); clearBox('sayTxt');
 }
 function renderSayPrev(){
   const D=sayDraft,P=$('sayPrev');P.hidden=false;P.innerHTML='';
@@ -1914,7 +2107,7 @@ function renderSayPrev(){
     if(D.from>D.to){const x=D.from;D.from=D.to;D.to=x}
     const no_=custodies.reduce((m,c)=>Math.max(m,c.no||0),0)+1;
     const c={id:'c'+no_+'-'+uid(),no:no_,project:D.project,fileNo:D.code,from:D.from,to:D.to,mealRate:RATE,advance:0,status:'open',createdAt:Date.now(),
-      items:D.items.map(i=>({id:uid(),type:i.type,amount:i.amount,remark:D.project||''}))};
+      items:D.items.map(i=>({id:uid(),type:i.type,amount:i.amount,remark:D.project||'',...(i.date?{date:i.date}:{})}))};
     rememberProject(c.project,c.fileNo,D.alias);
     custodies.push(c);save(c);sayDraft=null;P.hidden=true;$('sayTxt').value='';
     toast(tr(`اتعملت عهدة ${no_}`,`Custody ${no_} created`));openSheet(c.id);renderHome();
@@ -1986,18 +2179,18 @@ function buildSheet(wb,c,ids){
   ws.getRow(10).height=28.5;
   let r=11, first=null; const toD=c.to;
   const section=t=>{ws.mergeCells(`A${r}:E${r}`);put('A'+r,t,{b:true,u:true,L:true});r++};
-  const item=(label,amt,rem,formula,res)=>{first=first||r;
-    put('A'+r,{formula:'$D$7',result:xdate(toD)},{h:'center',fmt:DATEF,L:true});
+  const item=(label,amt,rem,formula,res,date)=>{first=first||r;
+    put('A'+r,date?xdate(date):{formula:'$D$7',result:xdate(toD)},{h:'center',fmt:DATEF,L:true});
     put('B'+r,label); put('C'+r,formula?{formula,result:res}:(amt===''?null:amt),{h:'right',fmt:SAR});
     put('D'+r,null,{fmt:SAR}); put('E'+r,rem||null); r++};
   const g=grouped(c);
-  section('LODGING'); (g.L.length?g.L:[{label:'Hotel 1',amount:''}]).forEach(i=>item(i.label,i.amount,i.remark));
-  section('TRANSPORTATION'); (g.T.length?g.T:[{label:'Fuel 1',amount:''}]).forEach(i=>item(i.label,i.amount,i.remark));
+  section('LODGING'); (g.L.length?g.L:[{label:'Hotel 1',amount:''}]).forEach(i=>item(i.label,i.amount,i.remark,null,null,i.date));
+  section('TRANSPORTATION'); (g.T.length?g.T:[{label:'Fuel 1',amount:''}]).forEach(i=>item(i.label,i.amount,i.remark,null,null,i.date));
   section('MEALS'); const rate=c.mealRate||RATE;
   first=first||r; put('A'+r,{formula:'$D$7',result:xdate(toD)},{h:'center',fmt:DATEF,L:true});
   put('B'+r,{formula:`B8&" days x ${rate} SAR"`,result:`${D} days x ${rate} SAR`});
   put('C'+r,{formula:`B8*${rate}`,result:D*rate},{h:'right',fmt:SAR}); put('D'+r,null); put('E'+r,'Meals allowance'); r++;
-  section('MISCELLANEOUS'); (g.M.length?g.M:[{label:'Material 1',amount:''}]).forEach(i=>item(i.label,i.amount,i.remark));
+  section('MISCELLANEOUS'); (g.M.length?g.M:[{label:'Material 1',amount:''}]).forEach(i=>item(i.label,i.amount,i.remark,null,null,i.date));
   const last=r-1, T=total(c);
   ws.mergeCells(`A${r}:B${r}`); put('A'+r,'Total Amount',{b:true,sz:12,h:'center',L:true});
   put('C'+r,{formula:`SUM(C${first}:C${last})`,result:T},{b:true,h:'right',fmt:SAR});
@@ -2013,6 +2206,7 @@ function buildSheet(wb,c,ids){
   boxR(1,5,1,s0+2,{style:'thick'});   // thick frame around the whole form (header → balance)
   r++;
   ws.mergeCells(`A${r}:C${r+2}`); put('A'+r,'Employee Signature : _____________________',{b:true,border:false});
+  if(ids.sig!=null) ws.addImage(ids.sig,{tl:{col:1.55,row:r-1-0.6},ext:{width:140,height:42}});
   ws.mergeCells(`D${r}:E${r+2}`); put('D'+r,'Approved by: __________________________',{b:true,border:false});
   ws.pageSetup={paperSize:9,orientation:'portrait',fitToPage:true,fitToWidth:1,fitToHeight:1,horizontalCentered:true,
     margins:{left:0.4,right:0.4,top:0.5,bottom:0.5,header:0.2,footer:0.2},printArea:`A1:E${r+2}`};
@@ -2023,7 +2217,7 @@ async function exportXlsx(onlyId){
   if(!custodies.length){toast('مفيش عهد لسه');return}
   const wb=new ExcelJS.Workbook(); wb.creator=EMP||'UUES';
   const G=await grayImgs();
-  const ids={logo:wb.addImage({base64:LOGO,extension:'png'}), /* logo in colour */name:wb.addImage({base64:G.name,extension:'png'})};
+  const ids={logo:wb.addImage({base64:LOGO,extension:'png'}), /* logo in colour */name:wb.addImage({base64:G.name,extension:'png'}),sig:SIG?wb.addImage({base64:SIG,extension:'png'}):null};
   const list=[...custodies].filter(c=>!onlyId||c.id===onlyId).sort((a,b)=>a.no-b.no), refs=[];
   list.forEach(c=>refs.push({c,...buildSheet(wb,c,ids)}));
   if(onlyId){wb.views=[{activeTab:0}];const one=list[0];const buf1=await wb.xlsx.writeBuffer();
@@ -2152,11 +2346,12 @@ function mergeBackup(d){
       if(same)o.projects[same[0]]={...same[1],code:same[1].code||p.code};else o.projects[id]=p});
     o.receipts={...(o.receipts||{}),...(d.receipts||{})};
     if(!o.name&&d.name)o.name=d.name;
+    if(!o.sig&&d.sig)o.sig=d.sig;
     if(!LS.write(o))throw 0;
     custodies=Object.entries(o.custodies).map(([id,c])=>({...c,id}));
     receipts=Object.entries(o.receipts||{}).map(([id,r])=>({...r,id}));
     projects=Object.entries(o.projects).map(([id,p])=>({...p,id})).sort((x,y)=>x.name.localeCompare(y.name));
-    setEmp(o.name||'');renderProjects();render();toast(tr(`اترجعت ${Object.keys(d.custodies).length} عهدة`,`Restored ${Object.keys(d.custodies).length} custodies`));return true}
+    setEmp(o.name||'');setSig(o.sig||'');renderProjects();render();toast(tr(`اترجعت ${Object.keys(d.custodies).length} عهدة`,`Restored ${Object.keys(d.custodies).length} custodies`));return true}
   catch(err){return false}
 }
 /* install prompt */
@@ -2215,6 +2410,13 @@ $('gaBtn').onclick=async()=>{buzz();
 $('gaCopy').onclick=async()=>{try{await navigator.clipboard.writeText(APP_URL);toast(tr('اتنسخ اللينك — الصقه في Safari أو Chrome','Link copied — paste it in Safari or Chrome'))}catch(e){prompt(tr('انسخ اللينك:','Copy the link:'),APP_URL)}};
 $('gaSkip').onclick=()=>{$('getApp').hidden=true;$('gaArrow').hidden=true};
 if(GA) gaShow();
+/* ---------- 💾 weekly backup: once a week (data on this phone only) a one-tap screen → share sheet (Save to Files / iCloud Drive, WhatsApp…) ---------- */
+function bkDue(){let bk=0,sn='';try{bk=+localStorage.getItem('uues_bk')||0;sn=localStorage.getItem('uues_bk_snooze')||''}catch(e){}
+  return custodies.length>0&&(!bk||Date.now()-bk>7*864e5)&&sn!==todayISO()}
+setTimeout(()=>{if(bkDue()&&!GA&&$('getApp').hidden&&$('tour').hidden)$('bkOv').hidden=false},2600);
+$('bkStep2').innerHTML=tr('اختار «حفظ في الملفات» <bdi>Save to Files</bdi> ← <bdi>iCloud Drive</bdi> — أو واتساب.','Choose <bdi>Save to Files</bdi> → <bdi>iCloud Drive</bdi> — or WhatsApp.');
+$('bkNow').onclick=()=>{$('bkOv').hidden=true;$('bkBtn').click()};
+$('bkLater').onclick=()=>{$('bkOv').hidden=true;try{localStorage.setItem('uues_bk_snooze',todayISO())}catch(e){}};
 /* «📤 ابعت لزميل»: phone share sheet (WhatsApp…) with a ready message and the link */
 const APP_URL='https://elsaiedharfoush14.github.io/uues-petty-cash/';
 const SHARE_TXT=tr('عهدة UUES 📋\nسجّل فواتير العهدة بصوتك، والتطبيق يحسب الأيام والوجبات ويطلّع فورم Expenses Report على Excel.\nافتح اللينك وضيفه على الشاشة الرئيسية:','UUES Petty Cash 📋\nRecord your custody invoices by voice — the app counts days and meals and exports the Expenses Report form to Excel.\nOpen the link and add it to your home screen:');
@@ -2224,7 +2426,7 @@ $('shBtn').onclick=async()=>{
 };
 if('serviceWorker' in navigator&&location.protocol==='https:')navigator.serviceWorker.register('sw.js').catch(()=>{});
 /* ---------- quick update: version.json is never cached; a newer one shows a bar, one tap reloads ---------- */
-const APP_VER='2026.10.05.9';
+const APP_VER='2026.10.05.10';
 $('verTxt').textContent=APP_VER;
 async function hardUpdate(){
   $('updBtn').disabled=true;$('updBtn').textContent='⏳ بيحدّث…';
@@ -2261,7 +2463,7 @@ function lsColl(name){return{doc:id=>({
   receipts=Object.entries(o.receipts||{}).map(([id,r])=>({...r,id}));
   custodies=Object.entries(o.custodies||{}).map(([id,c])=>({...c,id}));
   projects=Object.entries(o.projects||{}).map(([id,p])=>({...p,id})).sort((x,y)=>x.name.localeCompare(y.name));
-  setEmp(o.name||''); renderProjects(); render();
+  setEmp(o.name||''); setSig(o.sig||''); renderProjects(); render();
 })();
 </script>
 </body>
