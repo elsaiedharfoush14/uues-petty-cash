@@ -1546,7 +1546,9 @@ const AR_DATE=s=>{if(!s)return'';const [y,m,d]=s.split('-').map(Number);
   try{return new Date(y,m-1,d,12).toLocaleDateString(LANG==='en'?'en-GB':'ar-EG-u-nu-latn',{weekday:'long',day:'numeric',month:'long'})}catch(e){return dmy(s)}};
 const rangeTxt=c=>c.from&&c.to?`${AR_DATE(c.from)} ${ARW()} ${AR_DATE(c.to)}`:'';
 const daysTxt=n=>LANG==='en'?(n===1?'1 day':`${n} days`):n===1?'يوم واحد':n===2?'يومين':n<=10?`${n} أيام`:`${n} يوم`;
-function normDigits(s){return String(s).replace(/[٠-٩]/g,d=>'٠١٢٣٤٥٦٧٨٩'.indexOf(d)).replace(/٫/g,'.')}
+/* iPhone dictation wraps numbers in invisible direction marks («‎280‎») — drop them, and odd spaces become plain ones */
+function cleanSpeech(s){return String(s).replace(/[​-‏‪-‮⁦-⁩؜﻿]/g,'').replace(/[  -   　]/g,' ')}
+function normDigits(s){return cleanSpeech(s).replace(/[٠-٩]/g,d=>'٠١٢٣٤٥٦٧٨٩'.indexOf(d)).replace(/٫/g,'.')}
 /* spoken command at the end of the sentence: «… ضيفها» / «add them» adds without touching the button */
 /* phones write it many ways: ضيفها ضيفيها ضيفوها ضفها أضفها اضيفهالي صيفها احفظها سجلها … («يا معلم» / «لو سمحت» after it is fine) */
 const ADD_CMD=/(?:^|[\s،,.]+)(?:و?(?:خلاص\s+)?(?:[اأإ]?ضي?ف(?:ي|و)?(?:ها|هم|ه|هوم)?(?:لي|لى)?|[صدظز]ي?ف(?:ي|و)?(?:ها|هم)|[اأ]?حفظ(?:ها|هم)|سج+ّ?ل(?:ها|هم))|add(?: (?:it|them))?|save(?: (?:it|them))?)(?:\s+(?:يا\s*\S+|لو سمحت|please))?[\s.!،]*$/i;
@@ -1659,7 +1661,7 @@ function mic(btn,target,idle,done,after){
     /* rebuild this round's text from all results. Android Chrome repeats earlier phrases inside later
        results («فندق» then «فندق ميتين»), so a result that already contains the previous one replaces it */
     r.onresult=e=>{const parts=[];
-      for(let i=0;i<e.results.length;i++){const t=e.results[i][0].transcript.trim();if(!t)continue;
+      for(let i=0;i<e.results.length;i++){const t=cleanSpeech(e.results[i][0].transcript).trim();if(!t)continue;
         const p=parts[parts.length-1];
         if(p!=null&&t.startsWith(p)) parts[parts.length-1]=t;
         else if(p!=null&&p.startsWith(t)) continue;
@@ -2038,7 +2040,7 @@ $('shBtn').onclick=async()=>{
 };
 if('serviceWorker' in navigator&&location.protocol==='https:')navigator.serviceWorker.register('sw.js').catch(()=>{});
 /* ---------- quick update: version.json is never cached; a newer one shows a bar, one tap reloads ---------- */
-const APP_VER='2026.10.05.5';
+const APP_VER='2026.10.05.6';
 $('verTxt').textContent=APP_VER;
 async function hardUpdate(){
   $('updBtn').disabled=true;$('updBtn').textContent='⏳ بيحدّث…';
