@@ -1548,7 +1548,8 @@ const rangeTxt=c=>c.from&&c.to?`${AR_DATE(c.from)} ${ARW()} ${AR_DATE(c.to)}`:''
 const daysTxt=n=>LANG==='en'?(n===1?'1 day':`${n} days`):n===1?'يوم واحد':n===2?'يومين':n<=10?`${n} أيام`:`${n} يوم`;
 function normDigits(s){return String(s).replace(/[٠-٩]/g,d=>'٠١٢٣٤٥٦٧٨٩'.indexOf(d)).replace(/٫/g,'.')}
 /* spoken command at the end of the sentence: «… ضيفها» / «add them» adds without touching the button */
-const ADD_CMD=/[\s،,.]*(?:و?(?:ضيفها|ضيفهم|ضيفه|ضيف|أضف|اضف|اضيف|أضيف)|add(?: (?:it|them))?)[\s.!]*$/i;
+/* phones write it many ways: ضيفها ضيفيها ضيفوها ضفها أضفها اضيفهالي صيفها احفظها سجلها … («يا معلم» / «لو سمحت» after it is fine) */
+const ADD_CMD=/(?:^|[\s،,.]+)(?:و?(?:خلاص\s+)?(?:[اأإ]?ضي?ف(?:ي|و)?(?:ها|هم|ه|هوم)?(?:لي|لى)?|صي?ف(?:ي|و)?(?:ها|هم)|[اأ]?حفظ(?:ها|هم)|سج+ّ?ل(?:ها|هم))|add(?: (?:it|them))?|save(?: (?:it|them))?)(?:\s+(?:يا\s*\S+|لو سمحت|please))?[\s.!،]*$/i;
 /* «ضيفها» adds straight away (the old preview's confirm button was hidden under the total bar on phones,
    so the invoices were never saved); «تراجع» in the toast takes them back out */
 function parseVoice(){
@@ -1566,7 +1567,8 @@ function parseVoice(){
     c.items=[...(c.items||[]),...items.map((i,n)=>({id:ids[n],type:i.type,amount:i.amount,remark:i.note||c.project||''}))];
     if(pd){c.from=pd.from;c.to=pd.to}});
   const sum=items.reduce((s,i)=>s+i.amount,0);
-  toast(tr(`✓ اتضافت ${items.length} فواتير (${fmt(sum)})`+(pd?' واتعدّل التاريخ':''),`✓ Added ${items.length} invoices (${fmt(sum)})`+(pd?' and updated the dates':'')),
+  toast(tr((items.length===1?'✓ اتضافت فاتورة':`✓ اتضافت ${items.length} فواتير`)+` (${fmt(sum)})`+(pd?' واتعدّل التاريخ':''),
+      (items.length===1?'✓ Added 1 invoice':`✓ Added ${items.length} invoices`)+` (${fmt(sum)})`+(pd?' and updated the dates':'')),
     ()=>mutate(c=>{c.items=c.items.filter(i=>!ids.includes(i.id));if(pd){c.from=old.from;c.to=old.to}}));
   const rows=$('rows'); if(rows&&rows.lastElementChild) rows.lastElementChild.scrollIntoView({behavior:'smooth',block:'center'});
 }
@@ -2034,7 +2036,7 @@ $('shBtn').onclick=async()=>{
 };
 if('serviceWorker' in navigator&&location.protocol==='https:')navigator.serviceWorker.register('sw.js').catch(()=>{});
 /* ---------- quick update: version.json is never cached; a newer one shows a bar, one tap reloads ---------- */
-const APP_VER='2026.10.05.3';
+const APP_VER='2026.10.05.4';
 $('verTxt').textContent=APP_VER;
 async function hardUpdate(){
   $('updBtn').disabled=true;$('updBtn').textContent='⏳ بيحدّث…';
