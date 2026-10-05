@@ -495,7 +495,7 @@ html[dir=ltr] .card::before{border-radius:4px 0 0 4px}
 .spBy{position:absolute;bottom:calc(22px + env(safe-area-inset-bottom,0px));font-size:12.5px;color:#6b7a90;letter-spacing:.01em;animation:spUp .6s .85s both}
 @media (prefers-color-scheme: dark){.spBy{color:#8c9bb0}}
 /* ---- tour, settings, summary, confetti ---- */
-.hBtns{display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;margin-top:10px}
+.hBtns{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:10px}
 .hBtns .btn.big{font-size:15px;padding:12px 6px}
 .headcard .hBtns .btn{width:100%}
 .headcard #sumBtn{background:rgba(255,255,255,.16);color:#fff;border:0}
@@ -527,41 +527,24 @@ html[dir=ltr] .card::before{border-radius:4px 0 0 4px}
 .allBtns{display:grid;grid-template-columns:1fr 1fr;gap:10px}
 .allBtns .btn.big{font-size:15px;padding:13px 8px}
 #printArea{display:none}
+/* print = the A4 pictures drawn by custodyCanvas() / summaryCanvas(); each fills one page */
 @media print{
-  @page{size:A4 portrait;margin:9mm}
+  @page{size:A4 portrait;margin:0}
   html,body{background:#fff!important;padding:0!important;margin:0!important}
   body>*:not(#printArea){display:none!important}
-  #printArea{display:block!important;direction:ltr;color:#000}
-  #printArea img{filter:grayscale(1)}
-  .pPage{break-after:page;page-break-after:always;font-family:"Times New Roman",Times,serif}
-  .pPage:last-child{break-after:auto;page-break-after:auto}
-  .pf{width:100%;border-collapse:collapse;font-size:10.5pt;border:2.4pt solid #000}
-  .pf td{border:.7pt solid #000;padding:2.2pt 4pt;vertical-align:middle;line-height:1.25}
-  .pf .c{text-align:center}.pf .r{text-align:right}.pf .b,.pf tr.b td{font-weight:700}
-  .pf .lb{font-weight:700;text-align:center;font-size:11.5pt}.pf .lbBig{font-size:11.5pt;font-weight:700}
-  .pf .pSec{font-weight:700;text-decoration:underline;font-size:10.5pt;letter-spacing:0;color:#000}
-  .pf .th td{font-weight:700;text-align:center;font-size:11pt}
-  .pf tr.hd td{border:1.6pt solid #000;height:30mm}
-  .hLogo{display:flex;align-items:center;gap:3mm}
-  .hLogo>img{height:22mm;width:auto}
-  .hName{flex:1;display:flex;flex-direction:column;align-items:flex-end;gap:1.5mm}
-  .hName img{width:58mm;height:auto}
-  .hAddr{font-family:Arial,sans-serif;font-size:7pt;font-weight:700;text-align:right;line-height:1.5}
-  .hTitle{text-align:center;font-size:15pt;font-weight:700;white-space:nowrap}
-  .hInfo{text-align:right;font-family:Arial,sans-serif;font-size:7.6pt;font-weight:700;font-style:italic;line-height:1.55;white-space:nowrap}
-  .pf tr.gap td{height:1.6mm;padding:0;border-left:0;border-right:0}
-  .pf tr.gap2 td{height:4mm;padding:0}
-  .fileNo{font-size:11.5pt;vertical-align:top!important}
-  .sig{display:flex;justify-content:space-between;margin-top:9mm;font-weight:700;font-size:10.5pt;padding:0 2mm}
-  .sumHead{display:flex;align-items:center;gap:4mm;margin-bottom:5mm}
-  .sumHead img{height:16mm}
-  .sumHead div{display:flex;flex-direction:column}
-  .sumHead b{font-size:15pt}.sumHead span{font-size:10pt;color:#333}
-  .sumT{font-size:9pt}.sumT td.r{white-space:nowrap}.sumT .th td{border-bottom:1.6pt solid #000}
-  .sumT tr.yt td{font-weight:700;border-top:1.6pt solid #000}
-  .sumT.sumBal{margin-top:6mm;width:72%}
-
+  #printArea{display:block!important}
+  #printArea .pImg{display:block;width:100%;height:auto;break-after:page;page-break-after:always}
+  #printArea .pImg:last-child{break-after:auto;page-break-after:auto}
 }
+/* 👁️ preview */
+.pv{background:#0d1420;justify-content:flex-start;padding:calc(12px + env(safe-area-inset-top,0px)) 10px calc(12px + env(safe-area-inset-bottom,0px));z-index:30}
+.pvPages{flex:1;min-height:0;width:100%;overflow:auto;-webkit-overflow-scrolling:touch;display:flex;flex-direction:column;align-items:center;gap:12px}
+.viewer .pvPages img{width:100%;max-width:820px;max-height:none;height:auto;border-radius:3px;background:#fff;box-shadow:0 4px 20px rgba(0,0,0,.5);flex:none}
+.viewer .pvPages img.zoom{width:230%;max-width:none;align-self:flex-start}
+.pvWait{color:#fff;margin:auto;font-size:16px}
+.pv .vbar{flex:none;display:grid;grid-template-columns:1.3fr 1.3fr 1fr 1fr;gap:6px;width:100%;max-width:560px}
+.pv .vbar .btn{font-size:14px;padding:11px 4px;white-space:nowrap}
+.pv .vbar .btn.primary{background:var(--brand);color:#fff;border-color:var(--brand)}
 </style>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -711,6 +694,7 @@ html[dir=ltr] .card::before{border-radius:4px 0 0 4px}
     <div class="panel">
       <strong>آخر التحديثات</strong>
       <ul class="log">
+        <li><b class="num">2026.10.05</b><span>👁️ عرض العهدة كصورة واضحة A4 — شاركها واتساب أو اطبعها على طول، والـ PDF بقى مظبوط على ورقة A4 في أي موبايل.</span></li>
         <li><b class="num">2026.10.04</b><span>تحليل المصروفات بالشهور والأنواع، بحث في العهد، وتنبيهات للعهد المتأخرة والنسخة الاحتياطية.</span></li>
         <li><b class="num">2026.10.04</b><span>رصيد العهدة: المستلم والمصروف، ومدين أو دائن — ونسخة إنجليزي كاملة.</span></li>
         <li><b class="num">2026.10.04</b><span>صفحات وتابات، لوجو الشركة، وشاشة افتتاحية.</span></li>
@@ -756,7 +740,7 @@ html[dir=ltr] .card::before{border-radius:4px 0 0 4px}
       <div class="hcode num" id="hCode"></div>
       <div class="hp" id="hProj"></div>
       <div class="hm" id="hMeta"></div>
-      <div class="hBtns"><button class="btn primary big" id="oneXls" type="button">📊 Excel</button><button class="btn big" id="onePdf" type="button">🖨️ PDF</button><button class="btn big" id="sumBtn" type="button">📤 ملخص</button></div>
+      <div class="hBtns"><button class="btn primary big" id="oneXls" type="button">📊 Excel</button><button class="btn big" id="oneView" type="button">👁️ عرض</button><button class="btn big" id="onePdf" type="button">🖨️ PDF</button><button class="btn big" id="sumBtn" type="button">📤 ملخص</button></div>
       <div class="status"><span id="stTxt"></span><button class="btn" id="stBtn" type="button"></button></div>
     </div>
 
@@ -809,6 +793,7 @@ html[dir=ltr] .card::before{border-radius:4px 0 0 4px}
 <datalist id="projList"></datalist>
 <input type="file" id="phFile" accept="image/*" hidden>
 <div class="viewer" id="viewer" hidden><img id="vImg" alt="صورة الفاتورة"><div class="vbar"><button class="btn" id="vRep" type="button">استبدال</button><button class="btn" id="vDel" type="button">حذف الصورة</button><button class="btn" id="vClose" type="button">إغلاق</button></div></div>
+<div class="viewer pv" id="pvOv" hidden><div class="pvPages" id="pvPages"></div><div class="vbar"><button class="btn primary" id="pvShare" type="button">📤 شارك</button><button class="btn" id="pvPrint" type="button">🖨️ اطبع / PDF</button><button class="btn" id="pvSave" type="button">⬇️ حفظ</button><button class="btn" id="pvClose" type="button">✕ إغلاق</button></div></div>
 <nav class="tabbar" id="tabbar" aria-label="الصفحات">
   <button type="button" data-tab="home" aria-current="page"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3 10.5 12 3l9 7.5V20a1 1 0 0 1-1 1h-5v-6h-6v6H4a1 1 0 0 1-1-1z"/></svg><span>الرئيسية</span></button>
   <button type="button" data-tab="listView"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 3h11l3 3v15H5zM8 9h8M8 13h8M8 17h5"/></svg><span>العهد</span></button>
@@ -860,6 +845,7 @@ let LANG='ar'; try{LANG=localStorage.getItem('uues_lang')==='en'?'en':'ar'}catch
 const tr=(a,e)=>LANG==='en'?e:a;
 const ARW=()=>LANG==='en'?'→':'←';
 const EN={
+ '👁️ عرض':'👁️ View','📤 شارك':'📤 Share','🖨️ اطبع / PDF':'🖨️ Print / PDF','⬇️ حفظ':'⬇️ Save','✕ إغلاق':'✕ Close',
  'عهدة UUES':'UUES Petty Cash','أهلاً،':'Hi,','تغيير الاسم':'Change name','اكتب اسمك':'enter your name',
  'ثبّت «عهدة UUES» على موبايلك':'Install «UUES Petty Cash» on your phone','يفتح من الشاشة الرئيسية زي أي أبلكيشن، ويشتغل من غير نت':'Opens from your home screen like any app, and works offline',
  'إخفاء':'Hide','📲 ثبّت التطبيق':'📲 Install the app','أهلاً بيك 👋':'Welcome 👋',
@@ -912,7 +898,7 @@ const EN={
  'راجع بلمسة':'Review in a tap','التطبيق بيرتب الفواتير ويحسب الأيام والوجبات. أي رقم تقدر تعدّله بلمسة.':'The app sorts the invoices and counts days and meals. Fix any number with a tap.',
  'طلّع Excel وتابع رصيدك':'Export Excel, track your balance','فورم UUES Expenses Report جاهز للحسابات، وتعرف دايماً ليك ولا عليك.':'A ready UUES Expenses Report for accounts — and you always know who owes whom.',
  'تخطي':'Skip','التالي':'Next','السكن':'Lodging','المواصلات':'Transport','متنوع':'Misc.','دوّر بالمشروع أو الكود أو الرقم…':'Search by project, code or number…',
- 'آخر التحديثات':'What’s new','تحليل المصروفات بالشهور والأنواع، بحث في العهد، وتنبيهات للعهد المتأخرة والنسخة الاحتياطية.':'Spending insights by month and type, custody search, and reminders for late custodies and backups.',
+ 'آخر التحديثات':'What’s new','👁️ عرض العهدة كصورة واضحة A4 — شاركها واتساب أو اطبعها على طول، والـ PDF بقى مظبوط على ورقة A4 في أي موبايل.':'👁️ View a custody as a sharp A4 picture — share it on WhatsApp or print it right away; PDF now fits A4 on every phone.','تحليل المصروفات بالشهور والأنواع، بحث في العهد، وتنبيهات للعهد المتأخرة والنسخة الاحتياطية.':'Spending insights by month and type, custody search, and reminders for late custodies and backups.',
  'رصيد العهدة: المستلم والمصروف، ومدين أو دائن — ونسخة إنجليزي كاملة.':'Cash balance: received vs. spent, debit or credit — plus a full English version.',
  'صفحات وتابات، لوجو الشركة، وشاشة افتتاحية.':'Pages and tabs, the company logo, and an opening screen.',
  'فهم التاريخ بالكلام، والمايك بيفضل شغال لحد ما تدوس.':'Spoken dates, and the mic keeps listening until you tap.',
@@ -1279,59 +1265,169 @@ function grayImgs(){
     x.putImageData(d,0,0);ok(c.toDataURL('image/png'))}catch(e){ok(src)}};im.onerror=()=>ok(src);im.src=src});
   return grayP||(grayP=Promise.all([conv(LOGO),conv(NAME)]).then(([logo,name])=>(GI={logo,name})));
 }
-/* ---------- 🖨️ PDF: the same UUES form as print-ready A4 pages (browser print → «Save as PDF» / share) ---------- */
-const pE=s=>String(s==null?'':s).replace(/[&<>"]/g,ch=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[ch]));
+/* ---------- 🖨️ the UUES form drawn on a canvas: one sharp A4 picture per page (300 dpi, black & white).
+   The same picture is shown («👁️ عرض»), shared / saved as PNG and printed («🖨️ PDF»), so the printout is
+   exactly what was shown and always fits the A4 page on every phone (the old HTML print overflowed on iPhone) ---------- */
 const pS=v=>v===''||v==null?'':'SAR '+fmt(+v||0);
-function pdfPage(c){
-  const D=days(c), rate=c.mealRate||RATE, T=total(c), adv=+c.advance||0, g=grouped(c), toD=dmy(c.to);
-  const row=(a,b,cc,e,cls)=>`<tr class="${cls||''}"><td class="c">${a}</td><td>${b}</td><td class="r">${cc}</td><td class="r"></td><td>${e}</td></tr>`;
-  const sec=n=>`<tr><td colspan="5" class="pSec">${n}</td></tr>`;
-  const items=(list,empty)=>(list.length?list:[{label:empty,amount:''}]).map(i=>row(toD,pE(i.label),pS(i.amount),pE(i.remark||''))).join('');
-  return `<section class="pPage"><table class="pf">
-  <colgroup><col style="width:11.2%"><col style="width:26.4%"><col style="width:13.4%"><col style="width:10.7%"><col style="width:38.3%"></colgroup>
-  <tr class="hd"><td colspan="2" class="hBox"><div class="hLogo"><img src="${GI.logo}" alt=""><div class="hName"><img src="${GI.name}" alt="">
-    <div class="hAddr">الرياض - المملكة العربية السعودية - ص.ب. 260643<br>VAT No.: 310 861 827 600 003<br>CR No.: 1010686643</div></div></div></td>
-    <td colspan="2" class="hTitle">EXPENSES REPORT</td>
-    <td class="hInfo">UUES Form info.<br>Form Ref. No.: UI-08-01-F11 - Rev: 01<br>Form Issue Date: 16-06-2024</td></tr>
-  <tr class="gap"><td colspan="5"></td></tr>
-  <tr><td class="lb">Date From:</td><td class="c b">${dmy(c.from)}</td><td class="lb">Date To:</td><td class="c b">${toD}</td><td rowspan="2" class="b fileNo">UUES File No.:<br>${pE(c.fileNo||'')}</td></tr>
-  <tr><td class="lb">Days:</td><td class="c">${D}</td><td class="lb">Nights:</td><td class="c">${Math.max(0,D-1)}</td></tr>
-  <tr><td class="b">Employee Name:</td><td colspan="4" class="b">${pE(EMP)}</td></tr>
-  <tr class="th"><td>Date</td><td>Description</td><td>Amount<br>(SAR)</td><td>VAT<br>(Inclusive)</td><td>Remarks</td></tr>
-  ${sec('LODGING')}${items(g.L,'Hotel 1')}
-  ${sec('TRANSPORTATION')}${items(g.T,'Fuel 1')}
-  ${sec('MEALS')}${row(toD,`${D} days x ${rate} SAR`,pS(D*rate),'Meals allowance')}
-  ${sec('MISCELLANEOUS')}${items(g.M,'Material 1')}
-  <tr class="b"><td colspan="2" class="c lbBig">Total Amount</td><td class="r">${pS(T)}</td><td class="r">SAR 0.00</td><td></td></tr>
-  <tr class="gap2"><td colspan="5"></td></tr>
-  <tr><td colspan="2" class="b">Total spent by Employee:</td><td class="c">${pS(T)}</td><td colspan="2"></td></tr>
-  <tr><td colspan="2" class="b">Less Advance Received:</td><td class="c">${pS(adv)}</td><td colspan="2"></td></tr>
-  <tr><td colspan="2" class="b">Balance Due to / from Employee:</td><td class="c b">${pS(T-adv)}</td><td colspan="2"></td></tr>
-  </table>
-  <div class="sig"><span>Employee Signature : _____________________</span><span>Approved by: __________________________</span></div></section>`;
+const PX=300/25.4, PT=0.3528;                      /* px per mm at 300 dpi, mm per pt */
+const A4={w:210,h:296,m:9};                        /* 296 not 297: never spills onto a 2nd printed page */
+const F_TNR='"Times New Roman",Times,serif', F_AR='Arial,Helvetica,sans-serif';
+const HAS_AR=s=>/[؀-ۿ]/.test(s);
+const loadImg=src=>new Promise(ok=>{const im=new Image();im.onload=()=>ok(im);im.onerror=()=>ok(null);im.src=src});
+/* a table, sizes in mm: cols=[widths]; row={cells,h,grow,bw,top,noLR}; cell={t,cs,rs,al,b,i,u,pt,fam,va,fit,lh,draw}
+   rows grow for wrapped text; «fit» shrinks the font to one line instead of wrapping */
+function drawTable(cols,rows,frame){
+  const ms=document.createElement('canvas').getContext('2d'), W=cols.reduce((s,w)=>s+w,0), padH=4*PT, padV=2.2*PT;
+  const font=c=>`${c.i?'italic ':''}${c.b?'bold ':''}${(c.pt||10.5)*PT*PX}px ${c.fam||F_TNR}`;
+  const meas=(c,s)=>{ms.font=font(c);return ms.measureText(s).width/PX};
+  const lines=(c,w)=>{const out=[];String(c.t==null?'':c.t).split('\n').forEach(p=>{
+      if(c.fit){out.push(p);return}
+      let cur='';p.split(/\s+/).forEach(wd=>{const t=cur?cur+' '+wd:wd;if(cur&&meas(c,t)>w){out.push(cur);cur=wd}else cur=t});out.push(cur)});return out};
+  const taken=rows.map(()=>[]), placed=[];
+  rows.forEach((r,ri)=>{let ci=0;r.cells.forEach(c=>{while(taken[ri][ci])ci++;const cs=c.cs||1,rs=c.rs||1;
+    for(let a=0;a<rs;a++)for(let b=0;b<cs;b++)if(rows[ri+a])taken[ri+a][ci+b]=1;
+    placed.push({c,ri,ci,cs,rs,w:cols.slice(ci,ci+cs).reduce((s,v)=>s+v,0)});ci+=cs})});
+  placed.forEach(p=>{if(!p.c.fit||p.c.t==null)return;const L=String(p.c.t).split('\n');
+    while((p.c.pt||10.5)>5&&Math.max(...L.map(s=>meas(p.c,s)))>p.w-2*padH)p.c.pt=(p.c.pt||10.5)-.25});
+  const H=rows.map(r=>r.h||0);
+  placed.forEach(p=>{p.L=p.c.draw?[]:lines(p.c,p.w-2*padH);if(p.rs>1)return;
+    const need=p.L.length*(p.c.pt||10.5)*PT*(p.c.lh||1.25)+2*padV;if(!rows[p.ri].h||rows[p.ri].grow)H[p.ri]=Math.max(H[p.ri],need)});
+  const Y=[0];H.forEach((h,i)=>Y.push(Y[i]+h)); const TH=Y[Y.length-1];
+  return {h:TH,w:W,draw(g){
+    g.fillStyle='#000'; g.strokeStyle='#000'; g.lineCap='square';
+    const X=[0];cols.forEach((w,i)=>X.push(X[i]+w));
+    const line=(x1,y1,x2,y2,pt)=>{g.lineWidth=pt*PT*PX;g.beginPath();g.moveTo(x1*PX,y1*PX);g.lineTo(x2*PX,y2*PX);g.stroke()};
+    placed.forEach(p=>{const r=rows[p.ri],cx=X[p.ci],cy=Y[p.ri],w=p.w,h=Y[p.ri+p.rs]-cy,bw=r.bw||.7;
+      if(p.c.draw){g.save();p.c.draw(g,cx,cy,w,h);g.restore()}
+      const pt=p.c.pt||10.5, lh=pt*PT*(p.c.lh||1.25); g.font=font(p.c); g.fillStyle='#000';
+      const top=p.c.va==='t'?cy+padV:cy+(h-p.L.length*lh)/2;
+      p.L.forEach((s,k)=>{if(!s)return;g.direction=HAS_AR(s)?'rtl':'ltr';g.textAlign='left';g.textBaseline='alphabetic';
+        const tw=g.measureText(s).width/PX, al=p.c.al||'l';
+        const tx=al==='c'?cx+(w-tw)/2:al==='r'?cx+w-padH-tw:cx+padH, by=top+k*lh+(lh+pt*PT*.68)/2;
+        g.fillText(s,tx*PX,by*PX); if(p.c.u)line(tx,by+.5,tx+tw,by+.5,.6)});
+      line(cx,cy,cx+w,cy,r.top||bw); line(cx,cy+h,cx+w,cy+h,(rows[p.ri+p.rs]||{}).top||bw);
+      if(!r.noLR){line(cx,cy,cx,cy+h,bw);line(cx+w,cy,cx+w,cy+h,bw)}});
+    if(frame){g.lineWidth=frame*PT*PX;g.strokeRect(0,0,W*PX,TH*PX)}}};
 }
-function pdfSummary(list){
+function newPage(){const cv=document.createElement('canvas');cv.width=Math.round(A4.w*PX);cv.height=Math.round(A4.h*PX);cv.setAttribute('dir','ltr');
+  const g=cv.getContext('2d');g.fillStyle='#fff';g.fillRect(0,0,cv.width,cv.height);return {cv,g}}
+/* parts drawn top to bottom inside the 9 mm margins; taller than the page → the whole page is scaled down to fit */
+function layPage(parts){
+  const inner=A4.w-2*A4.m, maxH=A4.h-2*A4.m, need=parts.reduce((s,p)=>s+p.h+(p.gap||0),0), k=Math.min(1,maxH/need);
+  const P=newPage(); P.g.translate((A4.m+inner*(1-k)/2)*PX,A4.m*PX); P.g.scale(k,k);
+  let y=0; parts.forEach(p=>{y+=p.gap||0;P.g.save();P.g.translate(0,y*PX);p.draw(P.g);P.g.restore();y+=p.h}); return P.cv;
+}
+const sigPart=gap=>({h:6,gap,draw(g){g.fillStyle='#000';g.direction='ltr';g.textBaseline='alphabetic';g.font=`bold ${10.5*PT*PX}px ${F_TNR}`;
+  const inner=A4.w-2*A4.m; g.textAlign='left';g.fillText('Employee Signature : _____________________',2*PX,4*PX);
+  const t='Approved by: __________________________'; g.fillText(t,(inner-2)*PX-g.measureText(t).width,4*PX)}});
+async function custodyCanvas(c){
+  await grayImgs(); const [logo,name]=await Promise.all([loadImg(GI.logo),loadImg(GI.name)]);
+  const D=days(c), rate=c.mealRate||RATE, T=total(c), adv=+c.advance||0, gr=grouped(c), toD=dmy(c.to), inner=A4.w-2*A4.m;
+  const cols=[11.2,26.4,13.4,10.7,38.3].map(p=>p/100*inner);
+  const lb=t=>({t,b:1,al:'c',pt:11.5,fit:1}), sec=t=>({cells:[{t,cs:5,b:1,u:1}],h:6.2,grow:1});
+  const item=(a,b,cc,e)=>({cells:[{t:a,al:'c'},{t:b},{t:cc,al:'r',fit:1},{t:''},{t:e}],h:6.2,grow:1});
+  const items=(list,empty)=>(list.length?list:[{label:empty,amount:''}]).map(i=>item(toD,i.label,pS(i.amount),i.remark||''));
+  const head=(g,x,y,w,h)=>{const pad=1.4, lh=logo?22:0, lw=logo?logo.naturalWidth/logo.naturalHeight*lh:0;
+    if(logo)g.drawImage(logo,(x+pad)*PX,(y+(h-lh)/2)*PX,lw*PX,lh*PX);
+    const right=x+w-pad, room=w-2*pad-lw-3, nw=Math.min(58,room), nh=name?name.naturalHeight/name.naturalWidth*nw:0;
+    const addr=['الرياض - المملكة العربية السعودية - ص.ب. 260643','VAT No.: 310 861 827 600 003','CR No.: 1010686643'];
+    let fs=7; const setF=()=>g.font=`bold ${fs*PT*PX}px ${F_AR}`; setF();
+    while(fs>4&&Math.max(...addr.map(s=>{g.direction=HAS_AR(s)?'rtl':'ltr';return g.measureText(s).width/PX}))>room){fs-=.25;setF()}
+    const alh=fs*PT*1.5; let yy=y+(h-(nh+1.5+addr.length*alh))/2;
+    if(name)g.drawImage(name,(right-nw)*PX,yy*PX,nw*PX,nh*PX); yy+=nh+1.5;
+    g.fillStyle='#000';g.textAlign='left';g.textBaseline='alphabetic';
+    addr.forEach(s=>{g.direction=HAS_AR(s)?'rtl':'ltr';const tw=g.measureText(s).width/PX;g.fillText(s,(right-tw)*PX,(yy+alh*.78)*PX);yy+=alh})};
+  const rows=[
+    {cells:[{cs:2,draw:head},{t:'EXPENSES REPORT',cs:2,b:1,al:'c',pt:15,fit:1},
+      {t:'UUES Form info.\nForm Ref. No.: UI-08-01-F11 - Rev: 01\nForm Issue Date: 16-06-2024',al:'r',b:1,i:1,pt:7.6,fam:F_AR,fit:1,lh:1.55}],h:30,bw:1.6},
+    {cells:[{cs:5}],h:1.6,noLR:1,top:1.6},
+    {cells:[lb('Date From:'),{t:dmy(c.from),al:'c',b:1},lb('Date To:'),{t:toD,al:'c',b:1},{t:'UUES File No.:\n'+(c.fileNo||''),rs:2,b:1,pt:11.5,va:'t'}],h:6.6},
+    {cells:[lb('Days:'),{t:String(D),al:'c'},lb('Nights:'),{t:String(Math.max(0,D-1)),al:'c'}],h:6.6},
+    {cells:[{t:'Employee Name:',b:1},{t:EMP,cs:4,b:1}],h:6.6,grow:1},
+    {cells:['Date','Description','Amount\n(SAR)','VAT\n(Inclusive)','Remarks'].map(t=>({t,b:1,al:'c',pt:11,fit:1})),h:10},
+    sec('LODGING'),...items(gr.L,'Hotel 1'),
+    sec('TRANSPORTATION'),...items(gr.T,'Fuel 1'),
+    sec('MEALS'),item(toD,`${D} days x ${rate} SAR`,pS(D*rate),'Meals allowance'),
+    sec('MISCELLANEOUS'),...items(gr.M,'Material 1'),
+    {cells:[{t:'Total Amount',cs:2,b:1,al:'c',pt:11.5},{t:pS(T),al:'r',b:1,fit:1},{t:'SAR 0.00',al:'r',b:1,fit:1},{t:''}],h:6.6},
+    {cells:[{cs:5}],h:4},
+    {cells:[{t:'Total spent by Employee:',cs:2,b:1},{t:pS(T),al:'c',fit:1},{t:'',cs:2}],h:6.6},
+    {cells:[{t:'Less Advance Received:',cs:2,b:1},{t:pS(adv),al:'c',fit:1},{t:'',cs:2}],h:6.6},
+    {cells:[{t:'Balance Due to / from Employee:',cs:2,b:1},{t:pS(T-adv),al:'c',b:1,fit:1},{t:'',cs:2}],h:6.6}];
+  return layPage([drawTable(cols,rows,2.4),sigPart(9)]);
+}
+async function summaryCanvas(list){
+  await grayImgs(); const logo=await loadImg(GI.logo), inner=A4.w-2*A4.m;
   const got=receipts.reduce((s,x)=>s+(+x.amount||0),0), sumT=list.reduce((s,c)=>s+total(c),0), sumA=list.reduce((s,c)=>s+(+c.advance||0),0), d=sumT-got;
-  const rows=list.map(c=>`<tr><td class="c">${c.no}</td><td class="c">${pE(c.fileNo||'')}</td><td>${pE(c.project||'')}</td><td class="c">${dmy(c.from)}</td><td class="c">${dmy(c.to)}</td><td class="c">${days(c)}</td><td class="r">${pS(total(c))}</td><td class="r">${pS(+c.advance||0)}</td><td class="r">${pS(total(c)-(+c.advance||0))}</td><td class="c">${c.status==='submitted'?'Submitted':'Open'}</td></tr>`).join('');
-  return `<section class="pPage"><div class="sumHead"><img src="${GI.logo}" alt=""><div><b>PETTY CASH LEDGER – ${pE(EMP)}</b><span>${dmy(todayISO())} · ${list.length} custodies</span></div></div>
-  <table class="pf sumT"><tr class="th"><td>No.</td><td>UUES File No.</td><td>Project</td><td>Date From</td><td>Date To</td><td>Days</td><td>Total Spent</td><td>Advance</td><td>Balance</td><td>Status</td></tr>${rows}
-  <tr class="yt"><td colspan="6" class="c">YEAR TOTAL</td><td class="r">${pS(sumT)}</td><td class="r">${pS(sumA)}</td><td class="r">${pS(sumT-sumA)}</td><td></td></tr></table>
-  ${receipts.length?`<table class="pf sumT sumBal"><tr><td>Cash received from company (all advances)</td><td class="r">${pS(got)}</td></tr><tr><td>Total spent by employee</td><td class="r">${pS(sumT)}</td></tr>
-  <tr class="yt ${d>=0?'cr':'db'}"><td>${d>=0?'Balance due TO employee (Credit)':'Balance due FROM employee (Debit)'}</td><td class="r">${pS(Math.abs(d))}</td></tr></table>`:''}
-  <div class="sig"><span>Employee Signature : _____________________</span><span>Approved by: __________________________</span></div></section>`;
+  const top={h:21,draw(g){const lh=16,lw=logo?logo.naturalWidth/logo.naturalHeight*lh:0;if(logo)g.drawImage(logo,0,0,lw*PX,lh*PX);
+    g.fillStyle='#000';g.textAlign='left';g.textBaseline='alphabetic';const tx=(lw+4)*PX, ttl='PETTY CASH LEDGER – '+EMP;
+    g.direction=HAS_AR(EMP)?'rtl':'ltr'; let fs=15; const setF=()=>g.font=`bold ${fs*PT*PX}px ${F_TNR}`; setF();
+    while(fs>8&&g.measureText(ttl).width/PX>inner-lw-4){fs-=.5;setF()}
+    g.fillText(ttl,tx,7*PX); g.direction='ltr'; g.font=`${10*PT*PX}px ${F_TNR}`; g.fillStyle='#333'; g.fillText(`${dmy(todayISO())} · ${list.length} custodies`,tx,13*PX)}};
+  const cols=[9,22,36,19,19,10,22,20,22,13].map(w=>w/192*inner), n9=o=>({pt:9,...o});
+  const rows=[{cells:['No.','UUES File No.','Project','Date From','Date To','Days','Total Spent','Advance','Balance','Status'].map(t=>n9({t,b:1,al:'c',fit:1})),h:7}];
+  list.forEach(c=>rows.push({h:6,grow:1,cells:[n9({t:String(c.no),al:'c'}),n9({t:c.fileNo||'',al:'c',fit:1}),n9({t:c.project||''}),n9({t:dmy(c.from),al:'c',fit:1}),n9({t:dmy(c.to),al:'c',fit:1}),
+    n9({t:String(days(c)),al:'c'}),n9({t:pS(total(c)),al:'r',fit:1}),n9({t:pS(+c.advance||0),al:'r',fit:1}),n9({t:pS(total(c)-(+c.advance||0)),al:'r',fit:1}),n9({t:c.status==='submitted'?'Submitted':'Open',al:'c',fit:1})]}));
+  if(rows[1])rows[1].top=1.6;
+  rows.push({h:6.4,top:1.6,cells:[n9({t:'YEAR TOTAL',cs:6,b:1,al:'c'}),n9({t:pS(sumT),al:'r',b:1,fit:1}),n9({t:pS(sumA),al:'r',b:1,fit:1}),n9({t:pS(sumT-sumA),al:'r',b:1,fit:1}),n9({t:''})]});
+  const parts=[top,drawTable(cols,rows,2.4)];
+  if(receipts.length){const bc=[.72*inner*.7,.72*inner*.3];parts.push({...drawTable(bc,[
+    {h:6.2,cells:[n9({t:'Cash received from company (all advances)'}),n9({t:pS(got),al:'r',fit:1})]},
+    {h:6.2,cells:[n9({t:'Total spent by employee'}),n9({t:pS(sumT),al:'r',fit:1})]},
+    {h:6.4,top:1.6,cells:[n9({t:d>=0?'Balance due TO employee (Credit)':'Balance due FROM employee (Debit)',b:1}),n9({t:pS(Math.abs(d)),al:'r',b:1,fit:1})]}],2.4),gap:6})}
+  parts.push(sigPart(9));
+  return layPage(parts);
 }
 setTimeout(()=>grayImgs(),1500);
-function printPages(html,name){
-  const A=$('printArea'); A.innerHTML=html; const t0=document.title; document.title=name;
+/* pages → PNG files, one canvas at a time and released right after (a big ledger still fits a phone's memory) */
+async function makePages(jobs,base){
+  const files=[];
+  for(let i=0;i<jobs.length;i++){const cv=await jobs[i]();
+    const b=await new Promise((ok,no)=>cv.toBlob(x=>x?ok(x):no(new Error('blob')),'image/png')); cv.width=cv.height=0;
+    files.push(new File([b],base+(jobs.length>1?`_p${i+1}`:'')+'.png',{type:'image/png'}))}
+  return files;
+}
+const sortedC=()=>[...custodies].sort((a,b)=>a.no-b.no);
+const oneJobs=c=>[()=>custodyCanvas(c)], oneName=c=>`Petty_Cash_${c.no}_${(c.project||'').replace(/[^A-Za-z0-9]+/g,'_')}`.replace(/_+$/,'');
+const allJobs=()=>{const list=sortedC();return [...list.map(c=>()=>custodyCanvas(c)),()=>summaryCanvas(list)]};
+const allName=()=>`Petty_Cash_Ledger_${((sortedC().pop()||{}).to||todayISO()).slice(0,4)}`;
+/* print = the pictures, each one filling one A4 page */
+async function printFiles(files,name){
+  const A=$('printArea'); A.innerHTML='';
+  await Promise.all(files.map(f=>{const im=document.createElement('img');im.className='pImg';im.alt='';A.appendChild(im);im.src=URL.createObjectURL(f);
+    return im.decode?im.decode().catch(()=>{}):new Promise(ok=>{im.onload=im.onerror=ok})}));
+  const t0=document.title; document.title=name;
   const done=()=>{document.title=t0;removeEventListener('afterprint',done)}; addEventListener('afterprint',done);
   toast(tr('اختار «Save as PDF» أو «حفظ كـ PDF» من شاشة الطباعة','Choose «Save as PDF» in the print screen'));
-  setTimeout(()=>{try{window.print()}catch(e){toast(tr('الطباعة مش مدعومة هنا — استخدم Excel','Printing is not supported here — use Excel'))}},350);
+  setTimeout(()=>{try{window.print()}catch(e){toast(tr('الطباعة مش مدعومة هنا — استخدم Excel','Printing is not supported here — use Excel'))}},300);
 }
-$('onePdf').onclick=()=>{const c=custodies.find(x=>x.id===curId);if(!c)return;buzz();
-  printPages(pdfPage(c),`Petty_Cash_${c.no}_${(c.project||'').replace(/[^A-Za-z0-9]+/g,'_')}`)};
-$('allPdf').onclick=()=>{if(!custodies.length){toast('مفيش عهد لسه');return}buzz();
-  const list=[...custodies].sort((a,b)=>a.no-b.no);
-  printPages(list.map(pdfPage).join('')+pdfSummary(list),`Petty_Cash_Ledger_${(list[list.length-1].to||todayISO()).slice(0,4)}`)};
+let pdfBusy=false;
+async function runPdf(jobs,name){if(pdfBusy)return;pdfBusy=true;toast(tr('بجهّز الصفحات…','Preparing the pages…'));
+  try{await printFiles(await makePages(jobs,name),name)}catch(e){toast(tr('ما قدرتش أجهّز الصفحات — جرّب تاني','Could not prepare the pages — try again'))}finally{pdfBusy=false}}
+$('onePdf').onclick=()=>{const c=custodies.find(x=>x.id===curId);if(!c)return;buzz();runPdf(oneJobs(c),oneName(c))};
+$('allPdf').onclick=()=>{if(!custodies.length){toast('مفيش عهد لسه');return}buzz();runPdf(allJobs(),allName())};
+/* ---------- 👁️ preview: the page as a sharp picture → share (WhatsApp, Print, Save Image…) / print / save ---------- */
+let pvFiles=[], pvName='', pvUrls=[];
+async function openPreview(jobs,name){
+  if(pdfBusy)return; pdfBusy=true; pvName=name; pvFiles=[];
+  const P=$('pvPages'); P.innerHTML=''; const w=document.createElement('div'); w.className='pvWait'; w.textContent=tr('بجهّز الصورة…','Preparing the picture…'); P.appendChild(w);
+  $('pvOv').hidden=false;
+  try{pvFiles=await makePages(jobs,name)}catch(e){pvFiles=[]}
+  pdfBusy=false; if($('pvOv').hidden){pvFiles=[];return}
+  pvUrls.forEach(u=>URL.revokeObjectURL(u)); pvUrls=pvFiles.map(f=>URL.createObjectURL(f)); P.innerHTML='';
+  if(!pvFiles.length){w.textContent=tr('ما قدرتش أجهّز الصورة — جرّب تاني','Could not prepare the picture — try again');P.appendChild(w);return}
+  pvUrls.forEach(u=>{const im=document.createElement('img');im.src=u;im.alt='';im.onclick=()=>im.classList.toggle('zoom');P.appendChild(im)});
+}
+function closePreview(){$('pvOv').hidden=true;$('pvPages').innerHTML='';pvUrls.forEach(u=>URL.revokeObjectURL(u));pvUrls=[];pvFiles=[]}
+function saveFiles(files){files.forEach((f,i)=>setTimeout(()=>{const a=document.createElement('a');a.href=URL.createObjectURL(f);a.download=f.name;document.body.appendChild(a);a.click();
+  setTimeout(()=>{URL.revokeObjectURL(a.href);a.remove()},4000)},i*400))}
+$('pvShare').onclick=async()=>{if(!pvFiles.length)return;
+  if(navigator.canShare&&navigator.canShare({files:pvFiles})){try{await navigator.share({files:pvFiles,title:pvName});return}catch(e){if(e&&e.name==='AbortError')return}}
+  saveFiles(pvFiles); toast(tr('المشاركة مش متاحة هنا — الصورة اتحفظت','Sharing is not available here — the picture was saved'))};
+$('pvPrint').onclick=()=>{if(pvFiles.length)printFiles(pvFiles,pvName)};
+$('pvSave').onclick=()=>{if(pvFiles.length)saveFiles(pvFiles)};
+$('pvClose').onclick=closePreview;
+$('oneView').onclick=()=>{const c=custodies.find(x=>x.id===curId);if(!c)return;buzz();openPreview(oneJobs(c),oneName(c))};
 
 /* ---------- persistence ---------- */
 const chains={};
@@ -2048,7 +2144,7 @@ $('shBtn').onclick=async()=>{
 };
 if('serviceWorker' in navigator&&location.protocol==='https:')navigator.serviceWorker.register('sw.js').catch(()=>{});
 /* ---------- quick update: version.json is never cached; a newer one shows a bar, one tap reloads ---------- */
-const APP_VER='2026.10.05.7';
+const APP_VER='2026.10.05.8';
 $('verTxt').textContent=APP_VER;
 async function hardUpdate(){
   $('updBtn').disabled=true;$('updBtn').textContent='⏳ بيحدّث…';
