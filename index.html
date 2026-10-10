@@ -535,6 +535,13 @@ html[dir=ltr] .card::before{border-radius:4px 0 0 4px}
 .sigOv .gaSkip{color:#a33}
 .ocrBtn{width:100%;margin-top:8px;background:var(--brand-soft);color:var(--brand);border:0;font-weight:700;padding:12px}
 .ocrRow{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.scanOv{position:fixed;inset:0;z-index:45;background:#0b0f17;display:flex;flex-direction:column;gap:10px;padding:calc(12px + env(safe-area-inset-top,0px)) 12px calc(12px + env(safe-area-inset-bottom,0px))}
+.scanHead{color:#fff;text-align:center;font-weight:700}
+.scanStage{position:relative;flex:1;min-height:0;display:flex;align-items:center;justify-content:center;touch-action:none}
+.scanStage canvas{max-width:100%;max-height:100%;display:block}
+.scanStage .hd{position:absolute;width:34px;height:34px;margin:-17px 0 0 -17px;border-radius:50%;border:3px solid #fff;background:rgba(20,184,166,.55);box-shadow:0 0 0 2px rgba(0,0,0,.35);touch-action:none;cursor:grab}
+.scanBar{display:grid;grid-template-columns:1fr 1fr 1.4fr;gap:8px}
+.scanBar .btn{padding:12px 4px}
 .ocrCard{display:flex;flex-direction:column;gap:10px}
 .ocrDone{display:flex;flex-direction:column;gap:10px}.ocrDone .confirm{flex-wrap:wrap}
 .rcptBar{font-size:13px;color:var(--muted);text-align:center;margin-top:6px}
@@ -738,6 +745,7 @@ html[dir=ltr] .card::before{border-radius:4px 0 0 4px}
     <div class="panel">
       <strong>آخر التحديثات</strong>
       <ul class="log">
+        <li><b class="num">2026.10.11</b><span>📄 ماسح مستندات: التطبيق بيلاقي أطراف الفاتورة لوحده، بيعدّلها لو متصوّرة مايلة ويخلّيها أوضح زي السكانر.</span></li>
         <li><b class="num">2026.10.11</b><span>📋 الصق الفاتورة على طول من واتساب (نسخ ← لصق)، وفواتير الـ PDF بتتقري وتتحط في الملف زي الصور.</span></li>
         <li><b class="num">2026.10.10</b><span>📷 صوّر الفواتير ورا بعض — كل فاتورة بتاخد رقم، وتتحط مترقمة بعد الفورم في ملف PDF واحد تبعته مرة واحدة.</span></li>
         <li><b class="num">2026.10.05</b><span>✍️ توقيعك على الفورم، 🧾 صور الفواتير بعد الفورم في الـ PDF، 📅 تاريخ لكل فاتورة («بنزين 110 يوم 3»)، 📷 صوّر الفاتورة والتطبيق يقراها، 💾 نسخة احتياطية كل أسبوع بدوسة.</span></li>
@@ -850,6 +858,11 @@ html[dir=ltr] .card::before{border-radius:4px 0 0 4px}
 <datalist id="projList"></datalist>
 <input type="file" id="phFile" accept="image/*" hidden>
 <div class="viewer" id="viewer" hidden><img id="vImg" alt="صورة الفاتورة"><div class="vbar"><button class="btn" id="vRep" type="button">استبدال</button><button class="btn" id="vDel" type="button">حذف الصورة</button><button class="btn" id="vClose" type="button">إغلاق</button></div></div>
+<div class="scanOv" id="scanOv" hidden>
+  <div class="scanHead">حرّك النقط الأربعة على أطراف الفاتورة</div>
+  <div class="scanStage" id="scanStage"><canvas id="scanCv"></canvas><i class="hd" data-k="0"></i><i class="hd" data-k="1"></i><i class="hd" data-k="2"></i><i class="hd" data-k="3"></i></div>
+  <div class="scanBar"><button class="btn" id="scanCancel" type="button">إلغاء</button><button class="btn" id="scanFull" type="button">الصورة كاملة</button><button class="btn primary" id="scanOk" type="button">✓ تمام</button></div>
+</div>
 <div class="viewer pv" id="pvOv" hidden><div class="pvPages" id="pvPages"></div><div class="vbar"><button class="btn primary" id="pvShare" type="button">📤 ابعت PDF</button><button class="btn" id="pvPrint" type="button">🖨️ اطبع / PDF</button><button class="btn" id="pvSave" type="button">⬇️ حفظ PDF</button><button class="btn" id="pvClose" type="button">✕ إغلاق</button></div></div>
 <div class="viewer sigOv" id="sigOv" hidden><div class="sigBox"><b>وقّع بصباعك جوه المربع</b>
   <canvas id="sigPad"></canvas>
@@ -922,6 +935,7 @@ let LANG='ar'; try{LANG=localStorage.getItem('uues_lang')==='en'?'en':'ar'}catch
 const tr=(a,e)=>LANG==='en'?e:a;
 const ARW=()=>LANG==='en'?'→':'←';
 const EN={
+ 'حرّك النقط الأربعة على أطراف الفاتورة':'Drag the four dots onto the receipt corners','الصورة كاملة':'Whole photo','✓ تمام':'✓ OK',
  '📷 صوّر الفواتير':'📷 Snap receipts','📋 الصق الفاتورة':'📋 Paste receipt',
  '📷 صوّر الفواتير — واحدة ورا التانية':'📷 Snap receipts — one after another','📤 ابعت PDF':'📤 Send PDF','⬇️ حفظ PDF':'⬇️ Save PDF',
  '📷 صوّر الفاتورة — والتطبيق يقراها':'📷 Snap the receipt — the app reads it','✍️ توقيعي':'✍️ My signature','بيتحط في «Employee Signature» في الـ PDF والصورة والـ Excel':'Placed on «Employee Signature» in the PDF, picture and Excel',
@@ -985,7 +999,7 @@ const EN={
  'راجع بلمسة':'Review in a tap','التطبيق بيرتب الفواتير ويحسب الأيام والوجبات. أي رقم تقدر تعدّله بلمسة.':'The app sorts the invoices and counts days and meals. Fix any number with a tap.',
  'طلّع Excel وتابع رصيدك':'Export Excel, track your balance','فورم UUES Expenses Report جاهز للحسابات، وتعرف دايماً ليك ولا عليك.':'A ready UUES Expenses Report for accounts — and you always know who owes whom.',
  'تخطي':'Skip','التالي':'Next','السكن':'Lodging','المواصلات':'Transport','متنوع':'Misc.','دوّر بالمشروع أو الكود أو الرقم…':'Search by project, code or number…',
- 'آخر التحديثات':'What’s new','📋 الصق الفاتورة على طول من واتساب (نسخ ← لصق)، وفواتير الـ PDF بتتقري وتتحط في الملف زي الصور.':'📋 Paste a receipt straight from WhatsApp (Copy → Paste), and PDF receipts are read and added to the file like photos.','📷 صوّر الفواتير ورا بعض — كل فاتورة بتاخد رقم، وتتحط مترقمة بعد الفورم في ملف PDF واحد تبعته مرة واحدة.':'📷 Snap receipts one after another — each gets a number and goes, numbered, after the form in ONE PDF file you send at once.','✍️ توقيعك على الفورم، 🧾 صور الفواتير بعد الفورم في الـ PDF، 📅 تاريخ لكل فاتورة («بنزين 110 يوم 3»)، 📷 صوّر الفاتورة والتطبيق يقراها، 💾 نسخة احتياطية كل أسبوع بدوسة.':'✍️ Your signature on the form, 🧾 receipt photos after the form in the PDF, 📅 a date per invoice («fuel 110 day 3»), 📷 snap a receipt and the app reads it, 💾 one-tap weekly backup.','📲 باركود للتطبيق: زميلك يصوّره ويضيف التطبيق بزرار واحد — واللوجو بقى ملوّن في الطباعة والـ Excel.':'📲 App QR code: a colleague scans it and adds the app with one button — and the logo is now in colour in print and Excel.','👁️ عرض العهدة كصورة واضحة A4 — شاركها واتساب أو اطبعها على طول، والـ PDF بقى مظبوط على ورقة A4 في أي موبايل.':'👁️ View a custody as a sharp A4 picture — share it on WhatsApp or print it right away; PDF now fits A4 on every phone.','تحليل المصروفات بالشهور والأنواع، بحث في العهد، وتنبيهات للعهد المتأخرة والنسخة الاحتياطية.':'Spending insights by month and type, custody search, and reminders for late custodies and backups.',
+ 'آخر التحديثات':'What’s new','📄 ماسح مستندات: التطبيق بيلاقي أطراف الفاتورة لوحده، بيعدّلها لو متصوّرة مايلة ويخلّيها أوضح زي السكانر.':'📄 Document scanner: the app finds the receipt edges, straightens a tilted photo and cleans it like a scanner.','📋 الصق الفاتورة على طول من واتساب (نسخ ← لصق)، وفواتير الـ PDF بتتقري وتتحط في الملف زي الصور.':'📋 Paste a receipt straight from WhatsApp (Copy → Paste), and PDF receipts are read and added to the file like photos.','📷 صوّر الفواتير ورا بعض — كل فاتورة بتاخد رقم، وتتحط مترقمة بعد الفورم في ملف PDF واحد تبعته مرة واحدة.':'📷 Snap receipts one after another — each gets a number and goes, numbered, after the form in ONE PDF file you send at once.','✍️ توقيعك على الفورم، 🧾 صور الفواتير بعد الفورم في الـ PDF، 📅 تاريخ لكل فاتورة («بنزين 110 يوم 3»)، 📷 صوّر الفاتورة والتطبيق يقراها، 💾 نسخة احتياطية كل أسبوع بدوسة.':'✍️ Your signature on the form, 🧾 receipt photos after the form in the PDF, 📅 a date per invoice («fuel 110 day 3»), 📷 snap a receipt and the app reads it, 💾 one-tap weekly backup.','📲 باركود للتطبيق: زميلك يصوّره ويضيف التطبيق بزرار واحد — واللوجو بقى ملوّن في الطباعة والـ Excel.':'📲 App QR code: a colleague scans it and adds the app with one button — and the logo is now in colour in print and Excel.','👁️ عرض العهدة كصورة واضحة A4 — شاركها واتساب أو اطبعها على طول، والـ PDF بقى مظبوط على ورقة A4 في أي موبايل.':'👁️ View a custody as a sharp A4 picture — share it on WhatsApp or print it right away; PDF now fits A4 on every phone.','تحليل المصروفات بالشهور والأنواع، بحث في العهد، وتنبيهات للعهد المتأخرة والنسخة الاحتياطية.':'Spending insights by month and type, custody search, and reminders for late custodies and backups.',
  'رصيد العهدة: المستلم والمصروف، ومدين أو دائن — ونسخة إنجليزي كاملة.':'Cash balance: received vs. spent, debit or credit — plus a full English version.',
  'صفحات وتابات، لوجو الشركة، وشاشة افتتاحية.':'Pages and tabs, the company logo, and an opening screen.',
  'فهم التاريخ بالكلام، والمايك بيفضل شغال لحد ما تدوس.':'Spoken dates, and the mic keeps listening until you tap.',
@@ -1966,7 +1980,9 @@ async function ocrStart(file){
   if(isPdf(file)){st.textContent=tr('بفتح ملف الـ PDF…','Opening the PDF…');
     try{const r=await pdfReceipt(file);blob=r.blob;pdfText=r.text}
     catch(e){st.textContent=tr('ما قدرتش أفتح ملف الـ PDF ده (محتاج نت أول مرة) — جرّب صورة للفاتورة.','Could not open this PDF (needs internet the first time) — try a photo of the receipt.');ocrQ.length&&setTimeout(()=>ocrNext(),2500);return}}
-  else blob=await shrink(file);
+  else{st.textContent=tr('ظبّط أطراف الفاتورة…','Adjust the receipt corners…');
+    blob=await scanDoc(file);
+    if(!blob){P.hidden=true;P.innerHTML='';if(ocrQ.length)ocrNext();return}}
   const u=URL.createObjectURL(blob); img.src=u;
   ocrP=m=>{if(m&&typeof m.progress==='number'){const p=Math.round(m.progress*100);
     st.textContent=/recogni/.test(m.status||'')?tr(`بقرا الفاتورة… ${p}%`,`Reading the receipt… ${p}%`):tr(`بجهّز القارئ (أول مرة بس)… ${p}%`,`Preparing the reader (first time only)… ${p}%`)}};
@@ -2026,6 +2042,72 @@ function renderRcptCount(c,rn){const B=$('rcptBar'),all=(c.items||[]).length,n=r
   B.textContent=n?tr(`🧾 ${n} من ${all} فاتورة متصوّرة — هيتحطوا مترقمين بعد الفورم في ملف الـ PDF`,`🧾 ${n} of ${all} invoices photographed — they go numbered after the form in the PDF`)
     :tr('🧾 لسه مفيش فواتير متصوّرة — صوّرها وهتتحط مترقمة بعد الفورم','🧾 No receipts photographed yet — snap them and they go numbered after the form')}
 $('ocrBtn').onclick=()=>{buzz();$('ocrFile').click()};
+/* ---------- 📄 document scanner (no library): finds the paper, 4 handles to fix it, straightens the perspective,
+   cleans it like a scan (grayscale + contrast) — the receipt photo then goes on to the reader as before ---------- */
+function scanFind(g,w,h){              /* g = gray bytes; the brightest big blob (paper on a darker table) → its 4 corners */
+  const hist=new Array(256).fill(0);for(let i=0;i<g.length;i++)hist[g[i]]++;
+  let sum=0;for(let i=0;i<256;i++)sum+=i*hist[i];let sB=0,wB=0,best=0,th=128;
+  for(let t=0;t<256;t++){wB+=hist[t];if(!wB)continue;const wF=g.length-wB;if(!wF)break;sB+=t*hist[t];const mB=sB/wB,mF=(sum-sB)/wF,v=wB*wF*(mB-mF)*(mB-mF);if(v>best){best=v;th=t}}
+  const lab=new Int32Array(g.length);let bestN=0,bestL=0,L=0;const st=[];
+  for(let i=0;i<g.length;i++){if(g[i]<=th||lab[i])continue;L++;let n=0;st.push(i);lab[i]=L;
+    while(st.length){const q=st.pop();n++;const x=q%w,y=(q-x)/w;
+      if(x>0&&!lab[q-1]&&g[q-1]>th){lab[q-1]=L;st.push(q-1)} if(x<w-1&&!lab[q+1]&&g[q+1]>th){lab[q+1]=L;st.push(q+1)}
+      if(y>0&&!lab[q-w]&&g[q-w]>th){lab[q-w]=L;st.push(q-w)} if(y<h-1&&!lab[q+w]&&g[q+w]>th){lab[q+w]=L;st.push(q+w)}}
+    if(n>bestN){bestN=n;bestL=L}}
+  const inset=()=>{const m=.04;return [[w*m,h*m],[w*(1-m),h*m],[w*(1-m),h*(1-m)],[w*m,h*(1-m)]]};
+  if(bestN<g.length*.12||bestN>g.length*.97)return inset();
+  let tl=[0,0,1e9],tr=[0,0,-1e9],br=[0,0,-1e9],bl=[0,0,1e9];
+  for(let i=0;i<g.length;i++){if(lab[i]!==bestL)continue;const x=i%w,y=(i-x)/w,s1=x+y,s2=x-y;
+    if(s1<tl[2])tl=[x,y,s1];if(s1>br[2])br=[x,y,s1];if(s2>tr[2])tr=[x,y,s2];if(s2<bl[2])bl=[x,y,s2]}
+  return [tl,tr,br,bl].map(p=>[p[0],p[1]]);
+}
+function homography(dst,src){          /* 3×3 (h8=1) that maps a point of the flat output back into the photo */
+  const A=[],b=[];for(let i=0;i<4;i++){const [x,y]=dst[i],[u,v]=src[i];A.push([x,y,1,0,0,0,-u*x,-u*y]);b.push(u);A.push([0,0,0,x,y,1,-v*x,-v*y]);b.push(v)}
+  for(let c=0;c<8;c++){let p=c;for(let r=c+1;r<8;r++)if(Math.abs(A[r][c])>Math.abs(A[p][c]))p=r;[A[c],A[p]]=[A[p],A[c]];[b[c],b[p]]=[b[p],b[c]];
+    for(let r=0;r<8;r++){if(r===c)continue;const f=A[r][c]/A[c][c];if(!f)continue;for(let k=c;k<8;k++)A[r][k]-=f*A[c][k];b[r]-=f*b[c]}}
+  return b.map((v,i)=>v/A[i][i]);
+}
+function scanWarp(gray,sw,sh,q){        /* q = 4 corners in photo pixels → straight, clean grayscale canvas */
+  const d=(a,b)=>Math.hypot(a[0]-b[0],a[1]-b[1]);
+  let W=Math.max(d(q[0],q[1]),d(q[3],q[2])),H=Math.max(d(q[0],q[3]),d(q[1],q[2]));const k=Math.min(1,1600/Math.max(W,H));W=Math.max(50,Math.round(W*k));H=Math.max(50,Math.round(H*k));
+  const h=homography([[0,0],[W,0],[W,H],[0,H]],q), out=new Uint8ClampedArray(W*H);
+  for(let y=0;y<H;y++)for(let x=0;x<W;x++){const den=h[6]*x+h[7]*y+1,u=(h[0]*x+h[1]*y+h[2])/den,v=(h[3]*x+h[4]*y+h[5])/den;
+    const x0=Math.floor(u),y0=Math.floor(v);if(x0<0||y0<0||x0>=sw-1||y0>=sh-1){out[y*W+x]=255;continue}
+    const fx=u-x0,fy=v-y0,i=y0*sw+x0;out[y*W+x]=(gray[i]*(1-fx)+gray[i+1]*fx)*(1-fy)+(gray[i+sw]*(1-fx)+gray[i+sw+1]*fx)*fy}
+  /* scan look: stretch the contrast between the 2% and 98% levels, paper a bit whiter */
+  const hist=new Array(256).fill(0);for(let i=0;i<out.length;i++)hist[out[i]]++;let lo=0,hi=255,acc=0;
+  for(let i=0;i<256;i++){acc+=hist[i];if(acc>out.length*.02){lo=i;break}}acc=0;for(let i=255;i>=0;i--){acc+=hist[i];if(acc>out.length*.02){hi=i;break}}
+  const span=Math.max(30,hi-lo),c=document.createElement('canvas');c.width=W;c.height=H;const g=c.getContext('2d'),id=g.createImageData(W,H);
+  for(let i=0;i<out.length;i++){let v=(out[i]-lo)*255/span;v=v>235?255:v<0?0:v;id.data[i*4]=id.data[i*4+1]=id.data[i*4+2]=v;id.data[i*4+3]=255}
+  g.putImageData(id,0,0);return c;
+}
+async function scanDoc(file){
+  let bmp;try{bmp=await createImageBitmap(file)}catch(e){return await shrink(file)}
+  const k=Math.min(1,2000/Math.max(bmp.width,bmp.height)),sw=Math.round(bmp.width*k),sh=Math.round(bmp.height*k);
+  const src=document.createElement('canvas');src.width=sw;src.height=sh;const sg=src.getContext('2d');sg.drawImage(bmp,0,0,sw,sh);
+  const rgba=sg.getImageData(0,0,sw,sh).data,gray=new Uint8ClampedArray(sw*sh);for(let i=0;i<gray.length;i++)gray[i]=rgba[i*4]*.299+rgba[i*4+1]*.587+rgba[i*4+2]*.114;
+  /* find the paper on a small copy */
+  const f=Math.min(1,360/Math.max(sw,sh)),tw=Math.max(8,Math.round(sw*f)),th=Math.max(8,Math.round(sh*f)),small=new Uint8ClampedArray(tw*th);
+  for(let y=0;y<th;y++)for(let x=0;x<tw;x++)small[y*tw+x]=gray[Math.min(sh-1,Math.floor(y/f))*sw+Math.min(sw-1,Math.floor(x/f))];
+  let q=scanFind(small,tw,th).map(([x,y])=>[x/f,y/f]);
+  /* editor */
+  const O=$('scanOv'),cv=$('scanCv'),stg=$('scanStage'),hs=[...stg.querySelectorAll('.hd')];O.hidden=false;
+  const r0=stg.getBoundingClientRect(),z=Math.min((r0.width>40?r0.width:340)/sw,(r0.height>40?r0.height:560)/sh);cv.width=Math.round(sw*z);cv.height=Math.round(sh*z);
+  const cg=cv.getContext('2d');
+  const draw=()=>{cg.drawImage(src,0,0,cv.width,cv.height);cg.strokeStyle='#14b8a6';cg.lineWidth=3;cg.fillStyle='rgba(20,184,166,.12)';cg.beginPath();
+    q.forEach(([x,y],i)=>i?cg.lineTo(x*z,y*z):cg.moveTo(x*z,y*z));cg.closePath();cg.fill();cg.stroke();
+    const rc=cv.getBoundingClientRect(),rs=stg.getBoundingClientRect();hs.forEach((h,i)=>{h.style.left=(rc.left-rs.left+q[i][0]*z)+'px';h.style.top=(rc.top-rs.top+q[i][1]*z)+'px'})};
+  draw();
+  hs.forEach((h,i)=>{h.onpointerdown=e=>{e.preventDefault();try{h.setPointerCapture(e.pointerId)}catch(_){}
+    h.onpointermove=ev=>{const rc=cv.getBoundingClientRect();q[i]=[Math.max(0,Math.min(sw,(ev.clientX-rc.left)/z)),Math.max(0,Math.min(sh,(ev.clientY-rc.top)/z))];draw()};
+    h.onpointerup=h.onpointercancel=()=>{h.onpointermove=null}}});
+  const res=await new Promise(ok=>{$('scanOk').onclick=()=>ok('ok');$('scanCancel').onclick=()=>ok(null);$('scanFull').onclick=()=>ok('full')});
+  O.hidden=true;bmp.close&&bmp.close();
+  if(!res){src.width=src.height=0;return null}
+  if(res==='full')q=[[0,0],[sw,0],[sw,sh],[0,sh]];
+  const out=scanWarp(gray,sw,sh,q);src.width=src.height=0;
+  const blob=await new Promise(ok=>out.toBlob(ok,'image/jpeg',.85));out.width=out.height=0;return blob;
+}
 /* photos, PDFs, pasted pictures — all go through the same queue */
 const isPdf=f=>/pdf/i.test(f.type||'')||/\.pdf$/i.test(f.name||'');
 function takeReceipts(fs){fs=fs.filter(f=>/^image\//.test(f.type||'')||isPdf(f));if(!fs.length)return false;
@@ -2540,7 +2622,7 @@ $('shBtn').onclick=async()=>{
 };
 if('serviceWorker' in navigator&&location.protocol==='https:')navigator.serviceWorker.register('sw.js').catch(()=>{});
 /* ---------- quick update: version.json is never cached; a newer one shows a bar, one tap reloads ---------- */
-const APP_VER='2026.10.11.1';
+const APP_VER='2026.10.11.2';
 $('verTxt').textContent=APP_VER;
 /* update = check the internet first, then let the new service worker take over; the saved copy is NOT deleted
    (deleting it and then losing the connection left Safari with «FetchEvent.respondWith … Returned response is null»);

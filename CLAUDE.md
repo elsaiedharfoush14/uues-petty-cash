@@ -24,6 +24,12 @@ this repo, so GitHub is the single source of truth — never leave work only in 
   إيه», show him the latest lines as a numbered list; when he picks one, continue that work.
 
 ## Status
+- **v2026.10.11.2** (2026-10-11): 📄 in-app document scanner (no library) for every photo/pasted picture before the
+  reader: `scanDoc(file)` → `scanFind` (Otsu threshold on a 360-px copy, biggest bright blob, corners by x±y extremes;
+  falls back to a 4 % inset) → `#scanOv` editor with 4 draggable handles («✓ تمام / الصورة كاملة / إلغاء») →
+  `scanWarp` (own homography + bilinear, max 1600 px, grayscale + 2–98 % contrast stretch). Tested: corners found within
+  ~6 px on a 12°-tilted receipt; drag changes the crop; «إلغاء» adds nothing. PDFs skip the scanner. iOS also has
+  «مسح المستندات» inside the Files picker → its PDF now works too.
 - **v2026.10.11.1** (2026-10-11): 📋 paste + PDF receipts. `#pasteBtn` → `navigator.clipboard.read()` (iOS shows «لصق»);
   a normal paste anywhere with a picture/PDF also works (`document` paste listener); all go to `takeReceipts(fs)` → `ocrQ`.
   `#ocrFile` accepts `application/pdf`: `pdfReceipt()` = pdf.js 3.11.174 from cdnjs — the WORKER MUST be fetched and started
