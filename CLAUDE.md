@@ -6,6 +6,19 @@ official **UUES EXPENSES REPORT** form (Excel / PDF). Built and maintained with 
 terms on their own lines. He is not a CLI user: **do the work yourself** (run git / gh / tests) — never hand him
 shell commands to paste.
 
+## Two Claude accounts — keep everything synced (he switches accounts when credit runs out)
+He works on this repo from two Claude Pro accounts (Gmail + Apple). The other account knows ONLY what is in
+this repo, so GitHub is the single source of truth — never leave work only in the chat or a local folder.
+- **Start of every session:** `git pull` on main, then `git fetch origin wip` — if a `wip` branch exists,
+  unfinished work is waiting: check it out, read the «⏸️ Handoff» note below, continue from there.
+- **After every finished task:** update «Status» below (one short line), commit, push to `main`, and confirm
+  the push succeeded. Do this without being asked.
+- **Unfinished work** (he says «سلّم» / «هبدّل» / «الرصيد بيخلص», or a session is ending mid-task): do NOT
+  push half-done code to `main` — main is LIVE for all colleagues. Commit it to branch `wip`, push, and write
+  a «⏸️ Handoff» line under Status: what's done, what's left, the exact next step. When that work is finished,
+  merge `wip` into `main`, delete `wip`, and remove the handoff line.
+- After pushing, tell him in one line that everything is uploaded.
+
 ## Status
 - **v2026.10.06.2**: his iPhone showed Safari «FetchEvent.respondWith received an error: Returned response is null»
   — the old «حدّث» deleted ALL caches, then the network failed, and the SW answered `caches.match()` = undefined.
