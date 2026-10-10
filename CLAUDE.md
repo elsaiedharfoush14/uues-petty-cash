@@ -24,6 +24,13 @@ this repo, so GitHub is the single source of truth — never leave work only in 
   إيه», show him the latest lines as a numbered list; when he picks one, continue that work.
 
 ## Status
+- **v2026.10.11.1** (2026-10-11): 📋 paste + PDF receipts. `#pasteBtn` → `navigator.clipboard.read()` (iOS shows «لصق»);
+  a normal paste anywhere with a picture/PDF also works (`document` paste listener); all go to `takeReceipts(fs)` → `ocrQ`.
+  `#ocrFile` accepts `application/pdf`: `pdfReceipt()` = pdf.js 3.11.174 from cdnjs — the WORKER MUST be fetched and started
+  from a blob (a cross-origin worker hangs) and pages are rendered with `intent:'print'` (display intent uses
+  requestAnimationFrame and stalls when the page is hidden); first 3 pages → one picture; the PDF's own text is used instead
+  of OCR when it has text. Hotel chain names + «Room charge / nights» added to `RC_TYPES` Hotel. iOS can't put a web app in
+  WhatsApp's share menu (no share_target on iOS) — copy/paste is the shortest way.
 - **v2026.10.10.1** (2026-10-10): receipts one after another + ONE PDF. `#ocrFile` takes many photos (queue `ocrQ`,
   each read + confirmed, «تخطّي»), then `ocrNext()` bar «📷 صوّر اللي بعدها / 📎 الملف كله». `receiptNums(c)` = 1..N in form
   order for photographed invoices → «#n» in the form Remarks, black «#n» badge on each receipt page, «🧾n» on the row button,

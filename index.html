@@ -534,6 +534,7 @@ html[dir=ltr] .card::before{border-radius:4px 0 0 4px}
 .sigOv .btn{background:#eef2f7;color:#111;border-color:#dfe5ee}.sigOv .btn.primary{background:var(--brand);color:#fff;border-color:var(--brand)}
 .sigOv .gaSkip{color:#a33}
 .ocrBtn{width:100%;margin-top:8px;background:var(--brand-soft);color:var(--brand);border:0;font-weight:700;padding:12px}
+.ocrRow{display:grid;grid-template-columns:1fr 1fr;gap:8px}
 .ocrCard{display:flex;flex-direction:column;gap:10px}
 .ocrDone{display:flex;flex-direction:column;gap:10px}.ocrDone .confirm{flex-wrap:wrap}
 .rcptBar{font-size:13px;color:var(--muted);text-align:center;margin-top:6px}
@@ -737,6 +738,7 @@ html[dir=ltr] .card::before{border-radius:4px 0 0 4px}
     <div class="panel">
       <strong>آخر التحديثات</strong>
       <ul class="log">
+        <li><b class="num">2026.10.11</b><span>📋 الصق الفاتورة على طول من واتساب (نسخ ← لصق)، وفواتير الـ PDF بتتقري وتتحط في الملف زي الصور.</span></li>
         <li><b class="num">2026.10.10</b><span>📷 صوّر الفواتير ورا بعض — كل فاتورة بتاخد رقم، وتتحط مترقمة بعد الفورم في ملف PDF واحد تبعته مرة واحدة.</span></li>
         <li><b class="num">2026.10.05</b><span>✍️ توقيعك على الفورم، 🧾 صور الفواتير بعد الفورم في الـ PDF، 📅 تاريخ لكل فاتورة («بنزين 110 يوم 3»)، 📷 صوّر الفاتورة والتطبيق يقراها، 💾 نسخة احتياطية كل أسبوع بدوسة.</span></li>
         <li><b class="num">2026.10.05</b><span>📲 باركود للتطبيق: زميلك يصوّره ويضيف التطبيق بزرار واحد — واللوجو بقى ملوّن في الطباعة والـ Excel.</span></li>
@@ -800,7 +802,7 @@ html[dir=ltr] .card::before{border-radius:4px 0 0 4px}
       <div class="sayhead"><b>زوّد فواتير بالكلام</b></div>
       <div class="tbox"><textarea id="voiceTxt" dir="rtl" placeholder="فندق 200، بنزين مية وعشرة…"></textarea><button class="clr" type="button" aria-label="امسح الكلام" hidden>✕ امسح</button></div>
       <div class="confirm"><button class="btn mic2" id="micBtn" type="button">🎤 <span>اتكلم</span></button><button class="btn primary big grow" id="parseBtn" style="flex:1">ضيفها</button></div>
-      <button class="btn ocrBtn" id="ocrBtn" type="button">📷 صوّر الفواتير — واحدة ورا التانية</button><input type="file" id="ocrFile" accept="image/*" multiple hidden>
+      <div class="ocrRow"><button class="btn ocrBtn" id="ocrBtn" type="button">📷 صوّر الفواتير</button><button class="btn ocrBtn" id="pasteBtn" type="button">📋 الصق الفاتورة</button></div><input type="file" id="ocrFile" accept="image/*,application/pdf,.pdf" multiple hidden>
       <div class="rcptBar" id="rcptBar" hidden></div>
       <div id="voiceMsg" class="note" hidden></div>
       <div id="voicePrev" hidden></div>
@@ -920,6 +922,7 @@ let LANG='ar'; try{LANG=localStorage.getItem('uues_lang')==='en'?'en':'ar'}catch
 const tr=(a,e)=>LANG==='en'?e:a;
 const ARW=()=>LANG==='en'?'→':'←';
 const EN={
+ '📷 صوّر الفواتير':'📷 Snap receipts','📋 الصق الفاتورة':'📋 Paste receipt',
  '📷 صوّر الفواتير — واحدة ورا التانية':'📷 Snap receipts — one after another','📤 ابعت PDF':'📤 Send PDF','⬇️ حفظ PDF':'⬇️ Save PDF',
  '📷 صوّر الفاتورة — والتطبيق يقراها':'📷 Snap the receipt — the app reads it','✍️ توقيعي':'✍️ My signature','بيتحط في «Employee Signature» في الـ PDF والصورة والـ Excel':'Placed on «Employee Signature» in the PDF, picture and Excel',
  '✍️ وقّع':'✍️ Sign','وقّع بصباعك جوه المربع':'Sign with your finger inside the box','🧽 امسح':'🧽 Clear','✓ احفظ':'✓ Save','🗑️ احذف التوقيع المحفوظ':'🗑️ Delete the saved signature',
@@ -982,7 +985,7 @@ const EN={
  'راجع بلمسة':'Review in a tap','التطبيق بيرتب الفواتير ويحسب الأيام والوجبات. أي رقم تقدر تعدّله بلمسة.':'The app sorts the invoices and counts days and meals. Fix any number with a tap.',
  'طلّع Excel وتابع رصيدك':'Export Excel, track your balance','فورم UUES Expenses Report جاهز للحسابات، وتعرف دايماً ليك ولا عليك.':'A ready UUES Expenses Report for accounts — and you always know who owes whom.',
  'تخطي':'Skip','التالي':'Next','السكن':'Lodging','المواصلات':'Transport','متنوع':'Misc.','دوّر بالمشروع أو الكود أو الرقم…':'Search by project, code or number…',
- 'آخر التحديثات':'What’s new','📷 صوّر الفواتير ورا بعض — كل فاتورة بتاخد رقم، وتتحط مترقمة بعد الفورم في ملف PDF واحد تبعته مرة واحدة.':'📷 Snap receipts one after another — each gets a number and goes, numbered, after the form in ONE PDF file you send at once.','✍️ توقيعك على الفورم، 🧾 صور الفواتير بعد الفورم في الـ PDF، 📅 تاريخ لكل فاتورة («بنزين 110 يوم 3»)، 📷 صوّر الفاتورة والتطبيق يقراها، 💾 نسخة احتياطية كل أسبوع بدوسة.':'✍️ Your signature on the form, 🧾 receipt photos after the form in the PDF, 📅 a date per invoice («fuel 110 day 3»), 📷 snap a receipt and the app reads it, 💾 one-tap weekly backup.','📲 باركود للتطبيق: زميلك يصوّره ويضيف التطبيق بزرار واحد — واللوجو بقى ملوّن في الطباعة والـ Excel.':'📲 App QR code: a colleague scans it and adds the app with one button — and the logo is now in colour in print and Excel.','👁️ عرض العهدة كصورة واضحة A4 — شاركها واتساب أو اطبعها على طول، والـ PDF بقى مظبوط على ورقة A4 في أي موبايل.':'👁️ View a custody as a sharp A4 picture — share it on WhatsApp or print it right away; PDF now fits A4 on every phone.','تحليل المصروفات بالشهور والأنواع، بحث في العهد، وتنبيهات للعهد المتأخرة والنسخة الاحتياطية.':'Spending insights by month and type, custody search, and reminders for late custodies and backups.',
+ 'آخر التحديثات':'What’s new','📋 الصق الفاتورة على طول من واتساب (نسخ ← لصق)، وفواتير الـ PDF بتتقري وتتحط في الملف زي الصور.':'📋 Paste a receipt straight from WhatsApp (Copy → Paste), and PDF receipts are read and added to the file like photos.','📷 صوّر الفواتير ورا بعض — كل فاتورة بتاخد رقم، وتتحط مترقمة بعد الفورم في ملف PDF واحد تبعته مرة واحدة.':'📷 Snap receipts one after another — each gets a number and goes, numbered, after the form in ONE PDF file you send at once.','✍️ توقيعك على الفورم، 🧾 صور الفواتير بعد الفورم في الـ PDF، 📅 تاريخ لكل فاتورة («بنزين 110 يوم 3»)، 📷 صوّر الفاتورة والتطبيق يقراها، 💾 نسخة احتياطية كل أسبوع بدوسة.':'✍️ Your signature on the form, 🧾 receipt photos after the form in the PDF, 📅 a date per invoice («fuel 110 day 3»), 📷 snap a receipt and the app reads it, 💾 one-tap weekly backup.','📲 باركود للتطبيق: زميلك يصوّره ويضيف التطبيق بزرار واحد — واللوجو بقى ملوّن في الطباعة والـ Excel.':'📲 App QR code: a colleague scans it and adds the app with one button — and the logo is now in colour in print and Excel.','👁️ عرض العهدة كصورة واضحة A4 — شاركها واتساب أو اطبعها على طول، والـ PDF بقى مظبوط على ورقة A4 في أي موبايل.':'👁️ View a custody as a sharp A4 picture — share it on WhatsApp or print it right away; PDF now fits A4 on every phone.','تحليل المصروفات بالشهور والأنواع، بحث في العهد، وتنبيهات للعهد المتأخرة والنسخة الاحتياطية.':'Spending insights by month and type, custody search, and reminders for late custodies and backups.',
  'رصيد العهدة: المستلم والمصروف، ومدين أو دائن — ونسخة إنجليزي كاملة.':'Cash balance: received vs. spent, debit or credit — plus a full English version.',
  'صفحات وتابات، لوجو الشركة، وشاشة افتتاحية.':'Pages and tabs, the company logo, and an opening screen.',
  'فهم التاريخ بالكلام، والمايك بيفضل شغال لحد ما تدوس.':'Spoken dates, and the mic keeps listening until you tap.',
@@ -1929,7 +1932,7 @@ async function ocrRead(blob){
   const r=await ocrW.recognize(blob); return (r&&r.data&&r.data.text)||'';
 }
 /* the text of a receipt → {amount, type, date, merchant} */
-const RC_TYPES=[['Hotel',/hotel|\binn\b|suites|resort|residence|فندق|شقق|اوتيل|أوتيل|نزل/i],
+const RC_TYPES=[['Hotel',/hotel|\binn\b|suites|resort|residence|room\s*(charge|rate)|\bnights?\b|check.?in|hilton|marriott|sheraton|radisson|novotel|ibis|crowne|hyatt|movenpick|mövenpick|rotana|intercontinental|mercure|swiss.?otel|courtyard|hampton|fairmont|ritz|kempinski|shaza|elaf|hilton|park inn|golden tulip|braira|boudl|فندق|شقق|اوتيل|أوتيل|نزل|هيلتون|ماريوت|شيراتون|راديسون|نوفوتيل|روتانا|موفنبيك|إيلاف|ايلاف|بودل|برايرا/i],
   ['Fuel',/fuel|petrol|gasoline|diesel|\bstation\b|aldrees|sasco|petromin|naft|بنزين|وقود|محطة|محطه|الدريس|ساسكو|بترومين|نفط|ديزل/i],
   ['Taxi',/uber|careem|taxi|bolt|jeeny|تاكسي|اوبر|أوبر|كريم|جيني/i],['Parking',/parking|مواقف|باركنج/i],
   ['Car Wash',/car\s*wash|\bwash\b|مغسلة|مغسله|غسيل/i],['Car Rent',/rent\s*a\s*car|car\s*rental|yelo|budget|hertz|theeb|تأجير|تاجير|ايجار|إيجار/i],
@@ -1959,11 +1962,16 @@ async function ocrStart(file){
   const img=document.createElement('img'); img.className='ocrThumb'; img.alt=''; box.appendChild(img);
   const st=document.createElement('div'); st.className='note'; st.textContent=tr('بقرا الفاتورة…','Reading the receipt…'); box.appendChild(st);
   box.scrollIntoView({behavior:'smooth',block:'center'});
-  const blob=await shrink(file); const u=URL.createObjectURL(blob); img.src=u;
+  let blob, pdfText='';
+  if(isPdf(file)){st.textContent=tr('بفتح ملف الـ PDF…','Opening the PDF…');
+    try{const r=await pdfReceipt(file);blob=r.blob;pdfText=r.text}
+    catch(e){st.textContent=tr('ما قدرتش أفتح ملف الـ PDF ده (محتاج نت أول مرة) — جرّب صورة للفاتورة.','Could not open this PDF (needs internet the first time) — try a photo of the receipt.');ocrQ.length&&setTimeout(()=>ocrNext(),2500);return}}
+  else blob=await shrink(file);
+  const u=URL.createObjectURL(blob); img.src=u;
   ocrP=m=>{if(m&&typeof m.progress==='number'){const p=Math.round(m.progress*100);
     st.textContent=/recogni/.test(m.status||'')?tr(`بقرا الفاتورة… ${p}%`,`Reading the receipt… ${p}%`):tr(`بجهّز القارئ (أول مرة بس)… ${p}%`,`Preparing the reader (first time only)… ${p}%`)}};
   let r={amount:null,type:'Invoice',date:'',merchant:''}, ok=true;
-  try{r=readReceipt(await ocrRead(blob))}catch(e){ok=false}
+  try{r=readReceipt(pdfText.replace(/\s/g,'').length>15?pdfText:await ocrRead(blob))}catch(e){ok=false}
   ocrP=null;
   st.textContent=!ok?tr('ما قدرتش أقرا الصورة (أول مرة محتاج نت) — اكتب المبلغ بإيدك، والصورة هتتحفظ مع الفاتورة.','Could not read the photo (the first time needs internet) — type the amount; the photo is kept with the invoice.')
     :r.amount?tr('راجع اللي قريته وعدّل لو فيه حاجة غلط:','Check what I read and fix anything wrong:'):tr('ما لقيتش المبلغ — اكتبه بإيدك:','I could not find the amount — type it:');
@@ -2018,7 +2026,41 @@ function renderRcptCount(c,rn){const B=$('rcptBar'),all=(c.items||[]).length,n=r
   B.textContent=n?tr(`🧾 ${n} من ${all} فاتورة متصوّرة — هيتحطوا مترقمين بعد الفورم في ملف الـ PDF`,`🧾 ${n} of ${all} invoices photographed — they go numbered after the form in the PDF`)
     :tr('🧾 لسه مفيش فواتير متصوّرة — صوّرها وهتتحط مترقمة بعد الفورم','🧾 No receipts photographed yet — snap them and they go numbered after the form')}
 $('ocrBtn').onclick=()=>{buzz();$('ocrFile').click()};
-$('ocrFile').onchange=e=>{const fs=[...(e.target.files||[])];e.target.value='';if(!fs.length)return;ocrQ=fs.slice(1);ocrStart(fs[0])};
+/* photos, PDFs, pasted pictures — all go through the same queue */
+const isPdf=f=>/pdf/i.test(f.type||'')||/\.pdf$/i.test(f.name||'');
+function takeReceipts(fs){fs=fs.filter(f=>/^image\//.test(f.type||'')||isPdf(f));if(!fs.length)return false;
+  if($('sheet').hidden||!custodies.find(x=>x.id===curId)){toast(tr('افتح العهدة الأول وبعدين الصق الفاتورة','Open the custody first, then paste the receipt'));return true}
+  ocrQ=fs.slice(1);ocrStart(fs[0]);return true}
+$('ocrFile').onchange=e=>{const fs=[...(e.target.files||[])];e.target.value='';takeReceipts(fs)};
+/* 📋 paste a receipt copied from WhatsApp (long-press the picture → «نسخ», then «📋 الصق الفاتورة» → «لصق») */
+$('pasteBtn').onclick=async()=>{buzz();
+  const hint=()=>{toast(tr('دوس دوسة طويلة على مربع الكلام واختار «لصق»','Long-press the text box and choose «Paste»'));$('voiceTxt').focus()};
+  if(!navigator.clipboard||!navigator.clipboard.read){hint();return}
+  try{const items=await navigator.clipboard.read(), fs=[];
+    for(const it of items){const t=it.types.find(x=>/^image\//.test(x)||x==='application/pdf');if(!t)continue;
+      const b=await it.getType(t);fs.push(new File([b],'pasted.'+(t==='application/pdf'?'pdf':(t.split('/')[1]||'png')),{type:t}))}
+    if(!takeReceipts(fs))toast(tr('مفيش صورة فاتورة منسوخة — في واتساب دوس دوسة طويلة على الفاتورة واختار «نسخ»','No copied receipt picture — in WhatsApp long-press the receipt and choose «Copy»'))}
+  catch(e){hint()}};
+/* the normal «لصق» anywhere (text box included) also works when what was copied is a picture or a PDF */
+document.addEventListener('paste',e=>{const fs=[...((e.clipboardData&&e.clipboardData.files)||[])];if(fs.length&&takeReceipts(fs))e.preventDefault()});
+/* pdf.js (cdnjs, loaded the first time a PDF is opened): pages → one tall picture, plus the PDF's own text */
+async function pdfReceipt(file){
+  /* the worker is fetched and started from a blob: a worker straight from another site (cdnjs) is blocked and pdf.js hangs */
+  if(!window.pdfjsLib)await loadScript('https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js');
+  if(!/^blob:/.test(pdfjsLib.GlobalWorkerOptions.workerSrc||'')){
+    const code=await (await fetch('https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js')).text();
+    pdfjsLib.GlobalWorkerOptions.workerSrc=URL.createObjectURL(new Blob([code],{type:'text/javascript'}))}
+  const doc=await pdfjsLib.getDocument({data:new Uint8Array(await file.arrayBuffer())}).promise, n=Math.min(doc.numPages,3), canv=[];let text='';
+  for(let i=1;i<=n;i++){const pg=await doc.getPage(i), v0=pg.getViewport({scale:1}), sc=Math.min(3,1400/v0.width), v=pg.getViewport({scale:sc});
+    const c=document.createElement('canvas');c.width=Math.round(v.width);c.height=Math.round(v.height);const g=c.getContext('2d');g.fillStyle='#fff';g.fillRect(0,0,c.width,c.height);
+    /* intent 'print': drawn without requestAnimationFrame, so it never stalls when the page isn't on screen */
+    await pg.render({canvasContext:g,viewport:v,intent:'print'}).promise;canv.push(c);
+    const tc=await pg.getTextContent();text+=tc.items.map(it=>it.str+(it.hasEOL?'\n':' ')).join('')+'\n'}
+  const W=Math.max(...canv.map(c=>c.width)),H=canv.reduce((s,c)=>s+c.height,0),out=document.createElement('canvas');out.width=W;out.height=H;
+  const og=out.getContext('2d');og.fillStyle='#fff';og.fillRect(0,0,W,H);let y=0;canv.forEach(c=>{og.drawImage(c,0,y);y+=c.height;c.width=c.height=0});
+  const blob=await new Promise(ok=>out.toBlob(ok,'image/jpeg',.85));out.width=out.height=0;doc.destroy();
+  return {blob,text};
+}
 /* ---------- projects: name <-> fixed code ---------- */
 let projects=[], pcol=null;
 const codeOf=n=>{const p=projects.find(p=>p.name.trim().toLowerCase()===String(n).trim().toLowerCase());return p?p.code:null};
@@ -2498,7 +2540,7 @@ $('shBtn').onclick=async()=>{
 };
 if('serviceWorker' in navigator&&location.protocol==='https:')navigator.serviceWorker.register('sw.js').catch(()=>{});
 /* ---------- quick update: version.json is never cached; a newer one shows a bar, one tap reloads ---------- */
-const APP_VER='2026.10.10.1';
+const APP_VER='2026.10.11.1';
 $('verTxt').textContent=APP_VER;
 /* update = check the internet first, then let the new service worker take over; the saved copy is NOT deleted
    (deleting it and then losing the connection left Safari with «FetchEvent.respondWith … Returned response is null»);
