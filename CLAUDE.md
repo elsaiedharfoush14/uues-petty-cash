@@ -18,6 +18,10 @@ this repo, so GitHub is the single source of truth — never leave work only in 
   a «⏸️ Handoff» line under Status: what's done, what's left, the exact next step. When that work is finished,
   merge `wip` into `main`, delete `wip`, and remove the handoff line.
 - After pushing, tell him in one line that everything is uploaded.
+- **Session log** (chats don't move between accounts, so this list replaces them): every session adds ONE
+  line at the top of `SESSIONS.md` — `YYYY-MM-DD HH:MM · <short Arabic title of what he asked> · <what was done>
+  · <open item, if any>` — and pushes it with the rest. When he asks «المحادثات» / «سجل الجلسات» / «كنا بنعمل
+  إيه», show him the latest lines as a numbered list; when he picks one, continue that work.
 
 ## Status
 - **v2026.10.06.2**: his iPhone showed Safari «FetchEvent.respondWith received an error: Returned response is null»
