@@ -24,6 +24,9 @@ this repo, so GitHub is the single source of truth — never leave work only in 
   إيه», show him the latest lines as a numbered list; when he picks one, continue that work.
 
 ## Status
+- **v2026.10.11.3** (2026-10-11): he said the scanner did not show on his iPhone. `scanDoc` used to SKIP the editor
+  silently when `createImageBitmap(file)` failed → now falls back to a plain `<img>` (`loadImg`) and only skips with a
+  toast. Button renamed «📄 سكان الفاتورة». If it still doesn't show, ask him for a screenshot of «عن التطبيق» (version).
 - **v2026.10.11.2** (2026-10-11): 📄 in-app document scanner (no library) for every photo/pasted picture before the
   reader: `scanDoc(file)` → `scanFind` (Otsu threshold on a 360-px copy, biggest bright blob, corners by x±y extremes;
   falls back to a 4 % inset) → `#scanOv` editor with 4 draggable handles («✓ تمام / الصورة كاملة / إلغاء») →

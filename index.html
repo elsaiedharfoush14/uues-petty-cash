@@ -810,7 +810,7 @@ html[dir=ltr] .card::before{border-radius:4px 0 0 4px}
       <div class="sayhead"><b>زوّد فواتير بالكلام</b></div>
       <div class="tbox"><textarea id="voiceTxt" dir="rtl" placeholder="فندق 200، بنزين مية وعشرة…"></textarea><button class="clr" type="button" aria-label="امسح الكلام" hidden>✕ امسح</button></div>
       <div class="confirm"><button class="btn mic2" id="micBtn" type="button">🎤 <span>اتكلم</span></button><button class="btn primary big grow" id="parseBtn" style="flex:1">ضيفها</button></div>
-      <div class="ocrRow"><button class="btn ocrBtn" id="ocrBtn" type="button">📷 صوّر الفواتير</button><button class="btn ocrBtn" id="pasteBtn" type="button">📋 الصق الفاتورة</button></div><input type="file" id="ocrFile" accept="image/*,application/pdf,.pdf" multiple hidden>
+      <div class="ocrRow"><button class="btn ocrBtn" id="ocrBtn" type="button">📄 سكان الفاتورة</button><button class="btn ocrBtn" id="pasteBtn" type="button">📋 الصق الفاتورة</button></div><input type="file" id="ocrFile" accept="image/*,application/pdf,.pdf" multiple hidden>
       <div class="rcptBar" id="rcptBar" hidden></div>
       <div id="voiceMsg" class="note" hidden></div>
       <div id="voicePrev" hidden></div>
@@ -936,7 +936,7 @@ const tr=(a,e)=>LANG==='en'?e:a;
 const ARW=()=>LANG==='en'?'→':'←';
 const EN={
  'حرّك النقط الأربعة على أطراف الفاتورة':'Drag the four dots onto the receipt corners','الصورة كاملة':'Whole photo','✓ تمام':'✓ OK',
- '📷 صوّر الفواتير':'📷 Snap receipts','📋 الصق الفاتورة':'📋 Paste receipt',
+ '📷 صوّر الفواتير':'📷 Snap receipts','📄 سكان الفاتورة':'📄 Scan receipt','📋 الصق الفاتورة':'📋 Paste receipt',
  '📷 صوّر الفواتير — واحدة ورا التانية':'📷 Snap receipts — one after another','📤 ابعت PDF':'📤 Send PDF','⬇️ حفظ PDF':'⬇️ Save PDF',
  '📷 صوّر الفاتورة — والتطبيق يقراها':'📷 Snap the receipt — the app reads it','✍️ توقيعي':'✍️ My signature','بيتحط في «Employee Signature» في الـ PDF والصورة والـ Excel':'Placed on «Employee Signature» in the PDF, picture and Excel',
  '✍️ وقّع':'✍️ Sign','وقّع بصباعك جوه المربع':'Sign with your finger inside the box','🧽 امسح':'🧽 Clear','✓ احفظ':'✓ Save','🗑️ احذف التوقيع المحفوظ':'🗑️ Delete the saved signature',
@@ -2082,8 +2082,12 @@ function scanWarp(gray,sw,sh,q){        /* q = 4 corners in photo pixels → str
   g.putImageData(id,0,0);return c;
 }
 async function scanDoc(file){
-  let bmp;try{bmp=await createImageBitmap(file)}catch(e){return await shrink(file)}
-  const k=Math.min(1,2000/Math.max(bmp.width,bmp.height)),sw=Math.round(bmp.width*k),sh=Math.round(bmp.height*k);
+  /* open the photo: createImageBitmap, else a plain <img> (older iPhones); never skip the scanner silently */
+  let bmp=null;try{bmp=await createImageBitmap(file)}catch(e){}
+  if(!bmp||!bmp.width){const u=URL.createObjectURL(file);bmp=await loadImg(u);URL.revokeObjectURL(u)}
+  const bw=bmp&&(bmp.naturalWidth||bmp.width), bh=bmp&&(bmp.naturalHeight||bmp.height);
+  if(!bw||!bh){toast(tr('ما قدرتش أفتح الصورة في السكان — هكمّل بيها زي ما هي','Could not open the photo in the scanner — using it as it is'));return await shrink(file)}
+  const k=Math.min(1,2000/Math.max(bw,bh)),sw=Math.round(bw*k),sh=Math.round(bh*k);
   const src=document.createElement('canvas');src.width=sw;src.height=sh;const sg=src.getContext('2d');sg.drawImage(bmp,0,0,sw,sh);
   const rgba=sg.getImageData(0,0,sw,sh).data,gray=new Uint8ClampedArray(sw*sh);for(let i=0;i<gray.length;i++)gray[i]=rgba[i*4]*.299+rgba[i*4+1]*.587+rgba[i*4+2]*.114;
   /* find the paper on a small copy */
@@ -2102,7 +2106,7 @@ async function scanDoc(file){
     h.onpointermove=ev=>{const rc=cv.getBoundingClientRect();q[i]=[Math.max(0,Math.min(sw,(ev.clientX-rc.left)/z)),Math.max(0,Math.min(sh,(ev.clientY-rc.top)/z))];draw()};
     h.onpointerup=h.onpointercancel=()=>{h.onpointermove=null}}});
   const res=await new Promise(ok=>{$('scanOk').onclick=()=>ok('ok');$('scanCancel').onclick=()=>ok(null);$('scanFull').onclick=()=>ok('full')});
-  O.hidden=true;bmp.close&&bmp.close();
+  O.hidden=true;if(bmp.close)bmp.close();
   if(!res){src.width=src.height=0;return null}
   if(res==='full')q=[[0,0],[sw,0],[sw,sh],[0,sh]];
   const out=scanWarp(gray,sw,sh,q);src.width=src.height=0;
@@ -2622,7 +2626,7 @@ $('shBtn').onclick=async()=>{
 };
 if('serviceWorker' in navigator&&location.protocol==='https:')navigator.serviceWorker.register('sw.js').catch(()=>{});
 /* ---------- quick update: version.json is never cached; a newer one shows a bar, one tap reloads ---------- */
-const APP_VER='2026.10.11.2';
+const APP_VER='2026.10.11.3';
 $('verTxt').textContent=APP_VER;
 /* update = check the internet first, then let the new service worker take over; the saved copy is NOT deleted
    (deleting it and then losing the connection left Safari with «FetchEvent.respondWith … Returned response is null»);
