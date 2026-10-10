@@ -24,6 +24,13 @@ this repo, so GitHub is the single source of truth — never leave work only in 
   إيه», show him the latest lines as a numbered list; when he picks one, continue that work.
 
 ## Status
+- **v2026.10.10.1** (2026-10-10): receipts one after another + ONE PDF. `#ocrFile` takes many photos (queue `ocrQ`,
+  each read + confirmed, «تخطّي»), then `ocrNext()` bar «📷 صوّر اللي بعدها / 📎 الملف كله». `receiptNums(c)` = 1..N in form
+  order for photographed invoices → «#n» in the form Remarks, black «#n» badge on each receipt page, «🧾n» on the row button,
+  counter `#rcptBar`. Pages are now JPEG (`makePages`, `f.w/f.h`) and `buildPdf()` writes one real PDF (one A4 JPEG per page,
+  checked with PyMuPDF: valid, not repaired); «👁️ عرض» → «📤 ابعت PDF» / «⬇️ حفظ PDF» send that single file.
+  Receipt reader learned material shops (`RC_TYPES` 'Material'). Test server: port 8765 may be taken by another session →
+  `E:\Work\Automation_Tools\petty_cash_app\savesrv_8767.py`.
 - **v2026.10.06.2**: his iPhone showed Safari «FetchEvent.respondWith received an error: Returned response is null»
   — the old «حدّث» deleted ALL caches, then the network failed, and the SW answered `caches.match()` = undefined.
   Now `sw.js` never answers empty (saved page → built-in «النت مش واصل» page), caches only ok/basic pages,
