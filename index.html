@@ -535,6 +535,9 @@ html[dir=ltr] .card::before{border-radius:4px 0 0 4px}
 .sigOv .gaSkip{color:#a33}
 .ocrBtn{width:100%;margin-top:8px;background:var(--brand-soft);color:var(--brand);border:0;font-weight:700;padding:12px}
 .ocrCard{display:flex;flex-direction:column;gap:10px}
+.ocrDone{display:flex;flex-direction:column;gap:10px}.ocrDone .confirm{flex-wrap:wrap}
+.rcptBar{font-size:13px;color:var(--muted);text-align:center;margin-top:6px}
+.pvInfo{color:#fff;font-size:14px;text-align:center;opacity:.9}
 .ocrThumb{max-height:180px;max-width:100%;align-self:center;border-radius:8px;object-fit:contain;background:#fff}
 .ocrForm{display:grid;grid-template-columns:1fr 1fr;gap:8px}.ocrForm .full{grid-column:1/-1}
 .ocrForm select,.ocrForm input{width:100%;font:inherit;color:var(--ink);background:var(--surface);border:1px solid var(--line);border-radius:10px;padding:10px 12px;min-width:0}
@@ -734,6 +737,7 @@ html[dir=ltr] .card::before{border-radius:4px 0 0 4px}
     <div class="panel">
       <strong>آخر التحديثات</strong>
       <ul class="log">
+        <li><b class="num">2026.10.10</b><span>📷 صوّر الفواتير ورا بعض — كل فاتورة بتاخد رقم، وتتحط مترقمة بعد الفورم في ملف PDF واحد تبعته مرة واحدة.</span></li>
         <li><b class="num">2026.10.05</b><span>✍️ توقيعك على الفورم، 🧾 صور الفواتير بعد الفورم في الـ PDF، 📅 تاريخ لكل فاتورة («بنزين 110 يوم 3»)، 📷 صوّر الفاتورة والتطبيق يقراها، 💾 نسخة احتياطية كل أسبوع بدوسة.</span></li>
         <li><b class="num">2026.10.05</b><span>📲 باركود للتطبيق: زميلك يصوّره ويضيف التطبيق بزرار واحد — واللوجو بقى ملوّن في الطباعة والـ Excel.</span></li>
         <li><b class="num">2026.10.05</b><span>👁️ عرض العهدة كصورة واضحة A4 — شاركها واتساب أو اطبعها على طول، والـ PDF بقى مظبوط على ورقة A4 في أي موبايل.</span></li>
@@ -796,7 +800,8 @@ html[dir=ltr] .card::before{border-radius:4px 0 0 4px}
       <div class="sayhead"><b>زوّد فواتير بالكلام</b></div>
       <div class="tbox"><textarea id="voiceTxt" dir="rtl" placeholder="فندق 200، بنزين مية وعشرة…"></textarea><button class="clr" type="button" aria-label="امسح الكلام" hidden>✕ امسح</button></div>
       <div class="confirm"><button class="btn mic2" id="micBtn" type="button">🎤 <span>اتكلم</span></button><button class="btn primary big grow" id="parseBtn" style="flex:1">ضيفها</button></div>
-      <button class="btn ocrBtn" id="ocrBtn" type="button">📷 صوّر الفاتورة — والتطبيق يقراها</button><input type="file" id="ocrFile" accept="image/*" hidden>
+      <button class="btn ocrBtn" id="ocrBtn" type="button">📷 صوّر الفواتير — واحدة ورا التانية</button><input type="file" id="ocrFile" accept="image/*" multiple hidden>
+      <div class="rcptBar" id="rcptBar" hidden></div>
       <div id="voiceMsg" class="note" hidden></div>
       <div id="voicePrev" hidden></div>
       
@@ -843,7 +848,7 @@ html[dir=ltr] .card::before{border-radius:4px 0 0 4px}
 <datalist id="projList"></datalist>
 <input type="file" id="phFile" accept="image/*" hidden>
 <div class="viewer" id="viewer" hidden><img id="vImg" alt="صورة الفاتورة"><div class="vbar"><button class="btn" id="vRep" type="button">استبدال</button><button class="btn" id="vDel" type="button">حذف الصورة</button><button class="btn" id="vClose" type="button">إغلاق</button></div></div>
-<div class="viewer pv" id="pvOv" hidden><div class="pvPages" id="pvPages"></div><div class="vbar"><button class="btn primary" id="pvShare" type="button">📤 شارك</button><button class="btn" id="pvPrint" type="button">🖨️ اطبع / PDF</button><button class="btn" id="pvSave" type="button">⬇️ حفظ</button><button class="btn" id="pvClose" type="button">✕ إغلاق</button></div></div>
+<div class="viewer pv" id="pvOv" hidden><div class="pvPages" id="pvPages"></div><div class="vbar"><button class="btn primary" id="pvShare" type="button">📤 ابعت PDF</button><button class="btn" id="pvPrint" type="button">🖨️ اطبع / PDF</button><button class="btn" id="pvSave" type="button">⬇️ حفظ PDF</button><button class="btn" id="pvClose" type="button">✕ إغلاق</button></div></div>
 <div class="viewer sigOv" id="sigOv" hidden><div class="sigBox"><b>وقّع بصباعك جوه المربع</b>
   <canvas id="sigPad"></canvas>
   <div class="sigBar"><button class="btn" id="sigClear" type="button">🧽 امسح</button><button class="btn" id="sigCancel" type="button">إلغاء</button><button class="btn primary" id="sigSave" type="button">✓ احفظ</button></div>
@@ -915,6 +920,7 @@ let LANG='ar'; try{LANG=localStorage.getItem('uues_lang')==='en'?'en':'ar'}catch
 const tr=(a,e)=>LANG==='en'?e:a;
 const ARW=()=>LANG==='en'?'→':'←';
 const EN={
+ '📷 صوّر الفواتير — واحدة ورا التانية':'📷 Snap receipts — one after another','📤 ابعت PDF':'📤 Send PDF','⬇️ حفظ PDF':'⬇️ Save PDF',
  '📷 صوّر الفاتورة — والتطبيق يقراها':'📷 Snap the receipt — the app reads it','✍️ توقيعي':'✍️ My signature','بيتحط في «Employee Signature» في الـ PDF والصورة والـ Excel':'Placed on «Employee Signature» in the PDF, picture and Excel',
  '✍️ وقّع':'✍️ Sign','وقّع بصباعك جوه المربع':'Sign with your finger inside the box','🧽 امسح':'🧽 Clear','✓ احفظ':'✓ Save','🗑️ احذف التوقيع المحفوظ':'🗑️ Delete the saved signature',
  'النسخة الاحتياطية الأسبوعية':'Weekly backup','عهدك متسجلة على الموبايل ده بس. خد نسخة في ثانية واحفظها في iCloud Drive أو ابعتها لنفسك على واتساب.':'Your custodies live only on this phone. Take a copy in a second and keep it in iCloud Drive or send it to yourself on WhatsApp.',
@@ -976,7 +982,7 @@ const EN={
  'راجع بلمسة':'Review in a tap','التطبيق بيرتب الفواتير ويحسب الأيام والوجبات. أي رقم تقدر تعدّله بلمسة.':'The app sorts the invoices and counts days and meals. Fix any number with a tap.',
  'طلّع Excel وتابع رصيدك':'Export Excel, track your balance','فورم UUES Expenses Report جاهز للحسابات، وتعرف دايماً ليك ولا عليك.':'A ready UUES Expenses Report for accounts — and you always know who owes whom.',
  'تخطي':'Skip','التالي':'Next','السكن':'Lodging','المواصلات':'Transport','متنوع':'Misc.','دوّر بالمشروع أو الكود أو الرقم…':'Search by project, code or number…',
- 'آخر التحديثات':'What’s new','✍️ توقيعك على الفورم، 🧾 صور الفواتير بعد الفورم في الـ PDF، 📅 تاريخ لكل فاتورة («بنزين 110 يوم 3»)، 📷 صوّر الفاتورة والتطبيق يقراها، 💾 نسخة احتياطية كل أسبوع بدوسة.':'✍️ Your signature on the form, 🧾 receipt photos after the form in the PDF, 📅 a date per invoice («fuel 110 day 3»), 📷 snap a receipt and the app reads it, 💾 one-tap weekly backup.','📲 باركود للتطبيق: زميلك يصوّره ويضيف التطبيق بزرار واحد — واللوجو بقى ملوّن في الطباعة والـ Excel.':'📲 App QR code: a colleague scans it and adds the app with one button — and the logo is now in colour in print and Excel.','👁️ عرض العهدة كصورة واضحة A4 — شاركها واتساب أو اطبعها على طول، والـ PDF بقى مظبوط على ورقة A4 في أي موبايل.':'👁️ View a custody as a sharp A4 picture — share it on WhatsApp or print it right away; PDF now fits A4 on every phone.','تحليل المصروفات بالشهور والأنواع، بحث في العهد، وتنبيهات للعهد المتأخرة والنسخة الاحتياطية.':'Spending insights by month and type, custody search, and reminders for late custodies and backups.',
+ 'آخر التحديثات':'What’s new','📷 صوّر الفواتير ورا بعض — كل فاتورة بتاخد رقم، وتتحط مترقمة بعد الفورم في ملف PDF واحد تبعته مرة واحدة.':'📷 Snap receipts one after another — each gets a number and goes, numbered, after the form in ONE PDF file you send at once.','✍️ توقيعك على الفورم، 🧾 صور الفواتير بعد الفورم في الـ PDF، 📅 تاريخ لكل فاتورة («بنزين 110 يوم 3»)، 📷 صوّر الفاتورة والتطبيق يقراها، 💾 نسخة احتياطية كل أسبوع بدوسة.':'✍️ Your signature on the form, 🧾 receipt photos after the form in the PDF, 📅 a date per invoice («fuel 110 day 3»), 📷 snap a receipt and the app reads it, 💾 one-tap weekly backup.','📲 باركود للتطبيق: زميلك يصوّره ويضيف التطبيق بزرار واحد — واللوجو بقى ملوّن في الطباعة والـ Excel.':'📲 App QR code: a colleague scans it and adds the app with one button — and the logo is now in colour in print and Excel.','👁️ عرض العهدة كصورة واضحة A4 — شاركها واتساب أو اطبعها على طول، والـ PDF بقى مظبوط على ورقة A4 في أي موبايل.':'👁️ View a custody as a sharp A4 picture — share it on WhatsApp or print it right away; PDF now fits A4 on every phone.','تحليل المصروفات بالشهور والأنواع، بحث في العهد، وتنبيهات للعهد المتأخرة والنسخة الاحتياطية.':'Spending insights by month and type, custody search, and reminders for late custodies and backups.',
  'رصيد العهدة: المستلم والمصروف، ومدين أو دائن — ونسخة إنجليزي كاملة.':'Cash balance: received vs. spent, debit or credit — plus a full English version.',
  'صفحات وتابات، لوجو الشركة، وشاشة افتتاحية.':'Pages and tabs, the company logo, and an opening screen.',
  'فهم التاريخ بالكلام، والمايك بيفضل شغال لحد ما تدوس.':'Spoken dates, and the mic keeps listening until you tap.',
@@ -1132,14 +1138,14 @@ function renderSheet(){
   {const d=(+c.advance||0)-total(c), n=netInfo(d); $('sNet').className='net '+n.cls;
    $('sNet').textContent=n.cls==='isZero'?tr(n.head,'Settled ✓'):tr(n.head,n.cls==='isDebit'?'You hold':'Due to you')+' '+fmt(Math.abs(d))+(n.tag?' · '+(LANG==='en'?n.tag.split(' · ')[1]:n.tag.split(' · ')[0]):'');}
   countTo($('sTotal'),total(c));
-  const g=grouped(c), R=$('rows'); R.innerHTML='';
+  const g=grouped(c), R=$('rows'); R.innerHTML=''; const rn=receiptNums(c); renderRcptCount(c,rn);
   const sec=(name,list,extra)=>{
     const h=document.createElement('div');h.className='sec';h.textContent=name;R.appendChild(h);
     const box=document.createElement('div');box.className='rows';R.appendChild(box);
     list.forEach(i=>{
       const r=document.createElement('div');r.className='row';
       r.innerHTML='<span class="lab"></span><span class="num"></span><button class="ph" type="button" aria-label="صورة الفاتورة">📷</button><button class="x" aria-label="حذف">×</button>';
-      { const pb=r.querySelector('.ph'); if(photoKeys.has(i.id)){pb.classList.add('has');pb.textContent='🧾'} pb.onclick=()=>photoTap(i.id); }
+      { const pb=r.querySelector('.ph'); if(photoKeys.has(i.id)){pb.classList.add('has');pb.textContent='🧾'+(rn.get(i.id)||'')} pb.onclick=()=>photoTap(i.id); }
       r.querySelector('.lab').textContent=i.label;
       if(i.remark){const s=document.createElement('small');s.textContent=i.remark;r.querySelector('.lab').appendChild(s)}
       { const d=document.createElement('label'); d.className='dtc'+(i.date?'':' auto'); const sp=document.createElement('span');
@@ -1410,11 +1416,11 @@ const sigPart=(gap,sig)=>({h:6,gap,draw(g){g.fillStyle='#000';g.direction='ltr';
   const t='Approved by: __________________________'; g.fillText(t,(inner-2)*PX-g.measureText(t).width,4*PX)}});
 async function custodyCanvas(c){
   await grayImgs(); const [logo,name]=await Promise.all([loadImg(LOGO),loadImg(GI.name)]); /* the UUES logo stays in colour, all else black & white */
-  const D=days(c), rate=c.mealRate||RATE, T=total(c), adv=+c.advance||0, gr=grouped(c), toD=dmy(c.to), inner=A4.w-2*A4.m;
+  const D=days(c), rate=c.mealRate||RATE, T=total(c), adv=+c.advance||0, gr=grouped(c), toD=dmy(c.to), inner=A4.w-2*A4.m, rn=receiptNums(c);
   const cols=[11.2,26.4,13.4,10.7,38.3].map(p=>p/100*inner);
   const lb=t=>({t,b:1,al:'c',pt:11.5,fit:1}), sec=t=>({cells:[{t,cs:5,b:1,u:1}],h:6.2,grow:1});
   const item=(a,b,cc,e)=>({cells:[{t:a,al:'c'},{t:b},{t:cc,al:'r',fit:1},{t:''},{t:e}],h:6.2,grow:1});
-  const items=(list,empty)=>(list.length?list:[{label:empty,amount:''}]).map(i=>item(i.date?dmy(i.date):toD,i.label,pS(i.amount),i.remark||''));
+  const items=(list,empty)=>(list.length?list:[{label:empty,amount:''}]).map(i=>item(i.date?dmy(i.date):toD,i.label,pS(i.amount),(rn.get(i.id)?'#'+rn.get(i.id)+'  ':'')+(i.remark||'')));
   const head=(g,x,y,w,h)=>{const pad=1.4, lh=logo?22:0, lw=logo?logo.naturalWidth/logo.naturalHeight*lh:0;
     if(logo)g.drawImage(logo,(x+pad)*PX,(y+(h-lh)/2)*PX,lw*PX,lh*PX);
     const right=x+w-pad, room=w-2*pad-lw-3, nw=Math.min(58,room), nh=name?name.naturalHeight/name.naturalWidth*nw:0;
@@ -1468,13 +1474,29 @@ async function summaryCanvas(list){
   return layPage(parts);
 }
 setTimeout(()=>grayImgs(),1500);
-/* pages → PNG files, one canvas at a time and released right after (a big ledger still fits a phone's memory) */
+/* pages → JPEG files (sharp at 300 dpi, far smaller than PNG), one canvas at a time and released right after */
 async function makePages(jobs,base){
   const files=[];
-  for(let i=0;i<jobs.length;i++){const cv=await jobs[i]();
-    const b=await new Promise((ok,no)=>cv.toBlob(x=>x?ok(x):no(new Error('blob')),'image/png')); cv.width=cv.height=0;
-    files.push(new File([b],base+(jobs.length>1?`_p${i+1}`:'')+'.png',{type:'image/png'}))}
+  for(let i=0;i<jobs.length;i++){const cv=await jobs[i](), w=cv.width, h=cv.height;
+    const b=await new Promise((ok,no)=>cv.toBlob(x=>x?ok(x):no(new Error('blob')),'image/jpeg',.86)); cv.width=cv.height=0;
+    const f=new File([b],base+(jobs.length>1?`_p${i+1}`:'')+'.jpg',{type:'image/jpeg'}); f.w=w; f.h=h; files.push(f)}
   return files;
+}
+/* 📎 the pages → ONE PDF file (each page = one A4 JPEG), so the form + every receipt goes out as a single attachment */
+async function buildPdf(files,name){
+  const enc=new TextEncoder(), parts=[], offs=[]; let len=0;
+  const add=x=>{const b=typeof x==='string'?enc.encode(x):x;parts.push(b);len+=b.length};
+  const PW=595.28, PH=+(595.28*A4.h/A4.w).toFixed(2), N=files.length, total=3+3*N;
+  add(new Uint8Array([37,80,68,70,45,49,46,52,10,37,226,227,207,211,10]));             /* %PDF-1.4 + binary marker */
+  offs[1]=len;add('1 0 obj\n<< /Type /Catalog /Pages 2 0 R >>\nendobj\n');
+  offs[2]=len;add(`2 0 obj\n<< /Type /Pages /Count ${N} /Kids [${files.map((_,i)=>(3+3*i)+' 0 R').join(' ')}] >>\nendobj\n`);
+  for(let i=0;i<N;i++){const f=files[i], jpg=new Uint8Array(await f.arrayBuffer()), P=3+3*i, C=P+1, I=P+2, cs=`q ${PW} 0 0 ${PH} 0 0 cm /Im0 Do Q`;
+    offs[P]=len;add(`${P} 0 obj\n<< /Type /Page /Parent 2 0 R /MediaBox [0 0 ${PW} ${PH}] /Resources << /XObject << /Im0 ${I} 0 R >> >> /Contents ${C} 0 R >>\nendobj\n`);
+    offs[C]=len;add(`${C} 0 obj\n<< /Length ${cs.length} >>\nstream\n${cs}\nendstream\nendobj\n`);
+    offs[I]=len;add(`${I} 0 obj\n<< /Type /XObject /Subtype /Image /Width ${f.w} /Height ${f.h} /ColorSpace /DeviceRGB /BitsPerComponent 8 /Filter /DCTDecode /Length ${jpg.length} >>\nstream\n`);add(jpg);add('\nendstream\nendobj\n')}
+  const xo=len; add(`xref\n0 ${total}\n0000000000 65535 f \n`); for(let n=1;n<total;n++)add(String(offs[n]).padStart(10,'0')+' 00000 n \n');
+  add(`trailer\n<< /Size ${total} /Root 1 0 R >>\nstartxref\n${xo}\n%%EOF\n`);
+  return new File(parts,name+'.pdf',{type:'application/pdf'});
 }
 const sortedC=()=>[...custodies].sort((a,b)=>a.no-b.no);
 const oneJobs=async c=>[()=>custodyCanvas(c),...await photoJobs(c)], oneName=c=>`Petty_Cash_${c.no}_${(c.project||'').replace(/[^A-Za-z0-9]+/g,'_')}`.replace(/_+$/,'');
@@ -1496,25 +1518,27 @@ async function runPdf(jobs,name){if(pdfBusy)return;pdfBusy=true;toast(tr('بجه
 $('onePdf').onclick=()=>{const c=custodies.find(x=>x.id===curId);if(!c)return;buzz();runPdf(oneJobs(c),oneName(c))};
 $('allPdf').onclick=()=>{if(!custodies.length){toast('مفيش عهد لسه');return}buzz();runPdf(allJobs(),allName())};
 /* ---------- 👁️ preview: the page as a sharp picture → share (WhatsApp, Print, Save Image…) / print / save ---------- */
-let pvFiles=[], pvName='', pvUrls=[];
+let pvFiles=[], pvName='', pvUrls=[], pvPdf=null;
 async function openPreview(jobs,name){
   if(pdfBusy)return; pdfBusy=true; pvName=name; pvFiles=[];
   const P=$('pvPages'); P.innerHTML=''; const w=document.createElement('div'); w.className='pvWait'; w.textContent=tr('بجهّز الصورة…','Preparing the picture…'); P.appendChild(w);
   $('pvOv').hidden=false;
-  try{pvFiles=await makePages(await jobs,name)}catch(e){pvFiles=[]}
+  pvPdf=null; try{pvFiles=await makePages(await jobs,name);pvPdf=await buildPdf(pvFiles,name)}catch(e){pvFiles=[]}
   pdfBusy=false; if($('pvOv').hidden){pvFiles=[];return}
   pvUrls.forEach(u=>URL.revokeObjectURL(u)); pvUrls=pvFiles.map(f=>URL.createObjectURL(f)); P.innerHTML='';
   if(!pvFiles.length){w.textContent=tr('ما قدرتش أجهّز الصورة — جرّب تاني','Could not prepare the picture — try again');P.appendChild(w);return}
+  const info=document.createElement('div');info.className='pvInfo';
+  info.textContent=tr(`📎 ملف PDF واحد: ${pvFiles.length} صفحة · ${(pvPdf?pvPdf.size/1048576:0).toFixed(1)} MB`,`📎 One PDF file: ${pvFiles.length} pages · ${(pvPdf?pvPdf.size/1048576:0).toFixed(1)} MB`);P.appendChild(info);
   pvUrls.forEach(u=>{const im=document.createElement('img');im.src=u;im.alt='';im.onclick=()=>im.classList.toggle('zoom');P.appendChild(im)});
 }
 function closePreview(){$('pvOv').hidden=true;$('pvPages').innerHTML='';pvUrls.forEach(u=>URL.revokeObjectURL(u));pvUrls=[];pvFiles=[]}
 function saveFiles(files){files.forEach((f,i)=>setTimeout(()=>{const a=document.createElement('a');a.href=URL.createObjectURL(f);a.download=f.name;document.body.appendChild(a);a.click();
   setTimeout(()=>{URL.revokeObjectURL(a.href);a.remove()},4000)},i*400))}
-$('pvShare').onclick=async()=>{if(!pvFiles.length)return;
-  if(navigator.canShare&&navigator.canShare({files:pvFiles})){try{await navigator.share({files:pvFiles,title:pvName});return}catch(e){if(e&&e.name==='AbortError')return}}
-  saveFiles(pvFiles); toast(tr('المشاركة مش متاحة هنا — الصورة اتحفظت','Sharing is not available here — the picture was saved'))};
+$('pvShare').onclick=async()=>{if(!pvFiles.length)return; const send=pvPdf?[pvPdf]:pvFiles;
+  if(navigator.canShare&&navigator.canShare({files:send})){try{await navigator.share({files:send,title:pvName});return}catch(e){if(e&&e.name==='AbortError')return}}
+  saveFiles(send); toast(tr('المشاركة مش متاحة هنا — الملف اتحفظ','Sharing is not available here — the file was saved'))};
 $('pvPrint').onclick=()=>{if(pvFiles.length)printFiles(pvFiles,pvName)};
-$('pvSave').onclick=()=>{if(pvFiles.length)saveFiles(pvFiles)};
+$('pvSave').onclick=()=>{if(pvFiles.length)saveFiles(pvPdf?[pvPdf]:pvFiles)};
 $('pvClose').onclick=closePreview;
 $('oneView').onclick=()=>{const c=custodies.find(x=>x.id===curId);if(!c)return;buzz();openPreview(oneJobs(c),oneName(c))};
 /* ---------- 📲 install QR (qr-install.png → …/?i=1): an A4 poster to share or print ---------- */
@@ -1860,29 +1884,35 @@ $('sigSave').onclick=()=>{const u=sigTrim($('sigPad'));if(!u){toast(tr('وقّع
   sigStore(u);$('sigOv').hidden=true;toast(tr('✓ اتحفظ التوقيع — هيظهر في الـ PDF والصورة والـ Excel','✓ Signature saved — it appears on the PDF, picture and Excel'))};
 $('sigDel').onclick=()=>{sigStore('');$('sigOv').hidden=true;toast(tr('اتمسح التوقيع','Signature removed'))};
 
-/* ---------- 🧾 receipt photos after the form: 2 per A4 page, labelled like the form, black & white ---------- */
+/* ---------- 🧾 receipt photos after the form: 2 per A4 page, labelled like the form, black & white ----------
+   every photographed invoice gets a receipt number 1..N in the same order as the form (shown on the receipt page,
+   next to its row in the form «#3», and on its 🧾 button) */
+const receiptNums=c=>{const g=grouped(c),m=new Map();let n=0;[...g.L,...g.T,...g.M].forEach(i=>{if(photoKeys.has(i.id))m.set(i.id,++n)});return m};
 async function photoJobs(c){
   const g=grouped(c), list=[...g.L,...g.T,...g.M].filter(i=>photoKeys.has(i.id)), n=Math.ceil(list.length/2), jobs=[];
-  for(let k=0;k<list.length;k+=2){const two=list.slice(k,k+2),pg=k/2+1;jobs.push(()=>photoCanvas(c,two,pg,n))}
+  for(let k=0;k<list.length;k+=2){const two=list.slice(k,k+2),pg=k/2+1,first=k+1;jobs.push(()=>photoCanvas(c,two,pg,n,first,list.length))}
   return jobs;
 }
 function drawGray(g,im,x,y,w,h){const t=document.createElement('canvas');t.width=Math.max(1,Math.round(w*PX));t.height=Math.max(1,Math.round(h*PX));
   const tg=t.getContext('2d');tg.drawImage(im,0,0,t.width,t.height);const d=tg.getImageData(0,0,t.width,t.height),a=d.data;
   for(let p=0;p<a.length;p+=4){const v=a[p]*.299+a[p+1]*.587+a[p+2]*.114;a[p]=a[p+1]=a[p+2]=v}
   tg.putImageData(d,0,0);g.drawImage(t,x*PX,y*PX);t.width=t.height=0}
-async function photoCanvas(c,two,pg,n){
+async function photoCanvas(c,two,pg,n,first,total){
   const inner=A4.w-2*A4.m, maxH=A4.h-2*A4.m, gap=6, colW=(inner-gap)/2, top=17;
   const imgs=await Promise.all(two.map(async i=>{const b=await PDB.get(i.id).catch(()=>null);if(!b)return null;
     const u=URL.createObjectURL(b);const im=await loadImg(u);URL.revokeObjectURL(u);return im}));
   return layPage([{h:maxH,draw(g){
     g.fillStyle=g.strokeStyle='#000';g.textAlign='left';g.textBaseline='alphabetic';
     const fitF=(s,pt,bold,w)=>{let f=pt;do{g.font=`${bold?'bold ':''}${f*PT*PX}px ${F_TNR}`;f-=.5}while(f>6&&g.measureText(s).width/PX>w)};
-    const head=`RECEIPTS — Custody ${c.no}${c.project?' · '+c.project:''}${c.fileNo?' · '+c.fileNo:''}`, pn=`${pg} / ${n}`;
+    const head=`RECEIPTS — Custody ${c.no}${c.project?' · '+c.project:''}${c.fileNo?' · '+c.fileNo:''} · ${total} receipt${total>1?'s':''}`, pn=`${pg} / ${n}`;
     g.direction='ltr';g.font=`${10*PT*PX}px ${F_TNR}`;const pw=g.measureText(pn).width/PX;g.fillText(pn,(inner-pw)*PX,6*PX);
     fitF(head,13,1,inner-pw-6);g.direction=HAS_AR(head)?'rtl':'ltr';g.fillText(head,0,6*PX);g.direction='ltr';
     g.lineWidth=1.2*PT*PX;g.beginPath();g.moveTo(0,9*PX);g.lineTo(inner*PX,9*PX);g.stroke();
-    two.forEach((i,k)=>{const x=k*(colW+gap), im=imgs[k], cap=`${i.label} — ${pS(i.amount)} — ${dmy(i.date||c.to)}`;
-      fitF(cap,11,1,colW);g.direction='ltr';g.fillText(cap,x*PX,(top-3)*PX);
+    two.forEach((i,k)=>{const x=k*(colW+gap), im=imgs[k], no=first+k, cap=`${i.label} — ${pS(i.amount)} — ${dmy(i.date||c.to)}`;
+      /* the receipt number in a black badge, then the caption */
+      const bw=11,bh0=8.5;g.fillStyle='#000';g.fillRect(x*PX,(top-10)*PX,bw*PX,bh0*PX);g.fillStyle='#fff';g.font=`bold ${13*PT*PX}px ${F_TNR}`;g.direction='ltr';
+      const nt='#'+no;g.fillText(nt,(x+(bw-g.measureText(nt).width/PX)/2)*PX,(top-3.6)*PX);g.fillStyle='#000';
+      fitF(cap,11,1,colW-bw-2);g.direction='ltr';g.fillText(cap,(x+bw+2)*PX,(top-3)*PX);
       if(i.remark){fitF(i.remark,9,0,colW);g.direction=HAS_AR(i.remark)?'rtl':'ltr';g.fillText(i.remark,x*PX,(top+1)*PX);g.direction='ltr'}
       const bh=maxH-top-5, by=top+3;
       if(!im){g.lineWidth=.7*PT*PX;g.strokeRect(x*PX,by*PX,colW*PX,bh*PX);return}
@@ -1903,6 +1933,7 @@ const RC_TYPES=[['Hotel',/hotel|\binn\b|suites|resort|residence|فندق|شقق|
   ['Fuel',/fuel|petrol|gasoline|diesel|\bstation\b|aldrees|sasco|petromin|naft|بنزين|وقود|محطة|محطه|الدريس|ساسكو|بترومين|نفط|ديزل/i],
   ['Taxi',/uber|careem|taxi|bolt|jeeny|تاكسي|اوبر|أوبر|كريم|جيني/i],['Parking',/parking|مواقف|باركنج/i],
   ['Car Wash',/car\s*wash|\bwash\b|مغسلة|مغسله|غسيل/i],['Car Rent',/rent\s*a\s*car|car\s*rental|yelo|budget|hertz|theeb|تأجير|تاجير|ايجار|إيجار/i],
+  ['Material',/cable|trading|hardware|electric|materials?\b|tools|building|plumbing|paint|steel|pipe|مواد|ادوات|أدوات|عدد|كهربائي|كهربائية|سباكة|حديد|دهانات|مواسير|خردوات/i],
   ['Toll',/\btoll\b/i],['Printing',/printing|\bprint\b|طباعة|طباعه/i],['Shipping',/aramex|smsa|\bdhl\b|shipping|شحن/i]];
 function readReceipt(raw){
   const t=normDigits(raw).replace(/\d+(?:\.\d+)?\s*%/g,' ');
@@ -1948,18 +1979,46 @@ async function ocrStart(file){
   const add=document.createElement('button'); add.className='btn primary big grow'; add.textContent=tr('✓ أضف الفاتورة','✓ Add the invoice');
   const no=document.createElement('button'); no.className='btn'; no.textContent=tr('إلغاء','Cancel');
   a.append(add,no); box.appendChild(a); if(!r.amount) $('ocAmt').focus();
-  no.onclick=()=>{P.hidden=true;P.innerHTML='';URL.revokeObjectURL(u)};
+  no.onclick=()=>{ocrQ=[];P.hidden=true;P.innerHTML='';URL.revokeObjectURL(u)};
   add.onclick=async()=>{const v=parseFloat(normNum($('ocAmt').value));
     if(!(v>0)){$('ocAmt').focus();toast(tr('اكتب المبلغ الأول','Type the amount first'));return}
     const id=uid(), it={id,type:$('ocType').value,amount:Math.round(v*100)/100,remark:$('ocRem').value.trim()||c.project||''};
     if($('ocDate').value) it.date=$('ocDate').value;
     mutate(cc=>{cc.items=[...(cc.items||[]),it]});
     try{await PDB.put(id,blob);photoKeys.add(id)}catch(e){}
-    P.hidden=true;P.innerHTML='';URL.revokeObjectURL(u);renderSheet();
-    toast(tr(`✓ اتضافت الفاتورة وصورتها (${fmt(it.amount)})`,`✓ Invoice and photo added (${fmt(it.amount)})`),()=>mutate(cc=>{cc.items=cc.items.filter(x=>x.id!==id)}))};
+    URL.revokeObjectURL(u);renderSheet();
+    const no=receiptNums(custodies.find(x=>x.id===curId)).get(id);
+    toast(tr(`✓ فاتورة رقم ${no} اتضافت بصورتها (${fmt(it.amount)})`,`✓ Receipt #${no} added with its photo (${fmt(it.amount)})`),()=>mutate(cc=>{cc.items=cc.items.filter(x=>x.id!==id)}));
+    ocrNext(no)};
+  if(ocrQ.length){const sk=document.createElement('button');sk.className='btn';sk.textContent=tr('تخطّي','Skip');a.appendChild(sk);
+    sk.onclick=()=>{URL.revokeObjectURL(u);ocrNext()}}
+  if(ocrQ.length){const left=document.createElement('div');left.className='note';
+    left.textContent=tr(`فاضل ${ocrQ.length} صورة بعد دي`,`${ocrQ.length} more photo(s) after this one`);box.appendChild(left)}
 }
+/* queue of picked photos: each one is read and confirmed in turn; at the end a bar offers the next photo or the file */
+let ocrQ=[];
+function ocrNext(lastNo){
+  const P=$('voicePrev');
+  if(ocrQ.length){ocrStart(ocrQ.shift());return}
+  P.hidden=false;P.innerHTML='';
+  const box=document.createElement('div');box.className='prev ocrDone';
+  const c=custodies.find(x=>x.id===curId), n=c?receiptNums(c).size:0;
+  const nAr=n===1?'فاتورة واحدة مصوّرة':n===2?'فاتورتين مصوّرين':n<=10?`${n} فواتير مصوّرة`:`${n} فاتورة مصوّرة`;
+  const t=document.createElement('b');t.textContent=lastNo?tr(`✓ فاتورة رقم ${lastNo} اتضافت — معاك ${nAr}`,`✓ Receipt #${lastNo} added — ${n} photographed`):tr(`معاك ${nAr}`,`${n} photographed receipts`);
+  const a=document.createElement('div');a.className='confirm';
+  const nx=document.createElement('button');nx.className='btn primary big grow';nx.textContent=tr('📷 صوّر اللي بعدها','📷 Next receipt');
+  const fl=document.createElement('button');fl.className='btn big';fl.textContent=tr('📎 الملف كله','📎 Whole file');
+  const x=document.createElement('button');x.className='btn';x.textContent=tr('خلاص','Done');
+  a.append(nx,fl,x);box.append(t,a);P.appendChild(box);
+  nx.onclick=()=>{buzz();$('ocrFile').click()};
+  fl.onclick=()=>{P.hidden=true;P.innerHTML='';$('oneView').click()};
+  x.onclick=()=>{P.hidden=true;P.innerHTML=''};
+}
+function renderRcptCount(c,rn){const B=$('rcptBar'),all=(c.items||[]).length,n=rn.size;B.hidden=!all;if(!all)return;
+  B.textContent=n?tr(`🧾 ${n} من ${all} فاتورة متصوّرة — هيتحطوا مترقمين بعد الفورم في ملف الـ PDF`,`🧾 ${n} of ${all} invoices photographed — they go numbered after the form in the PDF`)
+    :tr('🧾 لسه مفيش فواتير متصوّرة — صوّرها وهتتحط مترقمة بعد الفورم','🧾 No receipts photographed yet — snap them and they go numbered after the form')}
 $('ocrBtn').onclick=()=>{buzz();$('ocrFile').click()};
-$('ocrFile').onchange=e=>{const f=e.target.files&&e.target.files[0];e.target.value='';if(f)ocrStart(f)};
+$('ocrFile').onchange=e=>{const fs=[...(e.target.files||[])];e.target.value='';if(!fs.length)return;ocrQ=fs.slice(1);ocrStart(fs[0])};
 /* ---------- projects: name <-> fixed code ---------- */
 let projects=[], pcol=null;
 const codeOf=n=>{const p=projects.find(p=>p.name.trim().toLowerCase()===String(n).trim().toLowerCase());return p?p.code:null};
@@ -2439,7 +2498,7 @@ $('shBtn').onclick=async()=>{
 };
 if('serviceWorker' in navigator&&location.protocol==='https:')navigator.serviceWorker.register('sw.js').catch(()=>{});
 /* ---------- quick update: version.json is never cached; a newer one shows a bar, one tap reloads ---------- */
-const APP_VER='2026.10.06.3';
+const APP_VER='2026.10.10.1';
 $('verTxt').textContent=APP_VER;
 /* update = check the internet first, then let the new service worker take over; the saved copy is NOT deleted
    (deleting it and then losing the connection left Safari with «FetchEvent.respondWith … Returned response is null»);
