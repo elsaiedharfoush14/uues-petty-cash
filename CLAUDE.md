@@ -24,6 +24,13 @@ this repo, so GitHub is the single source of truth — never leave work only in 
   إيه», show him the latest lines as a numbered list; when he picks one, continue that work.
 
 ## Status
+- **v2026.10.12.1** (2026-10-12): (1) pinch zoom «zooms and comes back» + the fixed «الإجمالي» bar floated in the
+  middle of the screen (a zoomed iPhone page moves fixed bars) → no zoom: viewport maximum-scale=1,user-scalable=no,
+  iPhone ignores that so gesturestart/change/end + 2-finger touchmove are preventDefault'ed (except inside #viewer),
+  `touch-action:manipulation` (no double-tap zoom), inputs ≥ 16px (no zoom on focus). (2) the row button of an invoice
+  already in the list showed 📷 and opened the plain picker → now 📄 and `phCapture()` = the same live scan camera
+  (`camScan(onGal)`, «🖼️ من الصور» → #phFile) → `scanSource` editor → `phSave()`; «➕ صفحة كمان» and «استبدال» use it too.
+  Tested: old invoice → camera auto-shot → ✓ → saved on that invoice; ➕ page 2 the same way.
 - **v2026.10.11.11** (2026-10-11): receipt pages: the receipt FILLS the page (his request): own `newPage()` with 4 mm margin
   (not layPage's 9 mm), no page header any more, ONE tiny 6.5 pt caption line per receipt (`#n label · SAR · date · p x/y`
   + `pg/n` on the first, own note right-aligned RTL), photo = the rest of the page. He still saw black & white photos after

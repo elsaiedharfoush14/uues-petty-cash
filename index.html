@@ -2,7 +2,7 @@
 <html lang="ar" dir="rtl">
 <head>
 <meta charset="utf-8">
-<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no,viewport-fit=cover">
 <title>عهدة UUES</title>
 <meta name="description" content="تصفية العهدة لموظفي UUES — سجّل فواتيرك بالكلام وطلّع فورم الإكسل.">
 <meta property="og:type" content="website">
@@ -23,6 +23,8 @@
 <meta name="apple-mobile-web-app-title" content="عهدة UUES">
 <meta name="apple-mobile-web-app-status-bar-style" content="default">
 <style>
+html,body{touch-action:manipulation}   /* no double-tap zoom */
+input,select,textarea{font-size:max(16px,1em)}   /* < 16px makes iPhone zoom in on focus */
 /* Layout: single mobile column — ledger list -> custody sheet with a quick-add strip and a sticky total bar. */
 :root{
   --bg:#f3f5f8; --surface:#ffffff; --ink:#15202b; --muted:#5d6b7a; --line:#d9dfe7;
@@ -763,6 +765,7 @@ html[dir=ltr] .card::before{border-radius:4px 0 0 4px}
     <div class="panel">
       <strong>آخر التحديثات</strong>
       <ul class="log">
+        <li><b class="num">2026.10.12</b><span>🔒 الصفحة بقت ثابتة من غير زوم، وشريط الإجمالي فاضل تحت. وزرار 📄 جنب أي فاتورة قديمة بيفتح كاميرا السكان.</span></li>
         <li><b class="num">2026.10.11</b><span>🎯 الكاميرا بقت بتلقط حرف الورقة نفسه: بتشتغل على ترابيزة بيضا أو خشب، ولو إيدك ماسكة الفاتورة.</span></li>
         <li><b class="num">2026.10.11</b><span>📸 كاميرا سكان جوه التطبيق زي واتساب: بتحوّط الفاتورة بإطار وتصوّر لوحدها (أو يدوي)، واختيار أبيض وأسود أو ألوان.</span></li>
         <li><b class="num">2026.10.11</b><span>📄 السكان بقى أنضف: بيشيل الظل، الورقة بيضا والكلام أوضح وبدقة أعلى — وزرار 📷 بتاع الفاتورة القديمة بيعدّي على السكان كمان.</span></li>
@@ -1026,7 +1029,7 @@ const EN={
  'راجع بلمسة':'Review in a tap','التطبيق بيرتب الفواتير ويحسب الأيام والوجبات. أي رقم تقدر تعدّله بلمسة.':'The app sorts the invoices and counts days and meals. Fix any number with a tap.',
  'طلّع Excel وتابع رصيدك':'Export Excel, track your balance','فورم UUES Expenses Report جاهز للحسابات، وتعرف دايماً ليك ولا عليك.':'A ready UUES Expenses Report for accounts — and you always know who owes whom.',
  'تخطي':'Skip','التالي':'Next','السكن':'Lodging','المواصلات':'Transport','متنوع':'Misc.','دوّر بالمشروع أو الكود أو الرقم…':'Search by project, code or number…',
- 'آخر التحديثات':'What’s new','➕ صفحة كمان':'➕ Add page','حذف الصفحة دي':'Delete this page','🎯 الكاميرا بقت بتلقط حرف الورقة نفسه: بتشتغل على ترابيزة بيضا أو خشب، ولو إيدك ماسكة الفاتورة.':'🎯 The camera now finds the paper edges themselves: works on a white or wooden table, even with your hand holding the receipt.','📸 كاميرا سكان جوه التطبيق زي واتساب: بتحوّط الفاتورة بإطار وتصوّر لوحدها (أو يدوي)، واختيار أبيض وأسود أو ألوان.':'📸 In-app scan camera like WhatsApp: it outlines the receipt and shoots by itself (or manually), black & white or colour.','📄 السكان بقى أنضف: بيشيل الظل، الورقة بيضا والكلام أوضح وبدقة أعلى — وزرار 📷 بتاع الفاتورة القديمة بيعدّي على السكان كمان.':'📄 Cleaner scans: shadows removed, white paper, sharper text at higher resolution — and an existing invoice’s 📷 button uses the scanner too.','📄 ماسح مستندات: التطبيق بيلاقي أطراف الفاتورة لوحده، بيعدّلها لو متصوّرة مايلة ويخلّيها أوضح زي السكانر.':'📄 Document scanner: the app finds the receipt edges, straightens a tilted photo and cleans it like a scanner.','📋 الصق الفاتورة على طول من واتساب (نسخ ← لصق)، وفواتير الـ PDF بتتقري وتتحط في الملف زي الصور.':'📋 Paste a receipt straight from WhatsApp (Copy → Paste), and PDF receipts are read and added to the file like photos.','📷 صوّر الفواتير ورا بعض — كل فاتورة بتاخد رقم، وتتحط مترقمة بعد الفورم في ملف PDF واحد تبعته مرة واحدة.':'📷 Snap receipts one after another — each gets a number and goes, numbered, after the form in ONE PDF file you send at once.','✍️ توقيعك على الفورم، 🧾 صور الفواتير بعد الفورم في الـ PDF، 📅 تاريخ لكل فاتورة («بنزين 110 يوم 3»)، 📷 صوّر الفاتورة والتطبيق يقراها، 💾 نسخة احتياطية كل أسبوع بدوسة.':'✍️ Your signature on the form, 🧾 receipt photos after the form in the PDF, 📅 a date per invoice («fuel 110 day 3»), 📷 snap a receipt and the app reads it, 💾 one-tap weekly backup.','📲 باركود للتطبيق: زميلك يصوّره ويضيف التطبيق بزرار واحد — واللوجو بقى ملوّن في الطباعة والـ Excel.':'📲 App QR code: a colleague scans it and adds the app with one button — and the logo is now in colour in print and Excel.','👁️ عرض العهدة كصورة واضحة A4 — شاركها واتساب أو اطبعها على طول، والـ PDF بقى مظبوط على ورقة A4 في أي موبايل.':'👁️ View a custody as a sharp A4 picture — share it on WhatsApp or print it right away; PDF now fits A4 on every phone.','تحليل المصروفات بالشهور والأنواع، بحث في العهد، وتنبيهات للعهد المتأخرة والنسخة الاحتياطية.':'Spending insights by month and type, custody search, and reminders for late custodies and backups.',
+ 'آخر التحديثات':'What’s new','🔒 الصفحة بقت ثابتة من غير زوم، وشريط الإجمالي فاضل تحت. وزرار 📄 جنب أي فاتورة قديمة بيفتح كاميرا السكان.':'🔒 The page no longer zooms and the total bar stays at the bottom. The 📄 button next to any old invoice opens the scan camera.','➕ صفحة كمان':'➕ Add page','حذف الصفحة دي':'Delete this page','🎯 الكاميرا بقت بتلقط حرف الورقة نفسه: بتشتغل على ترابيزة بيضا أو خشب، ولو إيدك ماسكة الفاتورة.':'🎯 The camera now finds the paper edges themselves: works on a white or wooden table, even with your hand holding the receipt.','📸 كاميرا سكان جوه التطبيق زي واتساب: بتحوّط الفاتورة بإطار وتصوّر لوحدها (أو يدوي)، واختيار أبيض وأسود أو ألوان.':'📸 In-app scan camera like WhatsApp: it outlines the receipt and shoots by itself (or manually), black & white or colour.','📄 السكان بقى أنضف: بيشيل الظل، الورقة بيضا والكلام أوضح وبدقة أعلى — وزرار 📷 بتاع الفاتورة القديمة بيعدّي على السكان كمان.':'📄 Cleaner scans: shadows removed, white paper, sharper text at higher resolution — and an existing invoice’s 📷 button uses the scanner too.','📄 ماسح مستندات: التطبيق بيلاقي أطراف الفاتورة لوحده، بيعدّلها لو متصوّرة مايلة ويخلّيها أوضح زي السكانر.':'📄 Document scanner: the app finds the receipt edges, straightens a tilted photo and cleans it like a scanner.','📋 الصق الفاتورة على طول من واتساب (نسخ ← لصق)، وفواتير الـ PDF بتتقري وتتحط في الملف زي الصور.':'📋 Paste a receipt straight from WhatsApp (Copy → Paste), and PDF receipts are read and added to the file like photos.','📷 صوّر الفواتير ورا بعض — كل فاتورة بتاخد رقم، وتتحط مترقمة بعد الفورم في ملف PDF واحد تبعته مرة واحدة.':'📷 Snap receipts one after another — each gets a number and goes, numbered, after the form in ONE PDF file you send at once.','✍️ توقيعك على الفورم، 🧾 صور الفواتير بعد الفورم في الـ PDF، 📅 تاريخ لكل فاتورة («بنزين 110 يوم 3»)، 📷 صوّر الفاتورة والتطبيق يقراها، 💾 نسخة احتياطية كل أسبوع بدوسة.':'✍️ Your signature on the form, 🧾 receipt photos after the form in the PDF, 📅 a date per invoice («fuel 110 day 3»), 📷 snap a receipt and the app reads it, 💾 one-tap weekly backup.','📲 باركود للتطبيق: زميلك يصوّره ويضيف التطبيق بزرار واحد — واللوجو بقى ملوّن في الطباعة والـ Excel.':'📲 App QR code: a colleague scans it and adds the app with one button — and the logo is now in colour in print and Excel.','👁️ عرض العهدة كصورة واضحة A4 — شاركها واتساب أو اطبعها على طول، والـ PDF بقى مظبوط على ورقة A4 في أي موبايل.':'👁️ View a custody as a sharp A4 picture — share it on WhatsApp or print it right away; PDF now fits A4 on every phone.','تحليل المصروفات بالشهور والأنواع، بحث في العهد، وتنبيهات للعهد المتأخرة والنسخة الاحتياطية.':'Spending insights by month and type, custody search, and reminders for late custodies and backups.',
  'رصيد العهدة: المستلم والمصروف، ومدين أو دائن — ونسخة إنجليزي كاملة.':'Cash balance: received vs. spent, debit or credit — plus a full English version.',
  'صفحات وتابات، لوجو الشركة، وشاشة افتتاحية.':'Pages and tabs, the company logo, and an opening screen.',
  'فهم التاريخ بالكلام، والمايك بيفضل شغال لحد ما تدوس.':'Spoken dates, and the mic keeps listening until you tap.',
@@ -1188,7 +1191,7 @@ function renderSheet(){
     const box=document.createElement('div');box.className='rows';R.appendChild(box);
     list.forEach(i=>{
       const r=document.createElement('div');r.className='row';
-      r.innerHTML='<span class="lab"></span><span class="num"></span><button class="ph" type="button" aria-label="صورة الفاتورة">📷</button><button class="x" aria-label="حذف">×</button>';
+      r.innerHTML='<span class="lab"></span><span class="num"></span><button class="ph" type="button" aria-label="سكان الفاتورة">📄</button><button class="x" aria-label="حذف">×</button>';
       { const pb=r.querySelector('.ph'); if(photoKeys.has(i.id)){const np=pageKeys(i.id).length;pb.classList.add('has');pb.textContent='🧾'+(rn.get(i.id)||'')+(np>1?' ('+np+')':'')} pb.onclick=()=>photoTap(i.id); }
       r.querySelector('.lab').textContent=i.label;
       /* 📝 the note under each invoice (its name, what it was for…): tap to write / change it */
@@ -1901,7 +1904,7 @@ async function shrink(file){
 }
 async function photoTap(id){
   phTarget=id; phPage=0; phAdd=false;
-  if(!photoKeys.has(id)){$('phFile').click();return}
+  if(!photoKeys.has(id)){phCapture();return}
   showPhPage();
 }
 async function showPhPage(){
@@ -1914,15 +1917,30 @@ async function showPhPage(){
     ks.forEach((k,n)=>{const bt=document.createElement('button');bt.type='button';bt.textContent=String(n+1);if(n===phPage)bt.className='on';bt.onclick=()=>{phPage=n;showPhPage()};P.appendChild(bt)})}
   $('vDel').textContent=ks.length>1?tr('حذف الصفحة دي','Delete this page'):tr('حذف الصورة','Delete photo');
 }
-$('phFile').onchange=async e=>{const f=e.target.files&&e.target.files[0];e.target.value='';if(!f||!phTarget)return;
-  const tgt=phTarget, add=phAdd, blob=isPdf(f)?(await pdfReceipt(f).catch(()=>null))?.blob:await scanDoc(f); phAdd=false; if(!blob)return;
+/* 🔒 no zoom: block pinch (iPhone gesture events + 2-finger moves), double-tap via touch-action; the receipt viewer keeps its own zoom */
+['gesturestart','gesturechange','gestureend'].forEach(t=>document.addEventListener(t,e=>{if(!e.target.closest||!e.target.closest('#viewer'))e.preventDefault()},{passive:false}));
+document.addEventListener('touchmove',e=>{if(e.touches.length>1&&!(e.target.closest&&e.target.closest('#viewer')))e.preventDefault()},{passive:false});
+/* 📄 a photo for an invoice already in the list: the same live scan camera as a new invoice (picker as fallback) */
+async function phCapture(){
+  if(!navigator.mediaDevices||!navigator.mediaDevices.getUserMedia){$('phFile').click();return}
+  const tgt=phTarget, add=phAdd;
+  const r=await camScan(()=>$('phFile').click()); if(!r)return;
+  const blob=await scanSource(r.cv,r.w,r.h,r.q); r.cv.width=r.cv.height=0; if(!blob)return;
+  phTarget=tgt; phAdd=add; await phSave(blob);
+}
+async function phSave(blob){
+  const tgt=phTarget, add=phAdd; phAdd=false;
   const ks=pageKeys(tgt), key=!ks.length?tgt:add?tgt+'#'+(ks.length+1):ks[Math.min(phPage,ks.length-1)];
   try{await PDB.put(key,blob);photoKeys.add(key);renderSheet();
     if(add||ks.length){phTarget=tgt;phPage=pageKeys(tgt).indexOf(key);showPhPage()}else $('viewer').hidden=true;
-    toast(add?tr(`اتضافت الصفحة ${ks.length+1}`,`Page ${ks.length+1} added`):'اتحفظت صورة الفاتورة')}catch(err){toast('ما اتحفظتش الصورة — المساحة ممكن تكون مليانة')}};
+    toast(add?tr(`اتضافت الصفحة ${ks.length+1}`,`Page ${ks.length+1} added`):'اتحفظت صورة الفاتورة')}catch(err){toast('ما اتحفظتش الصورة — المساحة ممكن تكون مليانة')}
+}
+$('phFile').onchange=async e=>{const f=e.target.files&&e.target.files[0];e.target.value='';if(!f||!phTarget)return;
+  const tgt=phTarget, add=phAdd, blob=isPdf(f)?(await pdfReceipt(f).catch(()=>null))?.blob:await scanDoc(f); if(!blob){phAdd=false;return}
+  phTarget=tgt; phAdd=add; await phSave(blob)};
 $('vClose').onclick=()=>{$('viewer').hidden=true};
-$('vAdd').onclick=()=>{phAdd=true;$('phFile').click()};
-$('vRep').onclick=()=>{phAdd=false;$('phFile').click()};
+$('vAdd').onclick=()=>{phAdd=true;phCapture()};
+$('vRep').onclick=()=>{phAdd=false;phCapture()};
 $('vDel').onclick=async()=>{const ks=pageKeys(phTarget);if(!ks.length)return;const at=Math.min(phPage,ks.length-1);
   try{for(let j=at+1;j<ks.length;j++){const b=await PDB.get(ks[j]);await PDB.put(ks[j-1],b)}await PDB.del(ks[ks.length-1])}catch(e){}  /* later pages move up one */
   photoKeys.delete(ks[ks.length-1]);renderSheet();
@@ -2291,7 +2309,7 @@ async function scanSource(bmp,bw,bh,qIn){
    outline holds still (or with the button), then the 4-corner editor opens pre-set → straightened scan ---------- */
 let camStream=null, camAutoOn=(()=>{try{return localStorage.getItem('uues_camauto')!=='0'}catch(e){return true}})();
 function camStop(){if(camStream){camStream.getTracks().forEach(t=>t.stop());camStream=null}const v=$('camV');v.srcObject=null}
-async function camScan(){
+async function camScan(onGal){
   const O=$('camOv'),v=$('camV'),C=$('camC'),msg=$('camMsg'),shot=$('camShot'),auto=$('camAuto');O.hidden=false;msg.hidden=true;
   const showAuto=()=>{auto.textContent=camAutoOn?tr('⚡ أوتوماتيك','⚡ Auto'):tr('✋ يدوي','✋ Manual');auto.classList.toggle('off',!camAutoOn)};showAuto();
   auto.onclick=()=>{camAutoOn=!camAutoOn;try{localStorage.setItem('uues_camauto',camAutoOn?'1':'0')}catch(e){}showAuto()};
@@ -2305,7 +2323,7 @@ async function camScan(){
     const capture=()=>{const vw=v.videoWidth,vh=v.videoHeight;if(!vw)return;const c=document.createElement('canvas');c.width=vw;c.height=vh;c.getContext('2d').drawImage(v,0,0,vw,vh);
       buzz();finish({cv:c,w:vw,h:vh,q:quad})};
     shot.onclick=capture;$('camX').onclick=()=>finish(null);
-    $('camGal').onclick=()=>{finish(null);$('ocrFile').click()};      /* still inside the tap → the picker may open */
+    $('camGal').onclick=()=>{finish(null);(onGal||(()=>$('ocrFile').click()))()};      /* still inside the tap → the picker may open */
     timer=setInterval(()=>{const vw=v.videoWidth,vh=v.videoHeight;if(!vw)return;
       const f=Math.min(1,320/Math.max(vw,vh)),tw=Math.round(vw*f),th=Math.round(vh*f);sm.width=tw;sm.height=th;sx.drawImage(v,0,0,tw,th);
       const d=sx.getImageData(0,0,tw,th).data,g=new Uint8ClampedArray(tw*th);for(let i=0;i<g.length;i++)g[i]=d[i*4]*.299+d[i*4+1]*.587+d[i*4+2]*.114;
@@ -2842,7 +2860,7 @@ $('shBtn').onclick=async()=>{
 };
 if('serviceWorker' in navigator&&location.protocol==='https:')navigator.serviceWorker.register('sw.js').catch(()=>{});
 /* ---------- quick update: version.json is never cached; a newer one shows a bar, one tap reloads ---------- */
-const APP_VER='2026.10.11.11';
+const APP_VER='2026.10.12.1';
 $('verTxt').textContent=APP_VER;
 /* update = check the internet first, then let the new service worker take over; the saved copy is NOT deleted
    (deleting it and then losing the connection left Safari with «FetchEvent.respondWith … Returned response is null»);
