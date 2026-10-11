@@ -24,6 +24,11 @@ this repo, so GitHub is the single source of truth — never leave work only in 
   إيه», show him the latest lines as a numbered list; when he picks one, continue that work.
 
 ## Status
+- **v2026.10.11.4** (2026-10-11): he said the scan looked bad and the 📷 of an OLD invoice skipped it. Fixes:
+  photo kept up to 3200 px, output up to 3200 px / 7 MP (was 2000 / 1600 → long receipts came out ~700 px wide);
+  `scanClean()` = local paper level (max-filter + blur on a /150 grid) → divide → shadows gone, ink ×1.35, ≥232 → white;
+  `#phFile` (row 📷) now goes through `scanDoc` too. Test photo 3024×4032 with a hand shadow: old = half black, new =
+  clean white page 1183×2374, OCR read 168.94 / date / merchant in 3 s.
 - **v2026.10.11.3** (2026-10-11): he said the scanner did not show on his iPhone. `scanDoc` used to SKIP the editor
   silently when `createImageBitmap(file)` failed → now falls back to a plain `<img>` (`loadImg`) and only skips with a
   toast. Button renamed «📄 سكان الفاتورة». If it still doesn't show, ask him for a screenshot of «عن التطبيق» (version).
