@@ -24,6 +24,14 @@ this repo, so GitHub is the single source of truth — never leave work only in 
   إيه», show him the latest lines as a numbered list; when he picks one, continue that work.
 
 ## Status
+- **v2026.10.11.5** (2026-10-11): he wanted the iPhone's own scanner (Notes / WhatsApp) — a web app can NOT open
+  VisionKit, and he refused the $99 App Store route. So «📄 سكان الفاتورة» now opens an in-app live camera `camScan()`
+  (getUserMedia, ideal 3840×2160, rear): every 200 ms `scanFind(...,strict)` outlines the paper on screen; ⚡ auto shoots
+  after 6 steady frames (`uues_camauto`), ✋ manual = shutter; «🖼️ من الصور» opens the picker inside the tap. The frame
+  goes to `scanSource()` (the old scanDoc editor, corners pre-set) with ⚫ B&W / 🎨 colour (`scanMode`, `scanWarpColor`).
+  Reader fixes: thin white frame after the warp (table sliver confused Tesseract) and `ocrRead` enlarges pictures
+  < 1500 px wide ×2.5 max with a white margin (fixed «50.50» read as «50»). Known limit: coloured stripes at the paper
+  edge (e.g. a red header) fall outside the auto crop → drag the dots. Tested with a fake camera (canvas captureStream).
 - **v2026.10.11.4** (2026-10-11): he said the scan looked bad and the 📷 of an OLD invoice skipped it. Fixes:
   photo kept up to 3200 px, output up to 3200 px / 7 MP (was 2000 / 1600 → long receipts came out ~700 px wide);
   `scanClean()` = local paper level (max-filter + blur on a /150 grid) → divide → shadows gone, ink ×1.35, ≥232 → white;

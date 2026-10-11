@@ -537,10 +537,21 @@ html[dir=ltr] .card::before{border-radius:4px 0 0 4px}
 .ocrRow{display:grid;grid-template-columns:1fr 1fr;gap:8px}
 .scanOv{position:fixed;inset:0;z-index:45;background:#0b0f17;display:flex;flex-direction:column;gap:10px;padding:calc(12px + env(safe-area-inset-top,0px)) 12px calc(12px + env(safe-area-inset-bottom,0px))}
 .scanHead{color:#fff;text-align:center;font-weight:700}
+.camOv{position:fixed;inset:0;z-index:44;background:#000;display:flex;flex-direction:column;gap:8px;padding:calc(10px + env(safe-area-inset-top,0px)) 10px calc(14px + env(safe-area-inset-bottom,0px))}
+.camTop{display:flex;justify-content:space-between;align-items:center;gap:8px;color:#fff;font-weight:700;font-size:15px}
+.camAuto{border:0;border-radius:99px;padding:7px 12px;background:#14b8a6;color:#fff;font-weight:700;font-size:13px}.camAuto.off{background:#374151}
+.camStage{position:relative;flex:1;min-height:0;overflow:hidden;border-radius:12px;background:#111}
+.camStage video{position:absolute;inset:0;width:100%;height:100%;object-fit:contain}
+.camStage canvas{position:absolute;inset:0;width:100%;height:100%;pointer-events:none}
+.camMsg{position:absolute;inset:auto 12px 12px;background:rgba(0,0,0,.65);color:#fff;border-radius:10px;padding:10px;text-align:center;font-size:14px}
+.camBar{display:grid;grid-template-columns:1fr auto 1fr;gap:12px;align-items:center}
+.camBar .btn{background:#1f2937;color:#fff;border-color:#374151;padding:12px 6px}
+.camShot{width:74px;height:74px;border-radius:50%;border:4px solid #fff;background:transparent;padding:5px;display:grid;place-items:center}
+.camShot i{display:block;width:100%;height:100%;border-radius:50%;background:#fff}.camShot.go i{background:#14b8a6}
 .scanStage{position:relative;flex:1;min-height:0;display:flex;align-items:center;justify-content:center;touch-action:none}
 .scanStage canvas{max-width:100%;max-height:100%;display:block}
 .scanStage .hd{position:absolute;width:34px;height:34px;margin:-17px 0 0 -17px;border-radius:50%;border:3px solid #fff;background:rgba(20,184,166,.55);box-shadow:0 0 0 2px rgba(0,0,0,.35);touch-action:none;cursor:grab}
-.scanBar{display:grid;grid-template-columns:1fr 1fr 1.4fr;gap:8px}
+.scanBar{display:grid;grid-template-columns:1fr 1fr 1.2fr 1.2fr;gap:6px}
 .scanBar .btn{padding:12px 4px}
 .ocrCard{display:flex;flex-direction:column;gap:10px}
 .ocrDone{display:flex;flex-direction:column;gap:10px}.ocrDone .confirm{flex-wrap:wrap}
@@ -745,6 +756,7 @@ html[dir=ltr] .card::before{border-radius:4px 0 0 4px}
     <div class="panel">
       <strong>آخر التحديثات</strong>
       <ul class="log">
+        <li><b class="num">2026.10.11</b><span>📸 كاميرا سكان جوه التطبيق زي واتساب: بتحوّط الفاتورة بإطار وتصوّر لوحدها (أو يدوي)، واختيار أبيض وأسود أو ألوان.</span></li>
         <li><b class="num">2026.10.11</b><span>📄 السكان بقى أنضف: بيشيل الظل، الورقة بيضا والكلام أوضح وبدقة أعلى — وزرار 📷 بتاع الفاتورة القديمة بيعدّي على السكان كمان.</span></li>
         <li><b class="num">2026.10.11</b><span>📄 ماسح مستندات: التطبيق بيلاقي أطراف الفاتورة لوحده، بيعدّلها لو متصوّرة مايلة ويخلّيها أوضح زي السكانر.</span></li>
         <li><b class="num">2026.10.11</b><span>📋 الصق الفاتورة على طول من واتساب (نسخ ← لصق)، وفواتير الـ PDF بتتقري وتتحط في الملف زي الصور.</span></li>
@@ -859,10 +871,15 @@ html[dir=ltr] .card::before{border-radius:4px 0 0 4px}
 <datalist id="projList"></datalist>
 <input type="file" id="phFile" accept="image/*" hidden>
 <div class="viewer" id="viewer" hidden><img id="vImg" alt="صورة الفاتورة"><div class="vbar"><button class="btn" id="vRep" type="button">استبدال</button><button class="btn" id="vDel" type="button">حذف الصورة</button><button class="btn" id="vClose" type="button">إغلاق</button></div></div>
+<div class="camOv" id="camOv" hidden>
+  <div class="camTop"><span id="camHint">وجّه الكاميرا على الفاتورة</span><button class="camAuto" id="camAuto" type="button">⚡ أوتوماتيك</button></div>
+  <div class="camStage" id="camStage"><video id="camV" playsinline muted autoplay></video><canvas id="camC"></canvas><div class="camMsg" id="camMsg" hidden></div></div>
+  <div class="camBar"><button class="btn" id="camGal" type="button">🖼️ من الصور</button><button class="camShot" id="camShot" type="button" aria-label="صوّر"><i></i></button><button class="btn" id="camX" type="button">✕ قفل</button></div>
+</div>
 <div class="scanOv" id="scanOv" hidden>
   <div class="scanHead">حرّك النقط الأربعة على أطراف الفاتورة</div>
   <div class="scanStage" id="scanStage"><canvas id="scanCv"></canvas><i class="hd" data-k="0"></i><i class="hd" data-k="1"></i><i class="hd" data-k="2"></i><i class="hd" data-k="3"></i></div>
-  <div class="scanBar"><button class="btn" id="scanCancel" type="button">إلغاء</button><button class="btn" id="scanFull" type="button">الصورة كاملة</button><button class="btn primary" id="scanOk" type="button">✓ تمام</button></div>
+  <div class="scanBar"><button class="btn" id="scanCancel" type="button">إلغاء</button><button class="btn" id="scanFull" type="button">الصورة كاملة</button><button class="btn" id="scanMode" type="button">⚫ أبيض وأسود</button><button class="btn primary" id="scanOk" type="button">✓ تمام</button></div>
 </div>
 <div class="viewer pv" id="pvOv" hidden><div class="pvPages" id="pvPages"></div><div class="vbar"><button class="btn primary" id="pvShare" type="button">📤 ابعت PDF</button><button class="btn" id="pvPrint" type="button">🖨️ اطبع / PDF</button><button class="btn" id="pvSave" type="button">⬇️ حفظ PDF</button><button class="btn" id="pvClose" type="button">✕ إغلاق</button></div></div>
 <div class="viewer sigOv" id="sigOv" hidden><div class="sigBox"><b>وقّع بصباعك جوه المربع</b>
@@ -936,6 +953,7 @@ let LANG='ar'; try{LANG=localStorage.getItem('uues_lang')==='en'?'en':'ar'}catch
 const tr=(a,e)=>LANG==='en'?e:a;
 const ARW=()=>LANG==='en'?'→':'←';
 const EN={
+ 'وجّه الكاميرا على الفاتورة':'Point the camera at the receipt','🖼️ من الصور':'🖼️ From photos','✕ قفل':'✕ Close','⚡ أوتوماتيك':'⚡ Auto','⚫ أبيض وأسود':'⚫ Black & white',
  'حرّك النقط الأربعة على أطراف الفاتورة':'Drag the four dots onto the receipt corners','الصورة كاملة':'Whole photo','✓ تمام':'✓ OK',
  '📷 صوّر الفواتير':'📷 Snap receipts','📄 سكان الفاتورة':'📄 Scan receipt','📋 الصق الفاتورة':'📋 Paste receipt',
  '📷 صوّر الفواتير — واحدة ورا التانية':'📷 Snap receipts — one after another','📤 ابعت PDF':'📤 Send PDF','⬇️ حفظ PDF':'⬇️ Save PDF',
@@ -1000,7 +1018,7 @@ const EN={
  'راجع بلمسة':'Review in a tap','التطبيق بيرتب الفواتير ويحسب الأيام والوجبات. أي رقم تقدر تعدّله بلمسة.':'The app sorts the invoices and counts days and meals. Fix any number with a tap.',
  'طلّع Excel وتابع رصيدك':'Export Excel, track your balance','فورم UUES Expenses Report جاهز للحسابات، وتعرف دايماً ليك ولا عليك.':'A ready UUES Expenses Report for accounts — and you always know who owes whom.',
  'تخطي':'Skip','التالي':'Next','السكن':'Lodging','المواصلات':'Transport','متنوع':'Misc.','دوّر بالمشروع أو الكود أو الرقم…':'Search by project, code or number…',
- 'آخر التحديثات':'What’s new','📄 السكان بقى أنضف: بيشيل الظل، الورقة بيضا والكلام أوضح وبدقة أعلى — وزرار 📷 بتاع الفاتورة القديمة بيعدّي على السكان كمان.':'📄 Cleaner scans: shadows removed, white paper, sharper text at higher resolution — and an existing invoice’s 📷 button uses the scanner too.','📄 ماسح مستندات: التطبيق بيلاقي أطراف الفاتورة لوحده، بيعدّلها لو متصوّرة مايلة ويخلّيها أوضح زي السكانر.':'📄 Document scanner: the app finds the receipt edges, straightens a tilted photo and cleans it like a scanner.','📋 الصق الفاتورة على طول من واتساب (نسخ ← لصق)، وفواتير الـ PDF بتتقري وتتحط في الملف زي الصور.':'📋 Paste a receipt straight from WhatsApp (Copy → Paste), and PDF receipts are read and added to the file like photos.','📷 صوّر الفواتير ورا بعض — كل فاتورة بتاخد رقم، وتتحط مترقمة بعد الفورم في ملف PDF واحد تبعته مرة واحدة.':'📷 Snap receipts one after another — each gets a number and goes, numbered, after the form in ONE PDF file you send at once.','✍️ توقيعك على الفورم، 🧾 صور الفواتير بعد الفورم في الـ PDF، 📅 تاريخ لكل فاتورة («بنزين 110 يوم 3»)، 📷 صوّر الفاتورة والتطبيق يقراها، 💾 نسخة احتياطية كل أسبوع بدوسة.':'✍️ Your signature on the form, 🧾 receipt photos after the form in the PDF, 📅 a date per invoice («fuel 110 day 3»), 📷 snap a receipt and the app reads it, 💾 one-tap weekly backup.','📲 باركود للتطبيق: زميلك يصوّره ويضيف التطبيق بزرار واحد — واللوجو بقى ملوّن في الطباعة والـ Excel.':'📲 App QR code: a colleague scans it and adds the app with one button — and the logo is now in colour in print and Excel.','👁️ عرض العهدة كصورة واضحة A4 — شاركها واتساب أو اطبعها على طول، والـ PDF بقى مظبوط على ورقة A4 في أي موبايل.':'👁️ View a custody as a sharp A4 picture — share it on WhatsApp or print it right away; PDF now fits A4 on every phone.','تحليل المصروفات بالشهور والأنواع، بحث في العهد، وتنبيهات للعهد المتأخرة والنسخة الاحتياطية.':'Spending insights by month and type, custody search, and reminders for late custodies and backups.',
+ 'آخر التحديثات':'What’s new','📸 كاميرا سكان جوه التطبيق زي واتساب: بتحوّط الفاتورة بإطار وتصوّر لوحدها (أو يدوي)، واختيار أبيض وأسود أو ألوان.':'📸 In-app scan camera like WhatsApp: it outlines the receipt and shoots by itself (or manually), black & white or colour.','📄 السكان بقى أنضف: بيشيل الظل، الورقة بيضا والكلام أوضح وبدقة أعلى — وزرار 📷 بتاع الفاتورة القديمة بيعدّي على السكان كمان.':'📄 Cleaner scans: shadows removed, white paper, sharper text at higher resolution — and an existing invoice’s 📷 button uses the scanner too.','📄 ماسح مستندات: التطبيق بيلاقي أطراف الفاتورة لوحده، بيعدّلها لو متصوّرة مايلة ويخلّيها أوضح زي السكانر.':'📄 Document scanner: the app finds the receipt edges, straightens a tilted photo and cleans it like a scanner.','📋 الصق الفاتورة على طول من واتساب (نسخ ← لصق)، وفواتير الـ PDF بتتقري وتتحط في الملف زي الصور.':'📋 Paste a receipt straight from WhatsApp (Copy → Paste), and PDF receipts are read and added to the file like photos.','📷 صوّر الفواتير ورا بعض — كل فاتورة بتاخد رقم، وتتحط مترقمة بعد الفورم في ملف PDF واحد تبعته مرة واحدة.':'📷 Snap receipts one after another — each gets a number and goes, numbered, after the form in ONE PDF file you send at once.','✍️ توقيعك على الفورم، 🧾 صور الفواتير بعد الفورم في الـ PDF، 📅 تاريخ لكل فاتورة («بنزين 110 يوم 3»)، 📷 صوّر الفاتورة والتطبيق يقراها، 💾 نسخة احتياطية كل أسبوع بدوسة.':'✍️ Your signature on the form, 🧾 receipt photos after the form in the PDF, 📅 a date per invoice («fuel 110 day 3»), 📷 snap a receipt and the app reads it, 💾 one-tap weekly backup.','📲 باركود للتطبيق: زميلك يصوّره ويضيف التطبيق بزرار واحد — واللوجو بقى ملوّن في الطباعة والـ Excel.':'📲 App QR code: a colleague scans it and adds the app with one button — and the logo is now in colour in print and Excel.','👁️ عرض العهدة كصورة واضحة A4 — شاركها واتساب أو اطبعها على طول، والـ PDF بقى مظبوط على ورقة A4 في أي موبايل.':'👁️ View a custody as a sharp A4 picture — share it on WhatsApp or print it right away; PDF now fits A4 on every phone.','تحليل المصروفات بالشهور والأنواع، بحث في العهد، وتنبيهات للعهد المتأخرة والنسخة الاحتياطية.':'Spending insights by month and type, custody search, and reminders for late custodies and backups.',
  'رصيد العهدة: المستلم والمصروف، ومدين أو دائن — ونسخة إنجليزي كاملة.':'Cash balance: received vs. spent, debit or credit — plus a full English version.',
  'صفحات وتابات، لوجو الشركة، وشاشة افتتاحية.':'Pages and tabs, the company logo, and an opening screen.',
  'فهم التاريخ بالكلام، والمايك بيفضل شغال لحد ما تدوس.':'Spoken dates, and the mic keeps listening until you tap.',
@@ -1945,7 +1963,13 @@ const loadScript=src=>new Promise((ok,no)=>{const s=document.createElement('scri
 async function ocrRead(blob){
   if(!window.Tesseract) await loadScript('https://cdn.jsdelivr.net/npm/tesseract.js@5.1.1/dist/tesseract.min.js');
   if(!ocrW) ocrW=await Tesseract.createWorker(['eng','ara'],1,{logger:m=>ocrP&&ocrP(m)});
-  const r=await ocrW.recognize(blob); return (r&&r.data&&r.data.text)||'';
+  /* the reader works best on big text with a white margin: small pictures are enlarged (×2.5 max) and padded */
+  let src=blob;
+  try{const im=await createImageBitmap(blob), k=Math.min(2.5,Math.max(1,1500/im.width)), pad=30;
+    if(k>1.05){const c=document.createElement('canvas');c.width=Math.round(im.width*k)+pad*2;c.height=Math.round(im.height*k)+pad*2;
+      const g=c.getContext('2d');g.fillStyle='#fff';g.fillRect(0,0,c.width,c.height);g.imageSmoothingQuality='high';g.drawImage(im,pad,pad,im.width*k,im.height*k);src=c}
+    if(im.close)im.close()}catch(e){}
+  const r=await ocrW.recognize(src); if(src!==blob)src.width=src.height=0; return (r&&r.data&&r.data.text)||'';
 }
 /* the text of a receipt → {amount, type, date, merchant} */
 const RC_TYPES=[['Hotel',/hotel|\binn\b|suites|resort|residence|room\s*(charge|rate)|\bnights?\b|check.?in|hilton|marriott|sheraton|radisson|novotel|ibis|crowne|hyatt|movenpick|mövenpick|rotana|intercontinental|mercure|swiss.?otel|courtyard|hampton|fairmont|ritz|kempinski|shaza|elaf|hilton|park inn|golden tulip|braira|boudl|فندق|شقق|اوتيل|أوتيل|نزل|هيلتون|ماريوت|شيراتون|راديسون|نوفوتيل|روتانا|موفنبيك|إيلاف|ايلاف|بودل|برايرا/i],
@@ -1982,6 +2006,7 @@ async function ocrStart(file){
   if(isPdf(file)){st.textContent=tr('بفتح ملف الـ PDF…','Opening the PDF…');
     try{const r=await pdfReceipt(file);blob=r.blob;pdfText=r.text}
     catch(e){st.textContent=tr('ما قدرتش أفتح ملف الـ PDF ده (محتاج نت أول مرة) — جرّب صورة للفاتورة.','Could not open this PDF (needs internet the first time) — try a photo of the receipt.');ocrQ.length&&setTimeout(()=>ocrNext(),2500);return}}
+  else if(file._scanned)blob=file;
   else{st.textContent=tr('ظبّط أطراف الفاتورة…','Adjust the receipt corners…');
     blob=await scanDoc(file);
     if(!blob){P.hidden=true;P.innerHTML='';if(ocrQ.length)ocrNext();return}}
@@ -2032,21 +2057,21 @@ function ocrNext(lastNo){
   const nAr=n===1?'فاتورة واحدة مصوّرة':n===2?'فاتورتين مصوّرين':n<=10?`${n} فواتير مصوّرة`:`${n} فاتورة مصوّرة`;
   const t=document.createElement('b');t.textContent=lastNo?tr(`✓ فاتورة رقم ${lastNo} اتضافت — معاك ${nAr}`,`✓ Receipt #${lastNo} added — ${n} photographed`):tr(`معاك ${nAr}`,`${n} photographed receipts`);
   const a=document.createElement('div');a.className='confirm';
-  const nx=document.createElement('button');nx.className='btn primary big grow';nx.textContent=tr('📷 صوّر اللي بعدها','📷 Next receipt');
+  const nx=document.createElement('button');nx.className='btn primary big grow';nx.textContent=tr('📄 سكان اللي بعدها','📄 Scan the next one');
   const fl=document.createElement('button');fl.className='btn big';fl.textContent=tr('📎 الملف كله','📎 Whole file');
   const x=document.createElement('button');x.className='btn';x.textContent=tr('خلاص','Done');
   a.append(nx,fl,x);box.append(t,a);P.appendChild(box);
-  nx.onclick=()=>{buzz();$('ocrFile').click()};
+  nx.onclick=()=>{buzz();camFlow()};
   fl.onclick=()=>{P.hidden=true;P.innerHTML='';$('oneView').click()};
   x.onclick=()=>{P.hidden=true;P.innerHTML=''};
 }
 function renderRcptCount(c,rn){const B=$('rcptBar'),all=(c.items||[]).length,n=rn.size;B.hidden=!all;if(!all)return;
   B.textContent=n?tr(`🧾 ${n} من ${all} فاتورة متصوّرة — هيتحطوا مترقمين بعد الفورم في ملف الـ PDF`,`🧾 ${n} of ${all} invoices photographed — they go numbered after the form in the PDF`)
     :tr('🧾 لسه مفيش فواتير متصوّرة — صوّرها وهتتحط مترقمة بعد الفورم','🧾 No receipts photographed yet — snap them and they go numbered after the form')}
-$('ocrBtn').onclick=()=>{buzz();$('ocrFile').click()};
+$('ocrBtn').onclick=()=>{buzz();camFlow()};
 /* ---------- 📄 document scanner (no library): finds the paper, 4 handles to fix it, straightens the perspective,
    cleans it like a scan (grayscale + contrast) — the receipt photo then goes on to the reader as before ---------- */
-function scanFind(g,w,h){              /* g = gray bytes; the brightest big blob (paper on a darker table) → its 4 corners */
+function scanFind(g,w,h,strict){              /* g = gray bytes; the brightest big blob (paper on a darker table) → its 4 corners */
   const hist=new Array(256).fill(0);for(let i=0;i<g.length;i++)hist[g[i]]++;
   let sum=0;for(let i=0;i<256;i++)sum+=i*hist[i];let sB=0,wB=0,best=0,th=128;
   for(let t=0;t<256;t++){wB+=hist[t];if(!wB)continue;const wF=g.length-wB;if(!wF)break;sB+=t*hist[t];const mB=sB/wB,mF=(sum-sB)/wF,v=wB*wF*(mB-mF)*(mB-mF);if(v>best){best=v;th=t}}
@@ -2057,7 +2082,7 @@ function scanFind(g,w,h){              /* g = gray bytes; the brightest big blob
       if(y>0&&!lab[q-w]&&g[q-w]>th){lab[q-w]=L;st.push(q-w)} if(y<h-1&&!lab[q+w]&&g[q+w]>th){lab[q+w]=L;st.push(q+w)}}
     if(n>bestN){bestN=n;bestL=L}}
   const inset=()=>{const m=.04;return [[w*m,h*m],[w*(1-m),h*m],[w*(1-m),h*(1-m)],[w*m,h*(1-m)]]};
-  if(bestN<g.length*.12||bestN>g.length*.97)return inset();
+  if(bestN<g.length*.12||bestN>g.length*.97)return strict?null:inset();
   let tl=[0,0,1e9],tr=[0,0,-1e9],br=[0,0,-1e9],bl=[0,0,1e9];
   for(let i=0;i<g.length;i++){if(lab[i]!==bestL)continue;const x=i%w,y=(i-x)/w,s1=x+y,s2=x-y;
     if(s1<tl[2])tl=[x,y,s1];if(s1>br[2])br=[x,y,s1];if(s2>tr[2])tr=[x,y,s2];if(s2<bl[2])bl=[x,y,s2]}
@@ -2081,6 +2106,18 @@ function scanWarp(gray,sw,sh,q){        /* q = 4 corners in photo pixels → str
   for(let i=0,j=0;i<out.length;i++,j+=4){dd[j]=dd[j+1]=dd[j+2]=out[i];dd[j+3]=255}
   g.putImageData(id,0,0);return c;
 }
+function scanWarpColor(rgba,sw,sh,q){   /* same straightening, keeping the colours (light auto-level) */
+  const d=(a,b)=>Math.hypot(a[0]-b[0],a[1]-b[1]);
+  let W=Math.max(d(q[0],q[1]),d(q[3],q[2])),H=Math.max(d(q[0],q[3]),d(q[1],q[2]));const k=Math.min(1,3200/Math.max(W,H),Math.sqrt(7e6/(W*H)));W=Math.max(50,Math.round(W*k));H=Math.max(50,Math.round(H*k));
+  const h=homography([[0,0],[W,0],[W,H],[0,H]],q),c=document.createElement('canvas');c.width=W;c.height=H;const g=c.getContext('2d'),id=g.createImageData(W,H),o=id.data;
+  for(let y=0;y<H;y++)for(let x=0;x<W;x++){const den=h[6]*x+h[7]*y+1,u=(h[0]*x+h[1]*y+h[2])/den,v=(h[3]*x+h[4]*y+h[5])/den,j=(y*W+x)*4;o[j+3]=255;
+    const x0=Math.floor(u),y0=Math.floor(v);if(x0<0||y0<0||x0>=sw-1||y0>=sh-1){o[j]=o[j+1]=o[j+2]=255;continue}
+    const fx=u-x0,fy=v-y0,i=(y0*sw+x0)*4,r=sw*4;
+    for(let ch=0;ch<3;ch++)o[j+ch]=(rgba[i+ch]*(1-fx)+rgba[i+4+ch]*fx)*(1-fy)+(rgba[i+r+ch]*(1-fx)+rgba[i+r+4+ch]*fx)*fy}
+  let mx=0;for(let j=0;j<o.length;j+=4){const v=o[j]*.299+o[j+1]*.587+o[j+2]*.114;if(v>mx)mx=v}   /* paper → white */
+  const gain=Math.min(1.6,250/Math.max(60,mx));if(gain>1.02)for(let j=0;j<o.length;j+=4){o[j]*=gain;o[j+1]*=gain;o[j+2]*=gain}
+  g.putImageData(id,0,0);return c;
+}
 /* the paper's own brightness is measured area by area (max filter kills the ink, blur smooths it), every pixel is
    divided by it → shadows and uneven light disappear, the paper turns white and the ink stays sharp */
 function scanClean(px,W,H){
@@ -2097,19 +2134,24 @@ function scanClean(px,W,H){
       v=255-(255-v)*1.35;                              /* darker, crisper ink */
       px[y*W+x]=v>=232?255:v<0?0:v}}
 }
+let scanMode=(()=>{try{return localStorage.getItem('uues_scanmode')||'bw'}catch(e){return 'bw'}})();
 async function scanDoc(file){
   /* open the photo: createImageBitmap, else a plain <img> (older iPhones); never skip the scanner silently */
   let bmp=null;try{bmp=await createImageBitmap(file)}catch(e){}
   if(!bmp||!bmp.width){const u=URL.createObjectURL(file);bmp=await loadImg(u);URL.revokeObjectURL(u)}
   const bw=bmp&&(bmp.naturalWidth||bmp.width), bh=bmp&&(bmp.naturalHeight||bmp.height);
   if(!bw||!bh){toast(tr('ما قدرتش أفتح الصورة في السكان — هكمّل بيها زي ما هي','Could not open the photo in the scanner — using it as it is'));return await shrink(file)}
+  const r=await scanSource(bmp,bw,bh,null);if(bmp.close)bmp.close();return r;
+}
+/* drawable (photo / camera frame) → editor (4 handles, ⚫ scan / 🎨 colour) → straightened JPEG blob, or null */
+async function scanSource(bmp,bw,bh,qIn){
   const k=Math.min(1,3200/Math.max(bw,bh)),sw=Math.round(bw*k),sh=Math.round(bh*k);
   const src=document.createElement('canvas');src.width=sw;src.height=sh;const sg=src.getContext('2d');sg.drawImage(bmp,0,0,sw,sh);
   const rgba=sg.getImageData(0,0,sw,sh).data,gray=new Uint8ClampedArray(sw*sh);for(let i=0;i<gray.length;i++)gray[i]=rgba[i*4]*.299+rgba[i*4+1]*.587+rgba[i*4+2]*.114;
   /* find the paper on a small copy */
   const f=Math.min(1,360/Math.max(sw,sh)),tw=Math.max(8,Math.round(sw*f)),th=Math.max(8,Math.round(sh*f)),small=new Uint8ClampedArray(tw*th);
   for(let y=0;y<th;y++)for(let x=0;x<tw;x++)small[y*tw+x]=gray[Math.min(sh-1,Math.floor(y/f))*sw+Math.min(sw-1,Math.floor(x/f))];
-  let q=scanFind(small,tw,th).map(([x,y])=>[x/f,y/f]);
+  let q=qIn?qIn.map(([x,y])=>[x*k,y*k]):scanFind(small,tw,th).map(([x,y])=>[x/f,y/f]);
   /* editor */
   const O=$('scanOv'),cv=$('scanCv'),stg=$('scanStage'),hs=[...stg.querySelectorAll('.hd')];O.hidden=false;
   const r0=stg.getBoundingClientRect(),z=Math.min((r0.width>40?r0.width:340)/sw,(r0.height>40?r0.height:560)/sh);cv.width=Math.round(sw*z);cv.height=Math.round(sh*z);
@@ -2121,12 +2163,57 @@ async function scanDoc(file){
   hs.forEach((h,i)=>{h.onpointerdown=e=>{e.preventDefault();try{h.setPointerCapture(e.pointerId)}catch(_){}
     h.onpointermove=ev=>{const rc=cv.getBoundingClientRect();q[i]=[Math.max(0,Math.min(sw,(ev.clientX-rc.left)/z)),Math.max(0,Math.min(sh,(ev.clientY-rc.top)/z))];draw()};
     h.onpointerup=h.onpointercancel=()=>{h.onpointermove=null}}});
+  const mb=$('scanMode'),showMode=()=>{mb.textContent=scanMode==='bw'?tr('⚫ أبيض وأسود','⚫ Black & white'):tr('🎨 ألوان','🎨 Colour')};showMode();
+  mb.onclick=()=>{scanMode=scanMode==='bw'?'color':'bw';try{localStorage.setItem('uues_scanmode',scanMode)}catch(e){}showMode()};
   const res=await new Promise(ok=>{$('scanOk').onclick=()=>ok('ok');$('scanCancel').onclick=()=>ok(null);$('scanFull').onclick=()=>ok('full')});
-  O.hidden=true;if(bmp.close)bmp.close();
+  O.hidden=true;
   if(!res){src.width=src.height=0;return null}
   if(res==='full')q=[[0,0],[sw,0],[sw,sh],[0,sh]];
-  const out=scanWarp(gray,sw,sh,q);src.width=src.height=0;
+  const out=scanMode==='color'?scanWarpColor(rgba,sw,sh,q):scanWarp(gray,sw,sh,q);src.width=src.height=0;
+  /* a thin white frame hides the sliver of table at the paper's edge (it confused the reader) */
+  {const og=out.getContext('2d'),bw=Math.max(4,Math.round(Math.min(out.width,out.height)*.012));og.strokeStyle='#fff';og.lineWidth=bw*2;og.strokeRect(0,0,out.width,out.height)}
   const blob=await new Promise(ok=>out.toBlob(ok,'image/jpeg',.9));out.width=out.height=0;return blob;
+}
+/* ---------- 📸 live document camera (like WhatsApp / Notes): the paper is outlined live, it shoots by itself when the
+   outline holds still (or with the button), then the 4-corner editor opens pre-set → straightened scan ---------- */
+let camStream=null, camAutoOn=(()=>{try{return localStorage.getItem('uues_camauto')!=='0'}catch(e){return true}})();
+function camStop(){if(camStream){camStream.getTracks().forEach(t=>t.stop());camStream=null}const v=$('camV');v.srcObject=null}
+async function camScan(){
+  const O=$('camOv'),v=$('camV'),C=$('camC'),msg=$('camMsg'),shot=$('camShot'),auto=$('camAuto');O.hidden=false;msg.hidden=true;
+  const showAuto=()=>{auto.textContent=camAutoOn?tr('⚡ أوتوماتيك','⚡ Auto'):tr('✋ يدوي','✋ Manual');auto.classList.toggle('off',!camAutoOn)};showAuto();
+  auto.onclick=()=>{camAutoOn=!camAutoOn;try{localStorage.setItem('uues_camauto',camAutoOn?'1':'0')}catch(e){}showAuto()};
+  try{camStream=await navigator.mediaDevices.getUserMedia({audio:false,video:{facingMode:{ideal:'environment'},width:{ideal:3840},height:{ideal:2160}}})}
+  catch(e){msg.hidden=false;msg.textContent=tr('الكاميرا مش متاحة (اسمح للكاميرا من الإعدادات) — دوس «🖼️ من الصور»','Camera not available (allow it in settings) — tap «🖼️ From photos»')}
+  if(camStream){v.srcObject=camStream;try{await v.play()}catch(e){}}
+  const sm=document.createElement('canvas'),sx=sm.getContext('2d',{willReadFrequently:true});
+  let quad=null,prev=null,still=0,timer=null,done=false;
+  return await new Promise(resolve=>{
+    const finish=r=>{if(done)return;done=true;clearInterval(timer);camStop();O.hidden=true;const g=C.getContext('2d');g.clearRect(0,0,C.width,C.height);resolve(r)};
+    const capture=()=>{const vw=v.videoWidth,vh=v.videoHeight;if(!vw)return;const c=document.createElement('canvas');c.width=vw;c.height=vh;c.getContext('2d').drawImage(v,0,0,vw,vh);
+      buzz();finish({cv:c,w:vw,h:vh,q:quad})};
+    shot.onclick=capture;$('camX').onclick=()=>finish(null);
+    $('camGal').onclick=()=>{finish(null);$('ocrFile').click()};      /* still inside the tap → the picker may open */
+    timer=setInterval(()=>{const vw=v.videoWidth,vh=v.videoHeight;if(!vw)return;
+      const f=Math.min(1,320/Math.max(vw,vh)),tw=Math.round(vw*f),th=Math.round(vh*f);sm.width=tw;sm.height=th;sx.drawImage(v,0,0,tw,th);
+      const d=sx.getImageData(0,0,tw,th).data,g=new Uint8ClampedArray(tw*th);for(let i=0;i<g.length;i++)g[i]=d[i*4]*.299+d[i*4+1]*.587+d[i*4+2]*.114;
+      const qq=scanFind(g,tw,th,true);
+      /* outline on screen (video is letter-boxed with object-fit:contain) */
+      const R=C.getBoundingClientRect();C.width=Math.round(R.width);C.height=Math.round(R.height);const z=Math.min(C.width/vw,C.height/vh),ox=(C.width-vw*z)/2,oy=(C.height-vh*z)/2,cg=C.getContext('2d');cg.clearRect(0,0,C.width,C.height);
+      if(!qq){quad=null;prev=null;still=0;shot.classList.remove('go');$('camHint').textContent=tr('وجّه الكاميرا على الفاتورة','Point the camera at the receipt');return}
+      quad=qq.map(([x,y])=>[x/f,y/f]);
+      const mv=prev?Math.max(...quad.map((p,i)=>Math.hypot(p[0]-prev[i][0],p[1]-prev[i][1])))/Math.max(vw,vh):1;prev=quad;still=mv<.025?still+1:0;
+      cg.lineWidth=4;cg.strokeStyle=still>=2?'#22c55e':'#14b8a6';cg.fillStyle='rgba(20,184,166,.18)';cg.beginPath();
+      quad.forEach(([x,y],i)=>i?cg.lineTo(ox+x*z,oy+y*z):cg.moveTo(ox+x*z,oy+y*z));cg.closePath();cg.fill();cg.stroke();
+      shot.classList.add('go');$('camHint').textContent=camAutoOn?tr('اثبت شوية… هتتصور لوحدها','Hold still… it will shoot by itself'):tr('دوس الزرار عشان تصوّر','Tap the button to shoot');
+      if(camAutoOn&&still>=6)capture()},200);
+  });
+}
+async function camFlow(){
+  const c=custodies.find(x=>x.id===curId);if(!c)return;
+  if(!navigator.mediaDevices||!navigator.mediaDevices.getUserMedia){$('ocrFile').click();return}
+  const r=await camScan();if(!r)return;
+  const blob=await scanSource(r.cv,r.w,r.h,r.q);r.cv.width=r.cv.height=0;if(!blob)return;
+  const f=new File([blob],'scan.jpg',{type:'image/jpeg'});f._scanned=true;ocrQ=[];ocrStart(f);
 }
 /* photos, PDFs, pasted pictures — all go through the same queue */
 const isPdf=f=>/pdf/i.test(f.type||'')||/\.pdf$/i.test(f.name||'');
@@ -2642,7 +2729,7 @@ $('shBtn').onclick=async()=>{
 };
 if('serviceWorker' in navigator&&location.protocol==='https:')navigator.serviceWorker.register('sw.js').catch(()=>{});
 /* ---------- quick update: version.json is never cached; a newer one shows a bar, one tap reloads ---------- */
-const APP_VER='2026.10.11.4';
+const APP_VER='2026.10.11.5';
 $('verTxt').textContent=APP_VER;
 /* update = check the internet first, then let the new service worker take over; the saved copy is NOT deleted
    (deleting it and then losing the connection left Safari with «FetchEvent.respondWith … Returned response is null»);
