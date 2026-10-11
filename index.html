@@ -887,7 +887,7 @@ html[dir=ltr] .card::before{border-radius:4px 0 0 4px}
 <div class="scanOv" id="scanOv" hidden>
   <div class="scanHead">حرّك النقط الأربعة على أطراف الفاتورة</div>
   <div class="scanStage" id="scanStage"><canvas id="scanCv"></canvas><i class="hd" data-k="0"></i><i class="hd" data-k="1"></i><i class="hd" data-k="2"></i><i class="hd" data-k="3"></i></div>
-  <div class="scanBar"><button class="btn" id="scanCancel" type="button">إلغاء</button><button class="btn" id="scanFull" type="button">الصورة كاملة</button><button class="btn" id="scanMode" type="button">⚫ أبيض وأسود</button><button class="btn primary" id="scanOk" type="button">✓ تمام</button></div>
+  <div class="scanBar"><button class="btn" id="scanCancel" type="button">إلغاء</button><button class="btn" id="scanFull" type="button">الصورة كاملة</button><button class="btn" id="scanMode" type="button">🎨 ألوان</button><button class="btn primary" id="scanOk" type="button">✓ تمام</button></div>
 </div>
 <div class="viewer pv" id="pvOv" hidden><div class="pvPages" id="pvPages"></div><div class="vbar"><button class="btn primary" id="pvShare" type="button">📤 ابعت PDF</button><button class="btn" id="pvPrint" type="button">🖨️ اطبع / PDF</button><button class="btn" id="pvSave" type="button">⬇️ حفظ PDF</button><button class="btn" id="pvClose" type="button">✕ إغلاق</button></div></div>
 <div class="viewer sigOv" id="sigOv" hidden><div class="sigBox"><b>وقّع بصباعك جوه المربع</b>
@@ -2250,7 +2250,8 @@ function scanClean(px,W,H){
       v=255-(255-v)*1.35;                              /* darker, crisper ink */
       px[y*W+x]=v>=232?255:v<0?0:v}}
 }
-let scanMode=(()=>{try{return localStorage.getItem('uues_scanmode')||'bw'}catch(e){return 'bw'}})();
+/* receipt photos are saved in COLOUR, as taken (his request 2026-10-11); ⚫ applies to that one scan only */
+let scanMode='color';
 async function scanDoc(file){
   /* open the photo: createImageBitmap, else a plain <img> (older iPhones); never skip the scanner silently */
   let bmp=null;try{bmp=await createImageBitmap(file)}catch(e){}
@@ -2279,8 +2280,9 @@ async function scanSource(bmp,bw,bh,qIn){
   hs.forEach((h,i)=>{h.onpointerdown=e=>{e.preventDefault();try{h.setPointerCapture(e.pointerId)}catch(_){}
     h.onpointermove=ev=>{const rc=cv.getBoundingClientRect();q[i]=[Math.max(0,Math.min(sw,(ev.clientX-rc.left)/z)),Math.max(0,Math.min(sh,(ev.clientY-rc.top)/z))];draw()};
     h.onpointerup=h.onpointercancel=()=>{h.onpointermove=null}}});
+  scanMode='color';
   const mb=$('scanMode'),showMode=()=>{mb.textContent=scanMode==='bw'?tr('⚫ أبيض وأسود','⚫ Black & white'):tr('🎨 ألوان','🎨 Colour')};showMode();
-  mb.onclick=()=>{scanMode=scanMode==='bw'?'color':'bw';try{localStorage.setItem('uues_scanmode',scanMode)}catch(e){}showMode()};
+  mb.onclick=()=>{scanMode=scanMode==='bw'?'color':'bw';showMode()};
   const res=await new Promise(ok=>{$('scanOk').onclick=()=>ok('ok');$('scanCancel').onclick=()=>ok(null);$('scanFull').onclick=()=>ok('full')});
   O.hidden=true;
   if(!res){src.width=src.height=0;return null}
@@ -2845,7 +2847,7 @@ $('shBtn').onclick=async()=>{
 };
 if('serviceWorker' in navigator&&location.protocol==='https:')navigator.serviceWorker.register('sw.js').catch(()=>{});
 /* ---------- quick update: version.json is never cached; a newer one shows a bar, one tap reloads ---------- */
-const APP_VER='2026.10.11.8';
+const APP_VER='2026.10.11.9';
 $('verTxt').textContent=APP_VER;
 /* update = check the internet first, then let the new service worker take over; the saved copy is NOT deleted
    (deleting it and then losing the connection left Safari with «FetchEvent.respondWith … Returned response is null»);

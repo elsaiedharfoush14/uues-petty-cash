@@ -24,6 +24,10 @@ this repo, so GitHub is the single source of truth — never leave work only in 
   إيه», show him the latest lines as a numbered list; when he picks one, continue that work.
 
 ## Status
+- **v2026.10.11.9** (2026-10-11): receipt photos are SAVED IN COLOUR as taken (he asked). The scan editor's mode used to
+  default to ⚫ black & white (`uues_scanmode` = 'bw'); now `scanMode='color'` at every scan, ⚫ applies to that one scan only
+  (not remembered). The PDF / printed receipt pages stay black & white (`drawGray`), like the form. Photos saved before
+  .9 stay black & white (the colour original was not kept) — re-shoot if colour is needed.
 - **v2026.10.11.8** (2026-10-11): he could not see the note line: every invoice gets the PROJECT NAME as its automatic
   remark (voice / typed add → Excel «Remarks»), so the line showed «MODON Jeddah» in small grey text like before. Now a remark
   equal to the project counts as no note: dashed box «📝 ضيف ملاحظة» on its own line under the invoice name; an own note is a
