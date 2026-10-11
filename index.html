@@ -1974,29 +1974,28 @@ async function photoJobs(c){
   return groups.map((gr,k)=>()=>photoCanvas(c,gr,k+1,groups.length,list.length));
 }
 async function photoCanvas(c,gr,pg,n,total){
-  const inner=A4.w-2*A4.m, maxH=A4.h-2*A4.m, gap=6, y0=12, two=gr.us;
-  const cells=gr.lay==='cols'?[[0,y0,(inner-gap)/2,maxH-y0],[(inner+gap)/2,y0,(inner-gap)/2,maxH-y0]]
-    :gr.lay==='rows'?[[0,y0,inner,(maxH-y0-gap)/2],[0,y0+(maxH-y0+gap)/2,inner,(maxH-y0-gap)/2]]:[[0,y0,inner,maxH-y0]];
+  /* the receipt fills the page (his request 2026-10-11): 4 mm margin, ONE tiny caption line per receipt, the rest is the photo */
+  const M=4, inner=A4.w-2*M, H=A4.h-2*M, gap=3, capH=3.6, two=gr.us;
+  const cells=gr.lay==='cols'?[[0,0,(inner-gap)/2,H],[(inner+gap)/2,0,(inner-gap)/2,H]]
+    :gr.lay==='rows'?[[0,0,inner,(H-gap)/2],[0,(H+gap)/2,inner,(H-gap)/2]]:[[0,0,inner,H]];
   const imgs=await Promise.all(two.map(async u=>{const b=await PDB.get(u.key).catch(()=>null);if(!b)return null;
     const url=URL.createObjectURL(b);const im=await loadImg(url);URL.revokeObjectURL(url);return im}));
-  return layPage([{h:maxH,draw(g){
-    g.fillStyle=g.strokeStyle='#000';g.textAlign='left';g.textBaseline='alphabetic';
-    const fitF=(s,pt,bold,w)=>{let f=pt;do{g.font=`${bold?'bold ':''}${f*PT*PX}px ${F_TNR}`;f-=.5}while(f>6&&g.measureText(s).width/PX>w)};
-    const head=`RECEIPTS — Custody ${c.no}${c.project?' · '+c.project:''}${c.fileNo?' · '+c.fileNo:''} · ${total} receipt${total>1?'s':''}`, pn=`${pg} / ${n}`;
-    g.direction='ltr';g.font=`${10*PT*PX}px ${F_TNR}`;const pw=g.measureText(pn).width/PX;g.fillText(pn,(inner-pw)*PX,6*PX);
-    fitF(head,13,1,inner-pw-6);g.direction=HAS_AR(head)?'rtl':'ltr';g.fillText(head,0,6*PX);g.direction='ltr';
-    g.lineWidth=1.2*PT*PX;g.beginPath();g.moveTo(0,9*PX);g.lineTo(inner*PX,9*PX);g.stroke();
-    two.forEach((u,k)=>{const i=u.i, [x,y,cw,ch]=cells[k], im=imgs[k], cap=`${i.label} — ${pS(i.amount)} — ${dmy(i.date||c.to)}${u.np>1?` — page ${u.p}/${u.np}`:''}`;
-      /* the receipt number in a black badge, then the caption, then the note */
-      const bw=11,bh0=8.5;g.fillStyle='#000';g.fillRect(x*PX,y*PX,bw*PX,bh0*PX);g.fillStyle='#fff';g.font=`bold ${13*PT*PX}px ${F_TNR}`;g.direction='ltr';
-      const nt='#'+u.no;g.fillText(nt,(x+(bw-g.measureText(nt).width/PX)/2)*PX,(y+6.4)*PX);g.fillStyle='#000';
-      fitF(cap,11,1,cw-bw-2);g.direction='ltr';g.fillText(cap,(x+bw+2)*PX,(y+6.2)*PX);
-      let by=y+11;
-      if(i.remark&&i.remark!==c.project){fitF(i.remark,10,0,cw);const ar=HAS_AR(i.remark);g.direction=ar?'rtl':'ltr';g.textAlign=ar?'right':'left';g.fillText(i.remark,(ar?x+cw:x)*PX,(y+13)*PX);g.direction='ltr';g.textAlign='left';by=y+16}
-      const bh=y+ch-by;
-      if(!im){g.lineWidth=.7*PT*PX;g.strokeRect(x*PX,by*PX,cw*PX,bh*PX);return}
-      const sc=Math.min(cw/im.naturalWidth,bh/im.naturalHeight), w=im.naturalWidth*sc, h=im.naturalHeight*sc, ix=x+(cw-w)/2;
-      g.imageSmoothingQuality='high';g.drawImage(im,ix*PX,by*PX,w*PX,h*PX);g.lineWidth=.7*PT*PX;   /* receipt photos in COLOUR (his request 2026-10-11) */g.strokeRect(ix*PX,by*PX,w*PX,h*PX)})}}]);
+  const P=newPage(), g=P.g; g.save(); g.translate(M*PX,M*PX);
+  g.fillStyle=g.strokeStyle='#000';g.textBaseline='alphabetic';
+  const font=(pt,bold)=>{g.font=`${bold?'bold ':''}${pt*PT*PX}px ${F_TNR}`};
+  const fit=(t,pt,bold,w)=>{let f=pt;do{font(f,bold);f-=.25}while(f>4.5&&g.measureText(t).width/PX>w)};
+  two.forEach((u,k)=>{const i=u.i,[x,y,cw,ch]=cells[k],im=imgs[k];
+    const left=`#${u.no}  ${i.label} · ${pS(i.amount)} · ${dmy(i.date||c.to)}${u.np>1?` · p ${u.p}/${u.np}`:''}${k===0?`  ·  ${pg}/${n}`:''}`;
+    const rmk=i.remark&&i.remark!==c.project?i.remark:'';
+    /* caption: numbers left (LTR), the note right (RTL if Arabic), both 6.5 pt */
+    g.direction='ltr';g.textAlign='left';fit(left,6.5,1,rmk?cw*.55:cw);const lw=g.measureText(left).width/PX;g.fillText(left,x*PX,(y+2.6)*PX);
+    if(rmk){const ar=HAS_AR(rmk);fit(rmk,6.5,0,cw-lw-3);g.direction=ar?'rtl':'ltr';g.textAlign='right';g.fillText(rmk,(x+cw)*PX,(y+2.6)*PX);g.direction='ltr';g.textAlign='left'}
+    const by=y+capH, bh=ch-capH;
+    if(!im){g.lineWidth=.5*PT*PX;g.strokeRect(x*PX,by*PX,cw*PX,bh*PX);return}
+    const sc=Math.min(cw/im.naturalWidth,bh/im.naturalHeight), w=im.naturalWidth*sc, h=im.naturalHeight*sc, ix=x+(cw-w)/2;
+    g.imageSmoothingQuality='high';g.drawImage(im,ix*PX,by*PX,w*PX,h*PX);   /* receipt photos in COLOUR (his request 2026-10-11) */
+    g.lineWidth=.4*PT*PX;g.strokeRect(ix*PX,by*PX,w*PX,h*PX)});
+  g.restore(); return P.cv;
 }
 
 /* ---------- 📷 read a receipt photo: Tesseract.js (free, runs on the phone; the first use downloads ~10 MB) ---------- */
@@ -2843,7 +2842,7 @@ $('shBtn').onclick=async()=>{
 };
 if('serviceWorker' in navigator&&location.protocol==='https:')navigator.serviceWorker.register('sw.js').catch(()=>{});
 /* ---------- quick update: version.json is never cached; a newer one shows a bar, one tap reloads ---------- */
-const APP_VER='2026.10.11.10';
+const APP_VER='2026.10.11.11';
 $('verTxt').textContent=APP_VER;
 /* update = check the internet first, then let the new service worker take over; the saved copy is NOT deleted
    (deleting it and then losing the connection left Safari with «FetchEvent.respondWith … Returned response is null»);

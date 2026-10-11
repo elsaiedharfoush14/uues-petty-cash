@@ -24,6 +24,11 @@ this repo, so GitHub is the single source of truth — never leave work only in 
   إيه», show him the latest lines as a numbered list; when he picks one, continue that work.
 
 ## Status
+- **v2026.10.11.11** (2026-10-11): receipt pages: the receipt FILLS the page (his request): own `newPage()` with 4 mm margin
+  (not layPage's 9 mm), no page header any more, ONE tiny 6.5 pt caption line per receipt (`#n label · SAR · date · p x/y`
+  + `pg/n` on the first, own note right-aligned RTL), photo = the rest of the page. He still saw black & white photos after
+  .9/.10: code path checked (scanner, camera, reader, viewer: no grey anywhere) → most likely an old app version on his
+  phone or photos taken before .9 — asked him to check the version in «عن التطبيق».
 - **v2026.10.11.10** (2026-10-11): receipt photos in the PDF / preview / print are drawn in COLOUR (he asked):
   `photoCanvas` uses `g.drawImage` (smoothing high); `drawGray` removed. Captions, badges and frames stay black.
   Test: colour photos (A4 + 2 fuel slips) → receipt pages full of colour, form page unchanged.
