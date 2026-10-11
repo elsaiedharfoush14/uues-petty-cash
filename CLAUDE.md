@@ -24,6 +24,16 @@ this repo, so GitHub is the single source of truth — never leave work only in 
   إيه», show him the latest lines as a numbered list; when he picks one, continue that work.
 
 ## Status
+- **v2026.10.11.6** (2026-10-11): on his iPhone the live camera never outlined the paper (the bright-blob `scanFind`
+  fails on a white table / with a hand on the receipt). New `edgeFind(g,w,h,cand)` (no library): blur → Sobel with
+  edge direction → threshold (top 9 %, capped at 26 so faint white-on-white edges stay) → Hough where each pixel votes
+  only ±8° around its own direction (print stops drowning the edge) → 2 groups of lines ±25° → best quad (edge support
+  ≥ .35 min / .55 mean, score mean²·√area) → each side refit through its edge pixels (weighted) → corners.
+  `findPaper(g,w,h,strict)`: the blob guess is kept when its 4 sides lie on edges (more precise), else edgeFind;
+  live camera (strict) accepts nothing else, a photo falls back to the blob. ~55–95 ms on a 320 px frame (desktop).
+  Synthetic test (corner error px at 1280): white/light/dark/wood/other white objects/hand on dark or white table all
+  5–11 px; paper only 7 grey levels brighter than the table = not found. Fake-camera flow auto-shot correctly.
+  OpenCV.js was tried and dropped (froze the tab > 90 s).
 - **v2026.10.11.5** (2026-10-11): he wanted the iPhone's own scanner (Notes / WhatsApp) — a web app can NOT open
   VisionKit, and he refused the $99 App Store route. So «📄 سكان الفاتورة» now opens an in-app live camera `camScan()`
   (getUserMedia, ideal 3840×2160, rear): every 200 ms `scanFind(...,strict)` outlines the paper on screen; ⚡ auto shoots
