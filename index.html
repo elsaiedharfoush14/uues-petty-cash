@@ -85,6 +85,9 @@ input[type=date]{direction:ltr;text-align:right}
 .row:last-child{border-bottom:0}
 .row .lab{direction:ltr;text-align:left;min-width:0}
 .row .lab small{display:block;color:var(--muted);font-size:12px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.row .lab small.rmk{cursor:pointer;text-decoration:underline dotted;text-underline-offset:3px}
+.row .lab small.rmk.empty{color:var(--brand);text-decoration:none;opacity:.85}
+.rmkEdit{display:block;width:100%;font-size:16px;padding:5px 8px;margin:3px 0;border:1px solid var(--brand);border-radius:8px;background:var(--card,#fff);color:inherit}
 .row.meal .lab{color:var(--muted)}
 .x{border:0;background:none;color:var(--muted);font-size:20px;line-height:1;padding:4px 8px;border-radius:8px}
 .x:hover{color:var(--red);background:var(--red-soft)}
@@ -190,6 +193,9 @@ body{margin:0;min-height:100%;padding-top:env(safe-area-inset-top,0px)}
 .viewer{position:fixed;inset:0;background:rgba(0,0,0,.92);z-index:20;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:14px;padding:16px}
 .viewer img{max-width:100%;max-height:75vh;border-radius:10px}
 .viewer .vbar{display:flex;gap:8px;flex-wrap:wrap;justify-content:center}
+.viewer .vpg{display:flex;gap:6px;flex-wrap:wrap;justify-content:center;color:#fff;font-size:14px;align-items:center}
+.viewer .vpg button{min-width:44px;padding:6px 10px;border-radius:10px;border:1px solid #fff6;background:transparent;color:#fff;font:inherit}
+.viewer .vpg button.on{background:#fff;color:#111;font-weight:700}
 .viewer .btn{background:#fff;color:#111;border-color:#fff}
 .install{background:var(--surface);border-radius:16px;box-shadow:var(--shadow);padding:12px 14px;display:flex;gap:12px;align-items:center}
 .install img{width:44px;height:44px;border-radius:10px}
@@ -871,7 +877,7 @@ html[dir=ltr] .card::before{border-radius:4px 0 0 4px}
 
 <datalist id="projList"></datalist>
 <input type="file" id="phFile" accept="image/*" hidden>
-<div class="viewer" id="viewer" hidden><img id="vImg" alt="صورة الفاتورة"><div class="vbar"><button class="btn" id="vRep" type="button">استبدال</button><button class="btn" id="vDel" type="button">حذف الصورة</button><button class="btn" id="vClose" type="button">إغلاق</button></div></div>
+<div class="viewer" id="viewer" hidden><div class="vpg" id="vPg"></div><img id="vImg" alt="صورة الفاتورة"><div class="vbar"><button class="btn" id="vAdd" type="button">➕ صفحة كمان</button><button class="btn" id="vRep" type="button">استبدال</button><button class="btn" id="vDel" type="button">حذف الصفحة دي</button><button class="btn" id="vClose" type="button">إغلاق</button></div></div>
 <div class="camOv" id="camOv" hidden>
   <div class="camTop"><span id="camHint">وجّه الكاميرا على الفاتورة</span><button class="camAuto" id="camAuto" type="button">⚡ أوتوماتيك</button></div>
   <div class="camStage" id="camStage"><video id="camV" playsinline muted autoplay></video><canvas id="camC"></canvas><div class="camMsg" id="camMsg" hidden></div></div>
@@ -1019,7 +1025,7 @@ const EN={
  'راجع بلمسة':'Review in a tap','التطبيق بيرتب الفواتير ويحسب الأيام والوجبات. أي رقم تقدر تعدّله بلمسة.':'The app sorts the invoices and counts days and meals. Fix any number with a tap.',
  'طلّع Excel وتابع رصيدك':'Export Excel, track your balance','فورم UUES Expenses Report جاهز للحسابات، وتعرف دايماً ليك ولا عليك.':'A ready UUES Expenses Report for accounts — and you always know who owes whom.',
  'تخطي':'Skip','التالي':'Next','السكن':'Lodging','المواصلات':'Transport','متنوع':'Misc.','دوّر بالمشروع أو الكود أو الرقم…':'Search by project, code or number…',
- 'آخر التحديثات':'What’s new','🎯 الكاميرا بقت بتلقط حرف الورقة نفسه: بتشتغل على ترابيزة بيضا أو خشب، ولو إيدك ماسكة الفاتورة.':'🎯 The camera now finds the paper edges themselves: works on a white or wooden table, even with your hand holding the receipt.','📸 كاميرا سكان جوه التطبيق زي واتساب: بتحوّط الفاتورة بإطار وتصوّر لوحدها (أو يدوي)، واختيار أبيض وأسود أو ألوان.':'📸 In-app scan camera like WhatsApp: it outlines the receipt and shoots by itself (or manually), black & white or colour.','📄 السكان بقى أنضف: بيشيل الظل، الورقة بيضا والكلام أوضح وبدقة أعلى — وزرار 📷 بتاع الفاتورة القديمة بيعدّي على السكان كمان.':'📄 Cleaner scans: shadows removed, white paper, sharper text at higher resolution — and an existing invoice’s 📷 button uses the scanner too.','📄 ماسح مستندات: التطبيق بيلاقي أطراف الفاتورة لوحده، بيعدّلها لو متصوّرة مايلة ويخلّيها أوضح زي السكانر.':'📄 Document scanner: the app finds the receipt edges, straightens a tilted photo and cleans it like a scanner.','📋 الصق الفاتورة على طول من واتساب (نسخ ← لصق)، وفواتير الـ PDF بتتقري وتتحط في الملف زي الصور.':'📋 Paste a receipt straight from WhatsApp (Copy → Paste), and PDF receipts are read and added to the file like photos.','📷 صوّر الفواتير ورا بعض — كل فاتورة بتاخد رقم، وتتحط مترقمة بعد الفورم في ملف PDF واحد تبعته مرة واحدة.':'📷 Snap receipts one after another — each gets a number and goes, numbered, after the form in ONE PDF file you send at once.','✍️ توقيعك على الفورم، 🧾 صور الفواتير بعد الفورم في الـ PDF، 📅 تاريخ لكل فاتورة («بنزين 110 يوم 3»)، 📷 صوّر الفاتورة والتطبيق يقراها، 💾 نسخة احتياطية كل أسبوع بدوسة.':'✍️ Your signature on the form, 🧾 receipt photos after the form in the PDF, 📅 a date per invoice («fuel 110 day 3»), 📷 snap a receipt and the app reads it, 💾 one-tap weekly backup.','📲 باركود للتطبيق: زميلك يصوّره ويضيف التطبيق بزرار واحد — واللوجو بقى ملوّن في الطباعة والـ Excel.':'📲 App QR code: a colleague scans it and adds the app with one button — and the logo is now in colour in print and Excel.','👁️ عرض العهدة كصورة واضحة A4 — شاركها واتساب أو اطبعها على طول، والـ PDF بقى مظبوط على ورقة A4 في أي موبايل.':'👁️ View a custody as a sharp A4 picture — share it on WhatsApp or print it right away; PDF now fits A4 on every phone.','تحليل المصروفات بالشهور والأنواع، بحث في العهد، وتنبيهات للعهد المتأخرة والنسخة الاحتياطية.':'Spending insights by month and type, custody search, and reminders for late custodies and backups.',
+ 'آخر التحديثات':'What’s new','➕ صفحة كمان':'➕ Add page','حذف الصفحة دي':'Delete this page','🎯 الكاميرا بقت بتلقط حرف الورقة نفسه: بتشتغل على ترابيزة بيضا أو خشب، ولو إيدك ماسكة الفاتورة.':'🎯 The camera now finds the paper edges themselves: works on a white or wooden table, even with your hand holding the receipt.','📸 كاميرا سكان جوه التطبيق زي واتساب: بتحوّط الفاتورة بإطار وتصوّر لوحدها (أو يدوي)، واختيار أبيض وأسود أو ألوان.':'📸 In-app scan camera like WhatsApp: it outlines the receipt and shoots by itself (or manually), black & white or colour.','📄 السكان بقى أنضف: بيشيل الظل، الورقة بيضا والكلام أوضح وبدقة أعلى — وزرار 📷 بتاع الفاتورة القديمة بيعدّي على السكان كمان.':'📄 Cleaner scans: shadows removed, white paper, sharper text at higher resolution — and an existing invoice’s 📷 button uses the scanner too.','📄 ماسح مستندات: التطبيق بيلاقي أطراف الفاتورة لوحده، بيعدّلها لو متصوّرة مايلة ويخلّيها أوضح زي السكانر.':'📄 Document scanner: the app finds the receipt edges, straightens a tilted photo and cleans it like a scanner.','📋 الصق الفاتورة على طول من واتساب (نسخ ← لصق)، وفواتير الـ PDF بتتقري وتتحط في الملف زي الصور.':'📋 Paste a receipt straight from WhatsApp (Copy → Paste), and PDF receipts are read and added to the file like photos.','📷 صوّر الفواتير ورا بعض — كل فاتورة بتاخد رقم، وتتحط مترقمة بعد الفورم في ملف PDF واحد تبعته مرة واحدة.':'📷 Snap receipts one after another — each gets a number and goes, numbered, after the form in ONE PDF file you send at once.','✍️ توقيعك على الفورم، 🧾 صور الفواتير بعد الفورم في الـ PDF، 📅 تاريخ لكل فاتورة («بنزين 110 يوم 3»)، 📷 صوّر الفاتورة والتطبيق يقراها، 💾 نسخة احتياطية كل أسبوع بدوسة.':'✍️ Your signature on the form, 🧾 receipt photos after the form in the PDF, 📅 a date per invoice («fuel 110 day 3»), 📷 snap a receipt and the app reads it, 💾 one-tap weekly backup.','📲 باركود للتطبيق: زميلك يصوّره ويضيف التطبيق بزرار واحد — واللوجو بقى ملوّن في الطباعة والـ Excel.':'📲 App QR code: a colleague scans it and adds the app with one button — and the logo is now in colour in print and Excel.','👁️ عرض العهدة كصورة واضحة A4 — شاركها واتساب أو اطبعها على طول، والـ PDF بقى مظبوط على ورقة A4 في أي موبايل.':'👁️ View a custody as a sharp A4 picture — share it on WhatsApp or print it right away; PDF now fits A4 on every phone.','تحليل المصروفات بالشهور والأنواع، بحث في العهد، وتنبيهات للعهد المتأخرة والنسخة الاحتياطية.':'Spending insights by month and type, custody search, and reminders for late custodies and backups.',
  'رصيد العهدة: المستلم والمصروف، ومدين أو دائن — ونسخة إنجليزي كاملة.':'Cash balance: received vs. spent, debit or credit — plus a full English version.',
  'صفحات وتابات، لوجو الشركة، وشاشة افتتاحية.':'Pages and tabs, the company logo, and an opening screen.',
  'فهم التاريخ بالكلام، والمايك بيفضل شغال لحد ما تدوس.':'Spoken dates, and the mic keeps listening until you tap.',
@@ -1182,9 +1188,17 @@ function renderSheet(){
     list.forEach(i=>{
       const r=document.createElement('div');r.className='row';
       r.innerHTML='<span class="lab"></span><span class="num"></span><button class="ph" type="button" aria-label="صورة الفاتورة">📷</button><button class="x" aria-label="حذف">×</button>';
-      { const pb=r.querySelector('.ph'); if(photoKeys.has(i.id)){pb.classList.add('has');pb.textContent='🧾'+(rn.get(i.id)||'')} pb.onclick=()=>photoTap(i.id); }
+      { const pb=r.querySelector('.ph'); if(photoKeys.has(i.id)){const np=pageKeys(i.id).length;pb.classList.add('has');pb.textContent='🧾'+(rn.get(i.id)||'')+(np>1?' ('+np+')':'')} pb.onclick=()=>photoTap(i.id); }
       r.querySelector('.lab').textContent=i.label;
-      if(i.remark){const s=document.createElement('small');s.textContent=i.remark;r.querySelector('.lab').appendChild(s)}
+      /* 📝 the note under each invoice (its name, what it was for…): tap to write / change it */
+      { const s=document.createElement('small');s.className='rmk'+(i.remark?'':' empty');s.textContent=i.remark||tr('📝 ضيف ملاحظة','📝 Add a note');
+        s.onclick=()=>{const inp=document.createElement('input');inp.className='rmkEdit';inp.dir='auto';inp.value=i.remark||'';
+          inp.placeholder=tr('اسم الفاتورة أو ملاحظة','Invoice name or note');s.replaceWith(inp);inp.focus();let done=false;
+          const commit=()=>{if(done)return;done=true;const v=inp.value.trim();
+            if(v!==(i.remark||'')){mutate(cc=>{cc.items=cc.items.map(x=>{if(x.id!==i.id)return x;const y={...x};if(v)y.remark=v;else delete y.remark;return y})});toast(tr('اتحفظت الملاحظة','Note saved'))}else renderSheet()};
+          inp.onkeydown=e=>{if(e.key==='Enter'){e.preventDefault();commit()}if(e.key==='Escape'){done=true;renderSheet()}};
+          inp.onblur=commit};
+        r.querySelector('.lab').appendChild(s) }
       { const d=document.createElement('label'); d.className='dtc'+(i.date?'':' auto'); const sp=document.createElement('span');
         sp.textContent='📅 '+dmy(i.date||c.to).slice(0,5); const di=document.createElement('input'); di.type='date'; di.value=i.date||c.to||'';
         di.setAttribute('aria-label',tr('تاريخ الفاتورة','Invoice date'));
@@ -1873,7 +1887,9 @@ $('nameSave').onclick=async()=>{const n=$('nameIn').value.trim();if(!n){$('nameI
 const PDB={p:null,open(){return this.p||(this.p=new Promise((res,rej)=>{const r=indexedDB.open('uues_pc',1);r.onupgradeneeded=()=>r.result.createObjectStore('photos');r.onsuccess=()=>res(r.result);r.onerror=()=>rej(r.error)}))},
   async tx(mode,fn){const d=await this.open();return new Promise((res,rej)=>{const t=d.transaction('photos',mode);const st=t.objectStore('photos');const q=fn(st);t.oncomplete=()=>res(q&&q.result);t.onerror=()=>rej(t.error)})},
   get(k){return this.tx('readonly',s=>s.get(k))},put(k,v){return this.tx('readwrite',s=>s.put(v,k))},del(k){return this.tx('readwrite',s=>s.delete(k))},keys(){return this.tx('readonly',s=>s.getAllKeys())}};
-let photoKeys=new Set(), phTarget=null, vUrl=null;
+let photoKeys=new Set(), phTarget=null, vUrl=null, phPage=0, phAdd=false;
+/* an invoice can have several pages: key «id» = page 1, «id#2», «id#3»… */
+const pageKeys=id=>{const a=[];if(!photoKeys.has(id))return a;a.push(id);for(let n=2;photoKeys.has(id+'#'+n);n++)a.push(id+'#'+n);return a};
 PDB.keys().then(k=>{photoKeys=new Set(k||[]);if(!$('sheet').hidden)renderSheet()}).catch(()=>{});
 async function shrink(file){
   try{const img=await createImageBitmap(file);const k=Math.min(1,1400/Math.max(img.width,img.height));
@@ -1881,17 +1897,34 @@ async function shrink(file){
     c.getContext('2d').drawImage(img,0,0,c.width,c.height);return await new Promise(r=>c.toBlob(b=>r(b||file),'image/jpeg',0.72))}catch(e){return file}
 }
 async function photoTap(id){
-  phTarget=id;
+  phTarget=id; phPage=0; phAdd=false;
   if(!photoKeys.has(id)){$('phFile').click();return}
-  const b=await PDB.get(id).catch(()=>null); if(!b){photoKeys.delete(id);$('phFile').click();return}
-  if(vUrl)URL.revokeObjectURL(vUrl); vUrl=URL.createObjectURL(b); $('vImg').src=vUrl; $('viewer').hidden=false;
+  showPhPage();
+}
+async function showPhPage(){
+  const ks=pageKeys(phTarget); if(!ks.length){$('viewer').hidden=true;return}
+  phPage=Math.max(0,Math.min(phPage,ks.length-1));
+  const b=await PDB.get(ks[phPage]).catch(()=>null);
+  if(vUrl)URL.revokeObjectURL(vUrl); vUrl=b?URL.createObjectURL(b):''; $('vImg').src=vUrl; $('viewer').hidden=false;
+  const P=$('vPg'); P.innerHTML='';
+  if(ks.length>1){const t=document.createElement('span');t.textContent=tr('الصفحات:','Pages:');P.appendChild(t);
+    ks.forEach((k,n)=>{const bt=document.createElement('button');bt.type='button';bt.textContent=String(n+1);if(n===phPage)bt.className='on';bt.onclick=()=>{phPage=n;showPhPage()};P.appendChild(bt)})}
+  $('vDel').textContent=ks.length>1?tr('حذف الصفحة دي','Delete this page'):tr('حذف الصورة','Delete photo');
 }
 $('phFile').onchange=async e=>{const f=e.target.files&&e.target.files[0];e.target.value='';if(!f||!phTarget)return;
-  const tgt=phTarget, blob=isPdf(f)?(await pdfReceipt(f).catch(()=>null))?.blob:await scanDoc(f); if(!blob)return;
-  try{await PDB.put(tgt,blob);photoKeys.add(tgt);$('viewer').hidden=true;renderSheet();toast('اتحفظت صورة الفاتورة')}catch(err){toast('ما اتحفظتش الصورة — المساحة ممكن تكون مليانة')}};
+  const tgt=phTarget, add=phAdd, blob=isPdf(f)?(await pdfReceipt(f).catch(()=>null))?.blob:await scanDoc(f); phAdd=false; if(!blob)return;
+  const ks=pageKeys(tgt), key=!ks.length?tgt:add?tgt+'#'+(ks.length+1):ks[Math.min(phPage,ks.length-1)];
+  try{await PDB.put(key,blob);photoKeys.add(key);renderSheet();
+    if(add||ks.length){phTarget=tgt;phPage=pageKeys(tgt).indexOf(key);showPhPage()}else $('viewer').hidden=true;
+    toast(add?tr(`اتضافت الصفحة ${ks.length+1}`,`Page ${ks.length+1} added`):'اتحفظت صورة الفاتورة')}catch(err){toast('ما اتحفظتش الصورة — المساحة ممكن تكون مليانة')}};
 $('vClose').onclick=()=>{$('viewer').hidden=true};
-$('vRep').onclick=()=>$('phFile').click();
-$('vDel').onclick=async()=>{try{await PDB.del(phTarget)}catch(e){}photoKeys.delete(phTarget);$('viewer').hidden=true;renderSheet();toast('اتمسحت الصورة')};
+$('vAdd').onclick=()=>{phAdd=true;$('phFile').click()};
+$('vRep').onclick=()=>{phAdd=false;$('phFile').click()};
+$('vDel').onclick=async()=>{const ks=pageKeys(phTarget);if(!ks.length)return;const at=Math.min(phPage,ks.length-1);
+  try{for(let j=at+1;j<ks.length;j++){const b=await PDB.get(ks[j]);await PDB.put(ks[j-1],b)}await PDB.del(ks[ks.length-1])}catch(e){}  /* later pages move up one */
+  photoKeys.delete(ks[ks.length-1]);renderSheet();
+  if(ks.length>1){phPage=Math.max(0,at-(at===ks.length-1?1:0));showPhPage();toast(tr('اتمسحت الصفحة','Page deleted'))}
+  else{$('viewer').hidden=true;toast('اتمسحت الصورة')}};
 /* ---------- ✍️ my signature: drawn once with a finger, stored in the data (so backups carry it), printed on every form ---------- */
 let SIG='';
 function setSig(u){SIG=u||'';const p=$('sigPrev');p.hidden=!SIG;if(SIG)p.src=SIG;$('sigBtn').textContent=SIG?tr('✍️ غيّر التوقيع','✍️ Change signature'):tr('✍️ وقّع','✍️ Sign')}
@@ -1922,23 +1955,31 @@ $('sigSave').onclick=()=>{const u=sigTrim($('sigPad'));if(!u){toast(tr('وقّع
   sigStore(u);$('sigOv').hidden=true;toast(tr('✓ اتحفظ التوقيع — هيظهر في الـ PDF والصورة والـ Excel','✓ Signature saved — it appears on the PDF, picture and Excel'))};
 $('sigDel').onclick=()=>{sigStore('');$('sigOv').hidden=true;toast(tr('اتمسح التوقيع','Signature removed'))};
 
-/* ---------- 🧾 receipt photos after the form: 2 per A4 page, labelled like the form, black & white ----------
+/* ---------- 🧾 receipt photos after the form: each invoice page on its own A4 page, labelled like the form, black & white;
+   small slips share a page: tall narrow slips (fuel, card machine) 2 side by side, short wide ones 2 one above the other ----------
    every photographed invoice gets a receipt number 1..N in the same order as the form (shown on the receipt page,
    next to its row in the form «#3», and on its 🧾 button) */
 const receiptNums=c=>{const g=grouped(c),m=new Map();let n=0;[...g.L,...g.T,...g.M].forEach(i=>{if(photoKeys.has(i.id))m.set(i.id,++n)});return m};
 async function photoJobs(c){
-  const g=grouped(c), list=[...g.L,...g.T,...g.M].filter(i=>photoKeys.has(i.id)), n=Math.ceil(list.length/2), jobs=[];
-  for(let k=0;k<list.length;k+=2){const two=list.slice(k,k+2),pg=k/2+1,first=k+1;jobs.push(()=>photoCanvas(c,two,pg,n,first,list.length))}
-  return jobs;
+  const g=grouped(c), list=[...g.L,...g.T,...g.M].filter(i=>photoKeys.has(i.id)), units=[];
+  list.forEach((i,k)=>{const ks=pageKeys(i.id);ks.forEach((key,p)=>units.push({i,no:k+1,key,p:p+1,np:ks.length}))});
+  for(const u of units){u.kind='full';try{const b=await PDB.get(u.key);const im=await createImageBitmap(b);const r=im.height/im.width;if(im.close)im.close();
+    u.kind=r>=1.7?'tall':r<=.8?'wide':'full'}catch(e){}}
+  const groups=[];
+  for(let k=0;k<units.length;k++){const u=units[k],v=units[k+1];
+    if(u.kind!=='full'&&v&&v.kind===u.kind){groups.push({lay:u.kind==='tall'?'cols':'rows',us:[u,v]});k++}else groups.push({lay:'full',us:[u]})}
+  return groups.map((gr,k)=>()=>photoCanvas(c,gr,k+1,groups.length,list.length));
 }
 function drawGray(g,im,x,y,w,h){const t=document.createElement('canvas');t.width=Math.max(1,Math.round(w*PX));t.height=Math.max(1,Math.round(h*PX));
   const tg=t.getContext('2d');tg.drawImage(im,0,0,t.width,t.height);const d=tg.getImageData(0,0,t.width,t.height),a=d.data;
   for(let p=0;p<a.length;p+=4){const v=a[p]*.299+a[p+1]*.587+a[p+2]*.114;a[p]=a[p+1]=a[p+2]=v}
   tg.putImageData(d,0,0);g.drawImage(t,x*PX,y*PX);t.width=t.height=0}
-async function photoCanvas(c,two,pg,n,first,total){
-  const inner=A4.w-2*A4.m, maxH=A4.h-2*A4.m, gap=6, colW=(inner-gap)/2, top=17;
-  const imgs=await Promise.all(two.map(async i=>{const b=await PDB.get(i.id).catch(()=>null);if(!b)return null;
-    const u=URL.createObjectURL(b);const im=await loadImg(u);URL.revokeObjectURL(u);return im}));
+async function photoCanvas(c,gr,pg,n,total){
+  const inner=A4.w-2*A4.m, maxH=A4.h-2*A4.m, gap=6, y0=12, two=gr.us;
+  const cells=gr.lay==='cols'?[[0,y0,(inner-gap)/2,maxH-y0],[(inner+gap)/2,y0,(inner-gap)/2,maxH-y0]]
+    :gr.lay==='rows'?[[0,y0,inner,(maxH-y0-gap)/2],[0,y0+(maxH-y0+gap)/2,inner,(maxH-y0-gap)/2]]:[[0,y0,inner,maxH-y0]];
+  const imgs=await Promise.all(two.map(async u=>{const b=await PDB.get(u.key).catch(()=>null);if(!b)return null;
+    const url=URL.createObjectURL(b);const im=await loadImg(url);URL.revokeObjectURL(url);return im}));
   return layPage([{h:maxH,draw(g){
     g.fillStyle=g.strokeStyle='#000';g.textAlign='left';g.textBaseline='alphabetic';
     const fitF=(s,pt,bold,w)=>{let f=pt;do{g.font=`${bold?'bold ':''}${f*PT*PX}px ${F_TNR}`;f-=.5}while(f>6&&g.measureText(s).width/PX>w)};
@@ -1946,15 +1987,16 @@ async function photoCanvas(c,two,pg,n,first,total){
     g.direction='ltr';g.font=`${10*PT*PX}px ${F_TNR}`;const pw=g.measureText(pn).width/PX;g.fillText(pn,(inner-pw)*PX,6*PX);
     fitF(head,13,1,inner-pw-6);g.direction=HAS_AR(head)?'rtl':'ltr';g.fillText(head,0,6*PX);g.direction='ltr';
     g.lineWidth=1.2*PT*PX;g.beginPath();g.moveTo(0,9*PX);g.lineTo(inner*PX,9*PX);g.stroke();
-    two.forEach((i,k)=>{const x=k*(colW+gap), im=imgs[k], no=first+k, cap=`${i.label} — ${pS(i.amount)} — ${dmy(i.date||c.to)}`;
-      /* the receipt number in a black badge, then the caption */
-      const bw=11,bh0=8.5;g.fillStyle='#000';g.fillRect(x*PX,(top-10)*PX,bw*PX,bh0*PX);g.fillStyle='#fff';g.font=`bold ${13*PT*PX}px ${F_TNR}`;g.direction='ltr';
-      const nt='#'+no;g.fillText(nt,(x+(bw-g.measureText(nt).width/PX)/2)*PX,(top-3.6)*PX);g.fillStyle='#000';
-      fitF(cap,11,1,colW-bw-2);g.direction='ltr';g.fillText(cap,(x+bw+2)*PX,(top-3)*PX);
-      if(i.remark){fitF(i.remark,9,0,colW);g.direction=HAS_AR(i.remark)?'rtl':'ltr';g.fillText(i.remark,x*PX,(top+1)*PX);g.direction='ltr'}
-      const bh=maxH-top-5, by=top+3;
-      if(!im){g.lineWidth=.7*PT*PX;g.strokeRect(x*PX,by*PX,colW*PX,bh*PX);return}
-      const s=Math.min(colW/im.naturalWidth,bh/im.naturalHeight), w=im.naturalWidth*s, h=im.naturalHeight*s, ix=x+(colW-w)/2;
+    two.forEach((u,k)=>{const i=u.i, [x,y,cw,ch]=cells[k], im=imgs[k], cap=`${i.label} — ${pS(i.amount)} — ${dmy(i.date||c.to)}${u.np>1?` — page ${u.p}/${u.np}`:''}`;
+      /* the receipt number in a black badge, then the caption, then the note */
+      const bw=11,bh0=8.5;g.fillStyle='#000';g.fillRect(x*PX,y*PX,bw*PX,bh0*PX);g.fillStyle='#fff';g.font=`bold ${13*PT*PX}px ${F_TNR}`;g.direction='ltr';
+      const nt='#'+u.no;g.fillText(nt,(x+(bw-g.measureText(nt).width/PX)/2)*PX,(y+6.4)*PX);g.fillStyle='#000';
+      fitF(cap,11,1,cw-bw-2);g.direction='ltr';g.fillText(cap,(x+bw+2)*PX,(y+6.2)*PX);
+      let by=y+11;
+      if(i.remark){fitF(i.remark,10,0,cw);const ar=HAS_AR(i.remark);g.direction=ar?'rtl':'ltr';g.textAlign=ar?'right':'left';g.fillText(i.remark,(ar?x+cw:x)*PX,(y+13)*PX);g.direction='ltr';g.textAlign='left';by=y+16}
+      const bh=y+ch-by;
+      if(!im){g.lineWidth=.7*PT*PX;g.strokeRect(x*PX,by*PX,cw*PX,bh*PX);return}
+      const sc=Math.min(cw/im.naturalWidth,bh/im.naturalHeight), w=im.naturalWidth*sc, h=im.naturalHeight*sc, ix=x+(cw-w)/2;
       drawGray(g,im,ix,by,w,h);g.lineWidth=.7*PT*PX;g.strokeRect(ix*PX,by*PX,w*PX,h*PX)})}}]);
 }
 
@@ -2800,7 +2842,7 @@ $('shBtn').onclick=async()=>{
 };
 if('serviceWorker' in navigator&&location.protocol==='https:')navigator.serviceWorker.register('sw.js').catch(()=>{});
 /* ---------- quick update: version.json is never cached; a newer one shows a bar, one tap reloads ---------- */
-const APP_VER='2026.10.11.6';
+const APP_VER='2026.10.11.7';
 $('verTxt').textContent=APP_VER;
 /* update = check the internet first, then let the new service worker take over; the saved copy is NOT deleted
    (deleting it and then losing the connection left Safari with «FetchEvent.respondWith … Returned response is null»);

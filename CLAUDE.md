@@ -24,6 +24,17 @@ this repo, so GitHub is the single source of truth — never leave work only in 
   إيه», show him the latest lines as a numbered list; when he picks one, continue that work.
 
 ## Status
+- **v2026.10.11.7** (2026-10-11): his 3 requests (written by the other account, which hit its session limit before
+  publishing; finished, tested and published from the Apple account):
+  1. 📝 note per invoice: tap the small line under each invoice (`.rmk`, «📝 ضيف ملاحظة») → inline input → `i.remark`;
+     printed under the invoice caption on its receipt page (RTL right-aligned when Arabic).
+  2. several pages per invoice: photo keys `id`, `id#2`, `id#3`… (`pageKeys(id)`); viewer has page buttons, «➕ صفحة كمان»,
+     «حذف الصفحة دي» (later pages move up); the row button shows `🧾n (pages)`.
+  3. receipt pages in PDF / preview: each invoice page on its OWN A4 page; small slips share: tall (h/w ≥ 1.7, fuel /
+     card machine) 2 side by side, wide (h/w ≤ .8) 2 one above the other (`photoJobs` groups, `photoCanvas(c,gr,…)`).
+  Test (desktop, mobile preset): 7 items with A4 / tall / wide / 2-page photos → form + 6 receipt pages at 2480×3496,
+  note typed by real clicks saved + shown, add page via the scanner (✓ تمام) and delete page 1 → page 2 moves up, no console errors.
+  Note: the weekly backup overlay `#bkOv` covers the screen in a fresh test profile — set `localStorage.uues_bk` first.
 - **v2026.10.11.6** (2026-10-11): on his iPhone the live camera never outlined the paper (the bright-blob `scanFind`
   fails on a white table / with a hand on the receipt). New `edgeFind(g,w,h,cand)` (no library): blur → Sobel with
   edge direction → threshold (top 9 %, capped at 26 so faint white-on-white edges stay) → Hough where each pixel votes
