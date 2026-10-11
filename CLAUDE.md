@@ -24,9 +24,12 @@ this repo, so GitHub is the single source of truth — never leave work only in 
   إيه», show him the latest lines as a numbered list; when he picks one, continue that work.
 
 ## Status
+- **v2026.10.11.10** (2026-10-11): receipt photos in the PDF / preview / print are drawn in COLOUR (he asked):
+  `photoCanvas` uses `g.drawImage` (smoothing high); `drawGray` removed. Captions, badges and frames stay black.
+  Test: colour photos (A4 + 2 fuel slips) → receipt pages full of colour, form page unchanged.
 - **v2026.10.11.9** (2026-10-11): receipt photos are SAVED IN COLOUR as taken (he asked). The scan editor's mode used to
   default to ⚫ black & white (`uues_scanmode` = 'bw'); now `scanMode='color'` at every scan, ⚫ applies to that one scan only
-  (not remembered). The PDF / printed receipt pages stay black & white (`drawGray`), like the form. Photos saved before
+  (not remembered). (Since v.10 the receipt photos are also printed in colour.) Photos saved before
   .9 stay black & white (the colour original was not kept) — re-shoot if colour is needed.
 - **v2026.10.11.8** (2026-10-11): he could not see the note line: every invoice gets the PROJECT NAME as its automatic
   remark (voice / typed add → Excel «Remarks»), so the line showed «MODON Jeddah» in small grey text like before. Now a remark
@@ -171,7 +174,7 @@ Creating new public repos/sites needs his explicit OK; pushing updates to this r
   to fit) → `makePages()` PNG files → «🖨️ PDF» = `printFiles()` puts the PNGs in `#printArea` (@page margin 0,
   img width 100%, one per page) + `window.print()`; «👁️ عرض» = `#pvOv` overlay with Share (navigator.share
   files → WhatsApp / Print / Save Image on iPhone), Print / PDF, Save. Replaced the old HTML print because it
-  overflowed the page on iPhone. **Output must stay BLACK & WHITE** (grayscale logos via `grayImgs()`), same
+  overflowed the page on iPhone. **The form part stays black & white (no fills); RECEIPT PHOTOS are printed in COLOUR since v.10 (his request)** (grayscale logos via `grayImgs()`), same
   layout as the original UUES form, thick frame. Test: `makePages(...)` → POST blob to savesrv → view PNG;
   print check = HTML with the same print CSS + PNGs → headless Edge `--print-to-pdf` (own --user-data-dir) → page count.
 

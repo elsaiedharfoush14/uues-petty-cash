@@ -1958,7 +1958,7 @@ $('sigSave').onclick=()=>{const u=sigTrim($('sigPad'));if(!u){toast(tr('وقّع
   sigStore(u);$('sigOv').hidden=true;toast(tr('✓ اتحفظ التوقيع — هيظهر في الـ PDF والصورة والـ Excel','✓ Signature saved — it appears on the PDF, picture and Excel'))};
 $('sigDel').onclick=()=>{sigStore('');$('sigOv').hidden=true;toast(tr('اتمسح التوقيع','Signature removed'))};
 
-/* ---------- 🧾 receipt photos after the form: each invoice page on its own A4 page, labelled like the form, black & white;
+/* ---------- 🧾 receipt photos after the form: each invoice page on its own A4 page, labelled like the form, photos in colour;
    small slips share a page: tall narrow slips (fuel, card machine) 2 side by side, short wide ones 2 one above the other ----------
    every photographed invoice gets a receipt number 1..N in the same order as the form (shown on the receipt page,
    next to its row in the form «#3», and on its 🧾 button) */
@@ -1973,10 +1973,6 @@ async function photoJobs(c){
     if(u.kind!=='full'&&v&&v.kind===u.kind){groups.push({lay:u.kind==='tall'?'cols':'rows',us:[u,v]});k++}else groups.push({lay:'full',us:[u]})}
   return groups.map((gr,k)=>()=>photoCanvas(c,gr,k+1,groups.length,list.length));
 }
-function drawGray(g,im,x,y,w,h){const t=document.createElement('canvas');t.width=Math.max(1,Math.round(w*PX));t.height=Math.max(1,Math.round(h*PX));
-  const tg=t.getContext('2d');tg.drawImage(im,0,0,t.width,t.height);const d=tg.getImageData(0,0,t.width,t.height),a=d.data;
-  for(let p=0;p<a.length;p+=4){const v=a[p]*.299+a[p+1]*.587+a[p+2]*.114;a[p]=a[p+1]=a[p+2]=v}
-  tg.putImageData(d,0,0);g.drawImage(t,x*PX,y*PX);t.width=t.height=0}
 async function photoCanvas(c,gr,pg,n,total){
   const inner=A4.w-2*A4.m, maxH=A4.h-2*A4.m, gap=6, y0=12, two=gr.us;
   const cells=gr.lay==='cols'?[[0,y0,(inner-gap)/2,maxH-y0],[(inner+gap)/2,y0,(inner-gap)/2,maxH-y0]]
@@ -2000,7 +1996,7 @@ async function photoCanvas(c,gr,pg,n,total){
       const bh=y+ch-by;
       if(!im){g.lineWidth=.7*PT*PX;g.strokeRect(x*PX,by*PX,cw*PX,bh*PX);return}
       const sc=Math.min(cw/im.naturalWidth,bh/im.naturalHeight), w=im.naturalWidth*sc, h=im.naturalHeight*sc, ix=x+(cw-w)/2;
-      drawGray(g,im,ix,by,w,h);g.lineWidth=.7*PT*PX;g.strokeRect(ix*PX,by*PX,w*PX,h*PX)})}}]);
+      g.imageSmoothingQuality='high';g.drawImage(im,ix*PX,by*PX,w*PX,h*PX);g.lineWidth=.7*PT*PX;   /* receipt photos in COLOUR (his request 2026-10-11) */g.strokeRect(ix*PX,by*PX,w*PX,h*PX)})}}]);
 }
 
 /* ---------- 📷 read a receipt photo: Tesseract.js (free, runs on the phone; the first use downloads ~10 MB) ---------- */
@@ -2847,7 +2843,7 @@ $('shBtn').onclick=async()=>{
 };
 if('serviceWorker' in navigator&&location.protocol==='https:')navigator.serviceWorker.register('sw.js').catch(()=>{});
 /* ---------- quick update: version.json is never cached; a newer one shows a bar, one tap reloads ---------- */
-const APP_VER='2026.10.11.9';
+const APP_VER='2026.10.11.10';
 $('verTxt').textContent=APP_VER;
 /* update = check the internet first, then let the new service worker take over; the saved copy is NOT deleted
    (deleting it and then losing the connection left Safari with «FetchEvent.respondWith … Returned response is null»);
