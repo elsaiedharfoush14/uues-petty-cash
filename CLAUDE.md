@@ -24,6 +24,10 @@ this repo, so GitHub is the single source of truth — never leave work only in 
   إيه», show him the latest lines as a numbered list; when he picks one, continue that work.
 
 ## Status
+- **v2026.10.11.8** (2026-10-11): he could not see the note line: every invoice gets the PROJECT NAME as its automatic
+  remark (voice / typed add → Excel «Remarks»), so the line showed «MODON Jeddah» in small grey text like before. Now a remark
+  equal to the project counts as no note: dashed box «📝 ضيف ملاحظة» on its own line under the invoice name; an own note is a
+  solid chip «📝 note ✎»; clearing a note puts the project name back; the receipt page prints only own notes.
 - **v2026.10.11.7** (2026-10-11): his 3 requests (written by the other account, which hit its session limit before
   publishing; finished, tested and published from the Apple account):
   1. 📝 note per invoice: tap the small line under each invoice (`.rmk`, «📝 ضيف ملاحظة») → inline input → `i.remark`;

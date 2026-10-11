@@ -85,8 +85,9 @@ input[type=date]{direction:ltr;text-align:right}
 .row:last-child{border-bottom:0}
 .row .lab{direction:ltr;text-align:left;min-width:0}
 .row .lab small{display:block;color:var(--muted);font-size:12px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
-.row .lab small.rmk{cursor:pointer;text-decoration:underline dotted;text-underline-offset:3px}
-.row .lab small.rmk.empty{color:var(--brand);text-decoration:none;opacity:.85}
+.row .lab small.rmk{cursor:pointer;display:block;width:fit-content;max-width:100%;unicode-bidi:plaintext;margin-top:4px;padding:3px 9px;border-radius:9px;white-space:normal;overflow-wrap:anywhere;line-height:1.5}
+.row .lab small.rmk.empty{color:var(--brand);border:1.5px dashed color-mix(in srgb,var(--brand) 55%,transparent);background:transparent}
+.row .lab small.rmk.has{color:var(--ink);background:var(--brand-soft);border:1.5px solid color-mix(in srgb,var(--brand) 35%,transparent)}
 .rmkEdit{display:block;width:100%;font-size:16px;padding:5px 8px;margin:3px 0;border:1px solid var(--brand);border-radius:8px;background:var(--card,#fff);color:inherit}
 .row.meal .lab{color:var(--muted)}
 .x{border:0;background:none;color:var(--muted);font-size:20px;line-height:1;padding:4px 8px;border-radius:8px}
@@ -1191,11 +1192,13 @@ function renderSheet(){
       { const pb=r.querySelector('.ph'); if(photoKeys.has(i.id)){const np=pageKeys(i.id).length;pb.classList.add('has');pb.textContent='🧾'+(rn.get(i.id)||'')+(np>1?' ('+np+')':'')} pb.onclick=()=>photoTap(i.id); }
       r.querySelector('.lab').textContent=i.label;
       /* 📝 the note under each invoice (its name, what it was for…): tap to write / change it */
-      { const s=document.createElement('small');s.className='rmk'+(i.remark?'':' empty');s.textContent=i.remark||tr('📝 ضيف ملاحظة','📝 Add a note');
-        s.onclick=()=>{const inp=document.createElement('input');inp.className='rmkEdit';inp.dir='auto';inp.value=i.remark||'';
+      /* the project name is only the automatic remark of every invoice (Excel «Remarks»): it counts as «no note yet» */
+      { const own=i.remark&&i.remark!==c.project?i.remark:'';
+        const s=document.createElement('small');s.className='rmk'+(own?' has':' empty');s.textContent=own?'📝 '+own+'  ✎':tr('📝 ضيف ملاحظة','📝 Add a note');
+        s.onclick=()=>{const inp=document.createElement('input');inp.className='rmkEdit';inp.dir='auto';inp.value=own;
           inp.placeholder=tr('اسم الفاتورة أو ملاحظة','Invoice name or note');s.replaceWith(inp);inp.focus();let done=false;
           const commit=()=>{if(done)return;done=true;const v=inp.value.trim();
-            if(v!==(i.remark||'')){mutate(cc=>{cc.items=cc.items.map(x=>{if(x.id!==i.id)return x;const y={...x};if(v)y.remark=v;else delete y.remark;return y})});toast(tr('اتحفظت الملاحظة','Note saved'))}else renderSheet()};
+            if(v!==own){mutate(cc=>{cc.items=cc.items.map(x=>{if(x.id!==i.id)return x;const y={...x};if(v)y.remark=v;else if(cc.project)y.remark=cc.project;else delete y.remark;return y})});toast(tr('اتحفظت الملاحظة','Note saved'))}else renderSheet()};
           inp.onkeydown=e=>{if(e.key==='Enter'){e.preventDefault();commit()}if(e.key==='Escape'){done=true;renderSheet()}};
           inp.onblur=commit};
         r.querySelector('.lab').appendChild(s) }
@@ -1993,7 +1996,7 @@ async function photoCanvas(c,gr,pg,n,total){
       const nt='#'+u.no;g.fillText(nt,(x+(bw-g.measureText(nt).width/PX)/2)*PX,(y+6.4)*PX);g.fillStyle='#000';
       fitF(cap,11,1,cw-bw-2);g.direction='ltr';g.fillText(cap,(x+bw+2)*PX,(y+6.2)*PX);
       let by=y+11;
-      if(i.remark){fitF(i.remark,10,0,cw);const ar=HAS_AR(i.remark);g.direction=ar?'rtl':'ltr';g.textAlign=ar?'right':'left';g.fillText(i.remark,(ar?x+cw:x)*PX,(y+13)*PX);g.direction='ltr';g.textAlign='left';by=y+16}
+      if(i.remark&&i.remark!==c.project){fitF(i.remark,10,0,cw);const ar=HAS_AR(i.remark);g.direction=ar?'rtl':'ltr';g.textAlign=ar?'right':'left';g.fillText(i.remark,(ar?x+cw:x)*PX,(y+13)*PX);g.direction='ltr';g.textAlign='left';by=y+16}
       const bh=y+ch-by;
       if(!im){g.lineWidth=.7*PT*PX;g.strokeRect(x*PX,by*PX,cw*PX,bh*PX);return}
       const sc=Math.min(cw/im.naturalWidth,bh/im.naturalHeight), w=im.naturalWidth*sc, h=im.naturalHeight*sc, ix=x+(cw-w)/2;
@@ -2842,7 +2845,7 @@ $('shBtn').onclick=async()=>{
 };
 if('serviceWorker' in navigator&&location.protocol==='https:')navigator.serviceWorker.register('sw.js').catch(()=>{});
 /* ---------- quick update: version.json is never cached; a newer one shows a bar, one tap reloads ---------- */
-const APP_VER='2026.10.11.7';
+const APP_VER='2026.10.11.8';
 $('verTxt').textContent=APP_VER;
 /* update = check the internet first, then let the new service worker take over; the saved copy is NOT deleted
    (deleting it and then losing the connection left Safari with «FetchEvent.respondWith … Returned response is null»);
