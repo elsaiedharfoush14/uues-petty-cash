@@ -1601,7 +1601,7 @@ let pvFiles=[], pvName='', pvUrls=[], pvPdf=null;
 async function openPreview(jobs,name){
   if(pdfBusy)return; pdfBusy=true; pvName=name; pvFiles=[];
   const P=$('pvPages'); P.innerHTML=''; const w=document.createElement('div'); w.className='pvWait'; w.textContent=tr('بجهّز الصورة…','Preparing the picture…'); P.appendChild(w);
-  $('pvOv').hidden=false; $('pvShare').textContent=pvMail?tr('📧 ابعت Outlook','📧 Send Outlook'):tr('📤 ابعت PDF','📤 Send PDF');
+  $('pvOv').hidden=false; $('pvShare').textContent=pvMail?tr('📋 انسخ للرد','📋 Copy for reply'):tr('📤 ابعت PDF','📤 Send PDF');
   pvPdf=null; try{pvFiles=await makePages(await jobs,name);pvPdf=await buildPdf(pvFiles,name)}catch(e){pvFiles=[]}
   pdfBusy=false; if($('pvOv').hidden){pvFiles=[];return}
   pvUrls.forEach(u=>URL.revokeObjectURL(u)); pvUrls=pvFiles.map(f=>URL.createObjectURL(f)); P.innerHTML='';
@@ -1617,15 +1617,15 @@ Subject: ${m.subj}
 
 ${m.body}`; P.appendChild(box);
     const h=document.createElement('div'); h.className='pvInfo';
-    h.textContent=tr('📧 أول عهدة: دوس «ابعت Outlook» (الموضوع اتنسخ، الصقه في Subject). العهدة اللي بعدها في نفس الإيميل: دوس «⬇️ حفظ PDF» (الكلام بيتنسخ) ← Outlook ← افتح إيميل «'+m.subj+'» ← Reply All ← الصق الكلام ← 📎 ارفق الـ PDF من Files',
-      '📧 First custody: tap «Send Outlook» (subject copied, paste it in Subject). Next ones in the same thread: tap «⬇️ Save PDF» (text copied) → Outlook → open «'+m.subj+'» → Reply All → paste → 📎 attach the PDF from Files'); P.appendChild(h)}}
+    h.textContent=tr('📋 دوس «انسخ للرد» ← Outlook ← الإيميل القديم ← Reply All ← لصق: الكلام وصفحات العهدة بيتلصقوا مع بعض',
+      '📋 Tap «Copy for reply» → Outlook → the old e-mail → Reply All → Paste: the text and the custody pages paste together'); P.appendChild(h)}}
   pvUrls.forEach(u=>{const im=document.createElement('img');im.src=u;im.alt='';im.onclick=()=>im.classList.toggle('zoom');P.appendChild(im)});
 }
 function closePreview(){pvMail=null;$('pvOv').hidden=true;$('pvPages').innerHTML='';pvUrls.forEach(u=>URL.revokeObjectURL(u));pvUrls=[];pvFiles=[]}
 function saveFiles(files){files.forEach((f,i)=>setTimeout(()=>{const a=document.createElement('a');a.href=URL.createObjectURL(f);a.download=f.name;document.body.appendChild(a);a.click();
   setTimeout(()=>{URL.revokeObjectURL(a.href);a.remove()},4000)},i*400))}
 $('pvShare').onclick=async()=>{if(!pvFiles.length)return; const send=pvPdf?[pvPdf]:pvFiles;
-  if(pvMail){mailShare(send);return}
+  if(pvMail){copyReply();return}
   if(navigator.canShare&&navigator.canShare({files:send})){try{await navigator.share({files:send,title:pvName});return}catch(e){if(e&&e.name==='AbortError')return}}
   saveFiles(send); toast(tr('المشاركة مش متاحة هنا — الملف اتحفظ','Sharing is not available here — the file was saved'))};
 $('pvPrint').onclick=()=>{if(pvFiles.length)printFiles(pvFiles,pvName)};
@@ -1669,21 +1669,29 @@ function mailStep(c){
 }
 /* the ready e-mail: To manager, CC finance, one fixed subject (one Outlook thread), his wording */
 function mailText(c){
-  const nm=c.project||'', body=[`Dear Eng. ${MAIL.mgr||'Zakaria'},`,'',
-    `Kindly approve the attached petty cash No. ${c.no}${nm?' ('+nm+')':''},`,
-    'so the Finance team can proceed with the petty cash claim.','','Best regards,',EMP].join('\n');
+  const nm=c.project||'', body=[`Dear Eng. ${MAIL.mgr.replace(/^\s*(eng(ineer)?\.?|م\.|مهندس)\s*/i,'')||'Zakaria'},`,'',
+    `Kindly approve the attached petty cash No. ${c.no}${nm?' ('+nm+')':''}, so the Finance team can proceed with the claim.`,'',
+    'Best regards,',EMP].join('\n');
   return {to:MAIL.mail,cc:MAIL.fin,subj:thrSubj(),body};
 }
 function markMail(){
   mutate(x=>{x.flow='mgr';x.mgrSentAt=todayISO()});closePreview();
   toast(tr('📧 اتبعتت — لما المالية تصفّيها دوس «✅ المالية صفّتها»','📧 Sent — when finance settles it tap «✅ Finance settled it»'))}
-async function mailShare(send){
-  const c=custodies.find(x=>x.id===pvMail.id); if(!c)return; const m=mailText(c);
-  if(navigator.clipboard)navigator.clipboard.writeText(m.subj).catch(()=>{});
-  if(navigator.canShare&&navigator.canShare({files:send})){
-    try{await navigator.share({files:send,title:m.subj,text:m.body});markMail();return}catch(e){if(e&&e.name==='AbortError')return}}
-  saveFiles(send); location.href='mailto:'+encodeURIComponent(m.to)+'?cc='+encodeURIComponent(m.cc)+'&subject='+encodeURIComponent(m.subj)+'&body='+encodeURIComponent(m.body);
-  toast(tr('الملف اتحفظ — ضيفه للإيميل كمرفق','The file was saved — attach it to the e-mail')); markMail();
+/* one tap: the ready text + the custody pages (pictures) go to the clipboard together → one «Paste» in the Outlook Reply All */
+function copyReply(){
+  const c=custodies.find(x=>x.id===pvMail.id); if(!c)return; const body=mailText(c).body, files=pvFiles.slice();
+  const esc=t=>t.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+  const small=async f=>{const bm=await createImageBitmap(f), k=Math.min(1,1100/bm.width), cv=document.createElement('canvas');
+    cv.width=Math.round(bm.width*k); cv.height=Math.round(bm.height*k); cv.getContext('2d').drawImage(bm,0,0,cv.width,cv.height); bm.close&&bm.close();
+    const u=cv.toDataURL('image/jpeg',.82); cv.width=cv.height=0; return u};
+  const html=(async()=>new Blob(['<div style="font-family:Calibri,Arial,sans-serif;font-size:11pt">'+esc(body).replace(/\n/g,'<br>')+'</div><br>'+
+    (await Promise.all(files.map(small))).map(u=>'<img src="'+u+'" style="max-width:100%"><br>').join('')],{type:'text/html'}))();
+  const ok=()=>{markMail();toast(tr('📋 اتنسخ ✓ — افتح Outlook ← Reply All ← لصق','📋 Copied ✓ — open Outlook → Reply All → Paste'))};
+  const fail=()=>toast(tr('⚠️ النسخ ما اشتغلش هنا — استخدم «⬇️ حفظ PDF»','⚠️ Copy did not work here — use «⬇️ Save PDF»'));
+  if(navigator.clipboard&&window.ClipboardItem){
+    navigator.clipboard.write([new ClipboardItem({'text/html':html,'text/plain':new Blob([body],{type:'text/plain'})})]).then(ok)
+      .catch(()=>navigator.clipboard.writeText(body).then(()=>{ok();toast(tr('📋 الكلام بس اتنسخ — ارفق الـ PDF من «⬇️ حفظ PDF»','📋 Only the text was copied — attach the PDF from «⬇️ Save PDF»'))}).catch(fail));
+  }else if(navigator.clipboard)navigator.clipboard.writeText(body).then(ok).catch(fail); else fail();
 }
 /* ---------- 📲 install QR (qr-install.png → …/?i=1): an A4 poster to share or print ---------- */
 async function qrPosterCanvas(){
@@ -2947,7 +2955,7 @@ $('shBtn').onclick=async()=>{
 };
 if('serviceWorker' in navigator&&location.protocol==='https:')navigator.serviceWorker.register('sw.js').catch(()=>{});
 /* ---------- quick update: version.json is never cached; a newer one shows a bar, one tap reloads ---------- */
-const APP_VER='2026.10.17.4';
+const APP_VER='2026.10.17.5';
 $('verTxt').textContent=APP_VER;
 /* update = check the internet first, then let the new service worker take over; the saved copy is NOT deleted
    (deleting it and then losing the connection left Safari with «FetchEvent.respondWith … Returned response is null»);
