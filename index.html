@@ -1617,8 +1617,8 @@ Subject: ${m.subj}
 
 ${m.body}`; P.appendChild(box);
     const h=document.createElement('div'); h.className='pvInfo';
-    h.textContent=tr('📧 اقرأ الإيميل، ودوس «ابعت Outlook» تحت. الموضوع اتنسخ، لو Outlook ما حطّوش الصقه في Subject',
-      '📧 Read the e-mail, then tap «Send Outlook» below. The subject is copied; paste it in Subject if Outlook leaves it empty'); P.appendChild(h)}}
+    h.textContent=tr('📧 أول عهدة: دوس «ابعت Outlook» (الموضوع اتنسخ، الصقه في Subject). العهدة اللي بعدها في نفس الإيميل: دوس «⬇️ حفظ PDF» (الكلام بيتنسخ) ← Outlook ← افتح إيميل «'+m.subj+'» ← Reply All ← الصق الكلام ← 📎 ارفق الـ PDF من Files',
+      '📧 First custody: tap «Send Outlook» (subject copied, paste it in Subject). Next ones in the same thread: tap «⬇️ Save PDF» (text copied) → Outlook → open «'+m.subj+'» → Reply All → paste → 📎 attach the PDF from Files'); P.appendChild(h)}}
   pvUrls.forEach(u=>{const im=document.createElement('img');im.src=u;im.alt='';im.onclick=()=>im.classList.toggle('zoom');P.appendChild(im)});
 }
 function closePreview(){pvMail=null;$('pvOv').hidden=true;$('pvPages').innerHTML='';pvUrls.forEach(u=>URL.revokeObjectURL(u));pvUrls=[];pvFiles=[]}
@@ -1630,7 +1630,8 @@ $('pvShare').onclick=async()=>{if(!pvFiles.length)return; const send=pvPdf?[pvPd
   saveFiles(send); toast(tr('المشاركة مش متاحة هنا — الملف اتحفظ','Sharing is not available here — the file was saved'))};
 $('pvPrint').onclick=()=>{if(pvFiles.length)printFiles(pvFiles,pvName)};
 $('pvSave').onclick=()=>{if(!pvFiles.length)return; saveFiles(pvPdf?[pvPdf]:pvFiles);
-  if(pvMail){if(navigator.clipboard)navigator.clipboard.writeText(thrSubj()).catch(()=>{}); setTimeout(markMail,600)}};
+  if(pvMail){const c=custodies.find(x=>x.id===pvMail.id); /* reply in the same thread: copy the ready text for «Reply All» */
+    if(c&&navigator.clipboard)navigator.clipboard.writeText(mailText(c).body).catch(()=>{}); setTimeout(markMail,600)}};
 $('pvClose').onclick=closePreview;
 $('oneView').onclick=()=>{const c=custodies.find(x=>x.id===curId);if(!c)return;buzz();openPreview(oneJobs(c),oneName(c))};
 /* ---------- 📧 approval loop: send to manager → manager approves («Approved by» printed on the form)
@@ -2946,7 +2947,7 @@ $('shBtn').onclick=async()=>{
 };
 if('serviceWorker' in navigator&&location.protocol==='https:')navigator.serviceWorker.register('sw.js').catch(()=>{});
 /* ---------- quick update: version.json is never cached; a newer one shows a bar, one tap reloads ---------- */
-const APP_VER='2026.10.17.3';
+const APP_VER='2026.10.17.4';
 $('verTxt').textContent=APP_VER;
 /* update = check the internet first, then let the new service worker take over; the saved copy is NOT deleted
    (deleting it and then losing the connection left Safari with «FetchEvent.respondWith … Returned response is null»);
