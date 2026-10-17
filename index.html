@@ -1668,9 +1668,9 @@ function mailStep(c){
 }
 /* the ready e-mail: To manager, CC finance, one fixed subject (one Outlook thread), his wording */
 function mailText(c){
-  const nm=c.project||'', body=[`Dear Eng. ${MAIL.mgr},`,'',
-    `Kindly approve the attached petty cash No. ${c.no}${nm?' ('+nm+')':''}, ${dmy(c.from)} to ${dmy(c.to)}, total SAR ${fmt(total(c))}, to proceed.`,'',
-    'Finance team, kindly proceed with the petty cash claim.','','Best regards,',EMP].join('\n');
+  const nm=c.project||'', body=[`Dear Eng. ${MAIL.mgr||'Zakaria'},`,'',
+    `Kindly approve the attached petty cash No. ${c.no}${nm?' ('+nm+')':''},`,
+    'so the Finance team can proceed with the petty cash claim.','','Best regards,',EMP].join('\n');
   return {to:MAIL.mail,cc:MAIL.fin,subj:thrSubj(),body};
 }
 function markMail(){
@@ -2946,7 +2946,7 @@ $('shBtn').onclick=async()=>{
 };
 if('serviceWorker' in navigator&&location.protocol==='https:')navigator.serviceWorker.register('sw.js').catch(()=>{});
 /* ---------- quick update: version.json is never cached; a newer one shows a bar, one tap reloads ---------- */
-const APP_VER='2026.10.17.2';
+const APP_VER='2026.10.17.3';
 $('verTxt').textContent=APP_VER;
 /* update = check the internet first, then let the new service worker take over; the saved copy is NOT deleted
    (deleting it and then losing the connection left Safari with «FetchEvent.respondWith … Returned response is null»);
