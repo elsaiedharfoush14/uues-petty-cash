@@ -574,6 +574,7 @@ html[dir=ltr] .card::before{border-radius:4px 0 0 4px}
 .ocrDone{display:flex;flex-direction:column;gap:10px}.ocrDone .confirm{flex-wrap:wrap}
 .rcptBar{font-size:13px;color:var(--muted);text-align:center;margin-top:6px}
 .pvInfo{color:#fff;font-size:14px;text-align:center;opacity:.9}
+.pvMail{background:#fff;color:#111;border-radius:12px;padding:12px 14px;font-size:14px;line-height:1.5;white-space:pre-wrap;text-align:left;width:min(100%,560px);box-sizing:border-box;overflow-wrap:anywhere}
 .ocrThumb{max-height:180px;max-width:100%;align-self:center;border-radius:8px;object-fit:contain;background:#fff}
 .ocrForm{display:grid;grid-template-columns:1fr 1fr;gap:8px}.ocrForm .full{grid-column:1/-1}
 .ocrForm select,.ocrForm input{width:100%;font:inherit;color:var(--ink);background:var(--surface);border:1px solid var(--line);border-radius:10px;padding:10px 12px;min-width:0}
@@ -745,8 +746,8 @@ html[dir=ltr] .card::before{border-radius:4px 0 0 4px}
       <strong>⚙️ الإعدادات</strong>
       <label class="f">بدل الوجبات في اليوم (SAR)<input id="setRate" class="amount" inputmode="decimal" placeholder="60" autocomplete="off"></label>
       <div class="note">بيتطبق على العهد الجديدة. أي عهدة قديمة تقدر تغيّر بدلها من جوه العهدة.</div>
-      <div class="projHead"><b>📧 الموافقات</b><small>المدير يوافق الأول، وبعدين المالية تصفّي العهدة</small></div>
-      <label class="f">اسم المدير (بيتكتب في «Approved by»)<input id="setMgr" autocomplete="off"></label>
+      <div class="projHead"><b>📧 الموافقات</b><small>إيميل واحد للمدير والمالية: المدير يوافق والمالية تصفّي</small></div>
+      <label class="f">اسم المدير بالإنجليزي (بيتكتب في «Dear Eng.»)<input id="setMgr" dir="ltr" autocomplete="off" placeholder="Zakaria"></label>
       <label class="f">إيميل المدير<input id="setMgrMail" type="email" inputmode="email" dir="ltr" autocomplete="off" placeholder="manager@uues.com"></label>
       <label class="f">إيميل المالية<input id="setFinMail" type="email" inputmode="email" dir="ltr" autocomplete="off" placeholder="finance@uues.com"></label>
       <label class="f">عنوان الإيميل الثابت (كل العهد في نفس السلسلة)<input id="setSubj" dir="auto" autocomplete="off" placeholder="UUES Petty Cash"></label>
@@ -979,8 +980,8 @@ let LANG='ar'; try{LANG=localStorage.getItem('uues_lang')==='en'?'en':'ar'}catch
 const tr=(a,e)=>LANG==='en'?e:a;
 const ARW=()=>LANG==='en'?'→':'←';
 const EN={
- '📧 الموافقات':'📧 Approvals','المدير يوافق الأول، وبعدين المالية تصفّي العهدة':'The manager approves first, then finance settles the custody',
- 'اسم المدير (بيتكتب في «Approved by»)':'Manager name (printed in «Approved by»)','إيميل المدير':'Manager e-mail','إيميل المالية':'Finance e-mail',
+ '📧 الموافقات':'📧 Approvals','إيميل واحد للمدير والمالية: المدير يوافق والمالية تصفّي':'One e-mail to the manager and finance: the manager approves, finance settles',
+ 'اسم المدير بالإنجليزي (بيتكتب في «Dear Eng.»)':'Manager name in English (used in «Dear Eng.»)','إيميل المدير':'Manager e-mail','إيميل المالية':'Finance e-mail',
  'عنوان الإيميل الثابت (كل العهد في نفس السلسلة)':'Fixed e-mail subject (all custodies in one thread)',
  'كل العهد بتتبعت بنفس العنوان ده، فالأوت لوك بيلمّها في محادثة واحدة. ابعت كل عهدة «Reply All» في نفس الإيميل.':'Every custody is sent with this same subject, so Outlook keeps them in one conversation. Send each custody as «Reply All» in that same e-mail.',
  'وجّه الكاميرا على الفاتورة':'Point the camera at the receipt','🖼️ من الصور':'🖼️ From photos','✕ قفل':'✕ Close','⚡ أوتوماتيك':'⚡ Auto','⚫ أبيض وأسود':'⚫ Black & white',
@@ -1194,8 +1195,8 @@ function renderSheet(){
   const sub=c.status==='submitted';
   $('stTxt').innerHTML=''; const sp=document.createElement('span'); sp.className='pill '+(sub?'done':'open');
   sp.textContent=sub?((c.flow?tr('✅ المالية صفّتها','✅ Settled by finance'):tr('اتسلمت للحسابات','Submitted'))+(c.submittedAt?' · '+dmy(c.submittedAt):'')):'لسه ما اتسلمتش'; $('stTxt').appendChild(sp);
-  $('stBtn').textContent=sub?'رجّعها «لسه»':c.flow==='fin'?tr('✅ المالية صفّتها','✅ Finance settled it'):'✓ علّم إنها اتسلمت'; $('stBtn').className='btn'+(sub?'':' ok');
-  $('stBtn').hidden=!sub&&(c.flow==='mgr'||c.flow==='ok'); renderFlow(c);
+  $('stBtn').textContent=sub?'رجّعها «لسه»':c.flow?tr('✅ المالية صفّتها','✅ Finance settled it'):'✓ علّم إنها اتسلمت'; $('stBtn').className='btn'+(sub?'':' ok');
+  $('stBtn').hidden=false; renderFlow(c);
   $('hCode').textContent=c.fileNo||'';
   $('hMeta').textContent=`📅 ${rangeTxt(c)} · ${daysTxt(days(c))}`;
   $('sDays').textContent=days(c); $('sMeals').textContent=fmt(meals(c));
@@ -1600,16 +1601,24 @@ let pvFiles=[], pvName='', pvUrls=[], pvPdf=null;
 async function openPreview(jobs,name){
   if(pdfBusy)return; pdfBusy=true; pvName=name; pvFiles=[];
   const P=$('pvPages'); P.innerHTML=''; const w=document.createElement('div'); w.className='pvWait'; w.textContent=tr('بجهّز الصورة…','Preparing the picture…'); P.appendChild(w);
-  $('pvOv').hidden=false;
+  $('pvOv').hidden=false; $('pvShare').textContent=pvMail?tr('📧 ابعت Outlook','📧 Send Outlook'):tr('📤 ابعت PDF','📤 Send PDF');
   pvPdf=null; try{pvFiles=await makePages(await jobs,name);pvPdf=await buildPdf(pvFiles,name)}catch(e){pvFiles=[]}
   pdfBusy=false; if($('pvOv').hidden){pvFiles=[];return}
   pvUrls.forEach(u=>URL.revokeObjectURL(u)); pvUrls=pvFiles.map(f=>URL.createObjectURL(f)); P.innerHTML='';
   if(!pvFiles.length){w.textContent=tr('ما قدرتش أجهّز الصورة — جرّب تاني','Could not prepare the picture — try again');P.appendChild(w);return}
   const info=document.createElement('div');info.className='pvInfo';
   info.textContent=tr(`📎 ملف PDF واحد: ${pvFiles.length} صفحة · ${(pvPdf?pvPdf.size/1048576:0).toFixed(1)} MB`,`📎 One PDF file: ${pvFiles.length} pages · ${(pvPdf?pvPdf.size/1048576:0).toFixed(1)} MB`);
-  if(pvMail)info.textContent+=tr(` · 📧 احفظ الـ PDF، وفي Outlook افتح إيميل «${thrSubj()}» ← Reply All ← ارفقه. أول مرة: دوس «ابعت PDF» واختار Outlook، والعنوان اتنسخ تلصقه في Subject`,
-    ` · 📧 Save the PDF, then in Outlook open the «${thrSubj()}» e-mail → Reply All → attach it. First time: tap «Send PDF», pick Outlook, the subject is copied for «Subject»`);
   P.appendChild(info);
+  if(pvMail){const c=custodies.find(x=>x.id===pvMail.id), m=c&&mailText(c); if(m){
+    const box=document.createElement('div'); box.className='pvMail'; box.dir='ltr';
+    box.textContent=`To: ${m.to||'—'}
+CC: ${m.cc||'—'}
+Subject: ${m.subj}
+
+${m.body}`; P.appendChild(box);
+    const h=document.createElement('div'); h.className='pvInfo';
+    h.textContent=tr('📧 اقرأ الإيميل، ودوس «ابعت Outlook» تحت. الموضوع اتنسخ، لو Outlook ما حطّوش الصقه في Subject',
+      '📧 Read the e-mail, then tap «Send Outlook» below. The subject is copied; paste it in Subject if Outlook leaves it empty'); P.appendChild(h)}}
   pvUrls.forEach(u=>{const im=document.createElement('img');im.src=u;im.alt='';im.onclick=()=>im.classList.toggle('zoom');P.appendChild(im)});
 }
 function closePreview(){pvMail=null;$('pvOv').hidden=true;$('pvPages').innerHTML='';pvUrls.forEach(u=>URL.revokeObjectURL(u));pvUrls=[];pvFiles=[]}
@@ -1621,7 +1630,7 @@ $('pvShare').onclick=async()=>{if(!pvFiles.length)return; const send=pvPdf?[pvPd
   saveFiles(send); toast(tr('المشاركة مش متاحة هنا — الملف اتحفظ','Sharing is not available here — the file was saved'))};
 $('pvPrint').onclick=()=>{if(pvFiles.length)printFiles(pvFiles,pvName)};
 $('pvSave').onclick=()=>{if(!pvFiles.length)return; saveFiles(pvPdf?[pvPdf]:pvFiles);
-  if(pvMail){const k=pvMail.kind; if(navigator.clipboard)navigator.clipboard.writeText(thrSubj()).catch(()=>{}); setTimeout(()=>markMail(k),600)}};
+  if(pvMail){if(navigator.clipboard)navigator.clipboard.writeText(thrSubj()).catch(()=>{}); setTimeout(markMail,600)}};
 $('pvClose').onclick=closePreview;
 $('oneView').onclick=()=>{const c=custodies.find(x=>x.id===curId);if(!c)return;buzz();openPreview(oneJobs(c),oneName(c))};
 /* ---------- 📧 approval loop: send to manager → manager approves («Approved by» printed on the form)
@@ -1634,60 +1643,46 @@ try{MAIL.mgr=localStorage.getItem('uues_mgr')||'';MAIL.mail=localStorage.getItem
 for(const [id,k,ls] of [['setMgr','mgr','uues_mgr'],['setMgrMail','mail','uues_mgrmail'],['setFinMail','fin','uues_finmail'],['setSubj','subj','uues_subj']]){
   $(id).value=MAIL[k];
   $(id).addEventListener('change',()=>{MAIL[k]=$(id).value.trim();$(id).value=MAIL[k];try{localStorage.setItem(ls,MAIL[k])}catch(e){}toast(tr('اتحفظ ✓','Saved ✓'))})}
-const flowStep=c=>c.status==='submitted'?4:({mgr:1,ok:2,fin:3})[c.flow]||0;
+const flowStep=c=>c.status==='submitted'?2:c.flow?1:0;   /* old 'ok' / 'fin' values count as «sent» */
 function renderFlow(c){
   const F=$('flow'); F.innerHTML=''; const st=flowStep(c);
-  if(st===4&&!c.flow){F.hidden=true;return} F.hidden=false;
+  if(st===2&&!c.flow){F.hidden=true;return} F.hidden=false;
   const ol=document.createElement('div'); ol.className='fSteps';
-  [tr('اتبعتت للمدير','Sent to manager'),tr('المدير وافق','Approved'),tr('اتبعتت للمالية','Sent to finance'),tr('اتصفّت','Settled')].forEach((t,i)=>{
+  [tr('اتبعتت للمدير والمالية','Sent to manager + finance'),tr('اتصفّت','Settled')].forEach((t,i)=>{
     const s=document.createElement('span'); s.className='fStep'+(i<st?' on':''); s.textContent=(i<st?'✓ ':(i+1)+'. ')+t; ol.appendChild(s)});
   F.appendChild(ol);
-  const info=[null,tr(`⏳ مستني موافقة المدير (اتبعتت ${dmy(c.mgrSentAt||todayISO())})`,`⏳ Waiting for the manager (sent ${dmy(c.mgrSentAt||todayISO())})`),
-    'Approved by: '+apprTxt(c),tr('⏳ مستني المالية تصفّيها، وبعدها ابعت العهدة الجاية','⏳ Waiting for finance to settle it, then send the next custody'),null][st];
-  if(info){const d=document.createElement('div');d.className='fInfo';d.dir='auto';d.textContent=info;F.appendChild(d)}
-  if(st===4)return;
+  if(st===1){const d=document.createElement('div');d.className='fInfo';
+    d.textContent=tr(`⏳ اتبعتت ${dmy(c.mgrSentAt||todayISO())} — لما المالية تصفّيها دوس «✅ المالية صفّتها»`,`⏳ Sent ${dmy(c.mgrSentAt||todayISO())} — when finance settles it tap «✅ Finance settled it»`);F.appendChild(d)}
+  if(st===2)return;
   const row=document.createElement('div'); row.className='fBtns';
   const btn=(t,ok,fn)=>{const b=document.createElement('button');b.type='button';b.className='btn'+(ok?' ok':'');b.textContent=t;b.onclick=()=>{buzz();fn()};row.appendChild(b)};
-  if(st===0)btn(tr('📧 ابعتها للمدير يوافق','📧 Send to manager for approval'),1,()=>mailStep(c,'mgr'));
-  if(st===1){btn(tr('✅ المدير وافق','✅ Manager approved'),1,()=>approveC(c));btn(tr('📧 ابعت تاني','📧 Send again'),0,()=>mailStep(c,'mgr'))}
-  if(st===2)btn(tr('📤 ابعتها للمالية','📤 Send to finance'),1,()=>mailStep(c,'fin'));
-  if(st===3)btn(tr('📤 ابعت تاني','📤 Send again'),0,()=>mailStep(c,'fin'));
-  if(st>0)btn(tr('↩️ خطوة لورا','↩️ Step back'),0,()=>mutate(x=>{
-    if(x.flow==='mgr'){delete x.flow;delete x.mgrSentAt}
-    else if(x.flow==='ok'){x.flow='mgr';delete x.approvedBy;delete x.approvedAt}
-    else if(x.flow==='fin'){x.flow='ok';delete x.finSentAt}}));
+  btn(st?tr('📧 ابعت تاني','📧 Send again'):tr('📧 ابعت Outlook','📧 Send Outlook'),!st,()=>mailStep(c));
+  if(st)btn(tr('↩️ خطوة لورا','↩️ Step back'),0,()=>mutate(x=>{delete x.flow;delete x.mgrSentAt;delete x.finSentAt}));
   F.appendChild(row);
 }
-function mailStep(c,kind){
-  if(kind==='mgr'){const w=custodies.find(x=>x.id!==c.id&&x.flow&&x.status!=='submitted');
-    if(w&&!confirm(tr(`عهدة رقم ${w.no} (${w.project||'بدون اسم'}) لسه ما اتصفّتش من المالية. تبعت دي برضه؟`,`Custody ${w.no} (${w.project||'no name'}) is not settled by finance yet. Send this one anyway?`)))return}
-  if(!(kind==='mgr'?MAIL.mail:MAIL.fin))toast(tr('💡 اكتب الإيميل مرة واحدة في ⚙️ الإعدادات عشان يتنسخ لوحده','💡 Add the e-mail once in ⚙️ Settings so it is copied for you'));
-  pvMail={id:c.id,kind}; openPreview(oneJobs(c),oneName(c));
+function mailStep(c){
+  const w=custodies.find(x=>x.id!==c.id&&x.flow&&x.status!=='submitted');
+  if(w&&!confirm(tr(`عهدة رقم ${w.no} (${w.project||'بدون اسم'}) لسه ما اتصفّتش من المالية. تبعت دي برضه؟`,`Custody ${w.no} (${w.project||'no name'}) is not settled by finance yet. Send this one anyway?`)))return;
+  if(!MAIL.mail||!MAIL.mgr)toast(tr('💡 اكتب اسم المدير وإيميله وإيميل المالية مرة واحدة في ⚙️ الإعدادات','💡 Add the manager name + e-mail and the finance e-mail once in ⚙️ Settings'));
+  pvMail={id:c.id}; openPreview(oneJobs(c),oneName(c));
 }
-function approveC(c){
-  let n=MAIL.mgr;
-  if(!n){n=(prompt(tr('اسم المدير اللي وافق؟ (بيتكتب في «Approved by»)','Name of the approving manager? (printed in «Approved by»)'),'')||'').trim(); if(!n)return;
-    MAIL.mgr=n;$('setMgr').value=n;try{localStorage.setItem('uues_mgr',n)}catch(e){}}
-  mutate(x=>{x.flow='ok';x.approvedBy=n;x.approvedAt=todayISO()});
-  toast(tr(`✅ اتكتب «Approved by: ${n}» على الفورم — ابعتها للمالية`,`✅ «Approved by: ${n}» is on the form — send it to finance`));
+/* the ready e-mail: To manager, CC finance, one fixed subject (one Outlook thread), his wording */
+function mailText(c){
+  const nm=c.project||'', body=[`Dear Eng. ${MAIL.mgr},`,'',
+    `Kindly approve the attached petty cash No. ${c.no}${nm?' ('+nm+')':''}, ${dmy(c.from)} to ${dmy(c.to)}, total SAR ${fmt(total(c))}, to proceed.`,'',
+    'Finance team, kindly proceed with the petty cash claim.','','Best regards,',EMP].join('\n');
+  return {to:MAIL.mail,cc:MAIL.fin,subj:thrSubj(),body};
 }
-function markMail(kind){
-  mutate(x=>{if(kind==='mgr'){x.flow='mgr';x.mgrSentAt=todayISO()}else{x.flow='fin';x.finSentAt=todayISO()}});closePreview();
-  toast(kind==='mgr'?tr('📧 اتبعتت للمدير — لما يوافق دوس «✅ المدير وافق»','📧 Sent to the manager — when approved tap «✅ Manager approved»')
-                    :tr('📤 اتبعتت للمالية — لما يردّوا «تم التصفية» دوس «✅ المالية صفّتها»','📤 Sent to finance — when they reply «settled» tap «✅ Finance settled it»'))}
+function markMail(){
+  mutate(x=>{x.flow='mgr';x.mgrSentAt=todayISO()});closePreview();
+  toast(tr('📧 اتبعتت — لما المالية تصفّيها دوس «✅ المالية صفّتها»','📧 Sent — when finance settles it tap «✅ Finance settled it»'))}
 async function mailShare(send){
-  const c=custodies.find(x=>x.id===pvMail.id), kind=pvMail.kind; if(!c)return;
-  const to=kind==='mgr'?MAIL.mail:MAIL.fin, nm=c.project||tr('بدون اسم','no name');
-  const subj=thrSubj(); /* ONE subject for every custody → Outlook keeps them all in one conversation */
-  const body=[kind==='mgr'?tr(`عهدة رقم ${c.no} - للموافقة`,`Petty cash ${c.no} - for approval`):tr(`عهدة رقم ${c.no} - للتصفية`,`Petty cash ${c.no} - for settlement`),'',tr(`مرفق تصفية العهدة رقم ${c.no} (${nm}) من ${dmy(c.from)} لـ ${dmy(c.to)}، الإجمالي ${fmt(total(c))} SAR.`,
-      `Attached: petty cash settlement ${c.no} (${nm}), ${dmy(c.from)} to ${dmy(c.to)}, total SAR ${fmt(total(c))}.`),
-    kind==='mgr'?tr('برجاء الموافقة.','Please approve.'):tr(`تمت الموافقة من ${apprTxt(c)}. برجاء التصفية.`,`Approved by ${apprTxt(c)}. Please settle.`),'',EMP].join('\n');
-  const mark=()=>markMail(kind);
-  if(navigator.clipboard)navigator.clipboard.writeText(subj).catch(()=>{});
+  const c=custodies.find(x=>x.id===pvMail.id); if(!c)return; const m=mailText(c);
+  if(navigator.clipboard)navigator.clipboard.writeText(m.subj).catch(()=>{});
   if(navigator.canShare&&navigator.canShare({files:send})){
-    try{await navigator.share({files:send,title:subj,text:subj+'\n\n'+body});mark();return}catch(e){if(e&&e.name==='AbortError')return}}
-  saveFiles(send); location.href='mailto:'+encodeURIComponent(to)+'?cc='+encodeURIComponent(kind==='mgr'?MAIL.fin:MAIL.mail)+'&subject='+encodeURIComponent(subj)+'&body='+encodeURIComponent(body);
-  toast(tr('الملف اتحفظ — ضيفه للإيميل كمرفق','The file was saved — attach it to the e-mail')); mark();
+    try{await navigator.share({files:send,title:m.subj,text:m.body});markMail();return}catch(e){if(e&&e.name==='AbortError')return}}
+  saveFiles(send); location.href='mailto:'+encodeURIComponent(m.to)+'?cc='+encodeURIComponent(m.cc)+'&subject='+encodeURIComponent(m.subj)+'&body='+encodeURIComponent(m.body);
+  toast(tr('الملف اتحفظ — ضيفه للإيميل كمرفق','The file was saved — attach it to the e-mail')); markMail();
 }
 /* ---------- 📲 install QR (qr-install.png → …/?i=1): an A4 poster to share or print ---------- */
 async function qrPosterCanvas(){
@@ -2951,7 +2946,7 @@ $('shBtn').onclick=async()=>{
 };
 if('serviceWorker' in navigator&&location.protocol==='https:')navigator.serviceWorker.register('sw.js').catch(()=>{});
 /* ---------- quick update: version.json is never cached; a newer one shows a bar, one tap reloads ---------- */
-const APP_VER='2026.10.17.1';
+const APP_VER='2026.10.17.2';
 $('verTxt').textContent=APP_VER;
 /* update = check the internet first, then let the new service worker take over; the saved copy is NOT deleted
    (deleting it and then losing the connection left Safari with «FetchEvent.respondWith … Returned response is null»);
