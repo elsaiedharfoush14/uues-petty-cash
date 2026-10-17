@@ -692,6 +692,7 @@ html[dir=ltr] .card::before{border-radius:4px 0 0 4px}
         <div class="confirm full"><button class="btn primary grow" id="rcvSave" type="button">سجّل</button><button class="btn" id="rcvCancel" type="button">إلغاء</button></div>
       </div>
       <button class="btn rcvBtn" id="rcvBtn" type="button">＋ استلمت مبلغ من الشركة</button>
+      <button class="btn rcvBtn" id="askBtn" type="button">📧 اطلب عهدة جديدة</button>
     </div>
     <button class="cta" id="goAdd" type="button"><span class="ctaIco" aria-hidden="true">+</span><span class="ctaT"><b>سجّل عهدة جديدة</b><small>بصوتك أو بالكتابة</small></span><span class="ctaArr" aria-hidden="true">←</span></button>
     <div class="panel ana" id="anaCard" hidden>
@@ -751,6 +752,7 @@ html[dir=ltr] .card::before{border-radius:4px 0 0 4px}
       <label class="f">إيميل المدير<input id="setMgrMail" type="email" inputmode="email" dir="ltr" autocomplete="off" placeholder="manager@uues.com"></label>
       <label class="f">إيميل المالية<input id="setFinMail" type="email" inputmode="email" dir="ltr" autocomplete="off" placeholder="finance@uues.com"></label>
       <label class="f">عنوان الإيميل الثابت (كل العهد في نفس السلسلة)<input id="setSubj" dir="auto" autocomplete="off" placeholder="UUES Petty Cash"></label>
+      <label class="f">مبلغ طلب العهدة الجديدة (SAR)<input id="setAsk" class="amount" inputmode="decimal" autocomplete="off" placeholder="5000"></label>
       <div class="note">كل العهد بتتبعت بنفس العنوان ده، فالأوت لوك بيلمّها في محادثة واحدة. ابعت كل عهدة «Reply All» في نفس الإيميل.</div>
       <div class="projHead"><b>المشاريع</b><small>دوس على المشروع عشان تغيّر الكود</small></div>
       <div class="projMgr" id="projMgr"></div>
@@ -981,7 +983,7 @@ const tr=(a,e)=>LANG==='en'?e:a;
 const ARW=()=>LANG==='en'?'→':'←';
 const EN={
  '📧 الموافقات':'📧 Approvals','إيميل واحد للمدير والمالية: المدير يوافق والمالية تصفّي':'One e-mail to the manager and finance: the manager approves, finance settles',
- 'اسم المدير بالإنجليزي (بيتكتب في «Dear Eng.»)':'Manager name in English (used in «Dear Eng.»)','إيميل المدير':'Manager e-mail','إيميل المالية':'Finance e-mail',
+ 'اسم المدير بالإنجليزي (بيتكتب في «Dear Eng.»)':'Manager name in English (used in «Dear Eng.»)','إيميل المدير':'Manager e-mail','إيميل المالية':'Finance e-mail','📧 اطلب عهدة جديدة':'📧 Request new petty cash','مبلغ طلب العهدة الجديدة (SAR)':'New petty cash request amount (SAR)',
  'عنوان الإيميل الثابت (كل العهد في نفس السلسلة)':'Fixed e-mail subject (all custodies in one thread)',
  'كل العهد بتتبعت بنفس العنوان ده، فالأوت لوك بيلمّها في محادثة واحدة. ابعت كل عهدة «Reply All» في نفس الإيميل.':'Every custody is sent with this same subject, so Outlook keeps them in one conversation. Send each custody as «Reply All» in that same e-mail.',
  'وجّه الكاميرا على الفاتورة':'Point the camera at the receipt','🖼️ من الصور':'🖼️ From photos','✕ قفل':'✕ Close','⚡ أوتوماتيك':'⚡ Auto','⚫ أبيض وأسود':'⚫ Black & white',
@@ -1639,9 +1641,9 @@ $('oneView').onclick=()=>{const c=custodies.find(x=>x.id===curId);if(!c)return;b
    c.flow: undefined → 'mgr' (sent, waiting) → 'ok' (approved) → 'fin' (sent to finance) ---------- */
 let pvMail=null;
 const thrSubj=()=>MAIL.subj||('UUES Petty Cash'+(EMP?' - '+EMP:''));
-const MAIL={mgr:'',mail:'',fin:'',subj:''};
-try{MAIL.mgr=localStorage.getItem('uues_mgr')||'';MAIL.mail=localStorage.getItem('uues_mgrmail')||'';MAIL.fin=localStorage.getItem('uues_finmail')||'';MAIL.subj=localStorage.getItem('uues_subj')||''}catch(e){}
-for(const [id,k,ls] of [['setMgr','mgr','uues_mgr'],['setMgrMail','mail','uues_mgrmail'],['setFinMail','fin','uues_finmail'],['setSubj','subj','uues_subj']]){
+const MAIL={mgr:'',mail:'',fin:'',subj:'',ask:''};
+try{MAIL.mgr=localStorage.getItem('uues_mgr')||'';MAIL.mail=localStorage.getItem('uues_mgrmail')||'';MAIL.fin=localStorage.getItem('uues_finmail')||'';MAIL.subj=localStorage.getItem('uues_subj')||'';MAIL.ask=localStorage.getItem('uues_ask')||''}catch(e){}
+for(const [id,k,ls] of [['setMgr','mgr','uues_mgr'],['setMgrMail','mail','uues_mgrmail'],['setFinMail','fin','uues_finmail'],['setSubj','subj','uues_subj'],['setAsk','ask','uues_ask']]){
   $(id).value=MAIL[k];
   $(id).addEventListener('change',()=>{MAIL[k]=$(id).value.trim();$(id).value=MAIL[k];try{localStorage.setItem(ls,MAIL[k])}catch(e){}toast(tr('اتحفظ ✓','Saved ✓'))})}
 const flowStep=c=>c.status==='submitted'?2:c.flow?1:0;   /* old 'ok' / 'fin' values count as «sent» */
@@ -1675,7 +1677,7 @@ function mailStep(c){
 }
 /* the ready e-mail: To manager, CC finance, one fixed subject (one Outlook thread), his wording */
 function mailText(c){
-  const nm=c.project||'', body=[`Dear Eng. ${MAIL.mgr.replace(/^\s*(eng(ineer)?\.?|م\.|مهندس)\s*/i,'')||'Zakaria'},`,'',
+  const nm=c.project||'', body=[`Dear Eng. ${mgrName()},`,'',
     `Kindly approve the attached petty cash No. ${c.no}${nm?' ('+nm+')':''}, so the Finance team can proceed with the claim.`,'',
     'Best regards,',EMP].join('\n');
   return {to:MAIL.mail,cc:MAIL.fin,subj:thrSubj(),body};
@@ -1685,18 +1687,27 @@ function markMail(){
   toast(tr('📧 اتبعتت — لما المالية تصفّيها دوس «✅ المالية صفّتها»','📧 Sent — when finance settles it tap «✅ Finance settled it»'))}
 /* one tap: the ready text goes to the clipboard in the Outlook font (Aptos 12 pt) and the share sheet opens with the PDF
    → «Save to Files» → Outlook Reply All → Paste + 📎 the PDF (iPhone Safari cannot put a PDF FILE on the clipboard) */
+const mgrName=()=>MAIL.mgr.replace(/^\s*(eng(ineer)?\.?|م\.|مهندس)\s*/i,'')||'Zakaria';
 function copyReply(c,pdf){
-  if(!c)return; const body=mailText(c).body;
+  if(!c)return; copyMail(mailText(c).body);
+  const done=()=>{markMail();toast(tr('✓ الكلام اتنسخ والـ PDF اتحفظ — Outlook ← Reply All ← لصق ← 📎 الـ PDF','✓ Text copied, PDF saved — Outlook → Reply All → Paste → 📎 the PDF'))};
+  if(navigator.canShare&&navigator.canShare({files:pdf}))navigator.share({files:pdf}).then(done).catch(e=>{if(!e||e.name!=='AbortError'){saveFiles(pdf);done()}});
+  else{saveFiles(pdf);done()}
+}
+/* the text goes to the clipboard in the Outlook font (Aptos 12 pt) */
+function copyMail(body,ok){
   const esc=t=>t.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
   const html='<div style="font-family:Aptos,Aptos_EmbeddedFont,Aptos_MSFontService,Calibri,Helvetica,sans-serif;font-size:12pt;color:#000">'+esc(body).replace(/\n/g,'<br>')+'</div>';
   const fail=()=>toast(tr('⚠️ النسخ ما اشتغلش هنا','⚠️ Copy did not work here'));
   if(navigator.clipboard&&window.ClipboardItem)navigator.clipboard.write([new ClipboardItem({'text/html':new Blob([html],{type:'text/html'}),'text/plain':new Blob([body],{type:'text/plain'})})])
     .catch(()=>navigator.clipboard.writeText(body).catch(fail));
   else if(navigator.clipboard)navigator.clipboard.writeText(body).catch(fail); else fail();
-  const done=()=>{markMail();toast(tr('✓ الكلام اتنسخ والـ PDF اتحفظ — Outlook ← Reply All ← لصق ← 📎 الـ PDF','✓ Text copied, PDF saved — Outlook → Reply All → Paste → 📎 the PDF'))};
-  if(navigator.canShare&&navigator.canShare({files:pdf}))navigator.share({files:pdf}).then(done).catch(e=>{if(!e||e.name!=='AbortError'){saveFiles(pdf);done()}});
-  else{saveFiles(pdf);done()}
+  if(ok)ok();
 }
+/* 📧 ask for a new petty cash: fixed amount (⚙️, default 5,000), ready text → one Paste in the Outlook Reply All */
+$('askBtn').onclick=()=>{buzz(); const amt=+String(MAIL.ask).replace(/[^\d.]/g,'')||5000;
+  copyMail([`Dear Eng. ${mgrName()},`,'',`Kindly approve a new petty cash of SAR ${amt.toLocaleString('en-US')}, so the Finance team can proceed with the transfer.`,'','Best regards,',EMP].join('\n'),
+    ()=>toast(tr('📋 طلب العهدة اتنسخ — Outlook ← Reply All ← لصق','📋 Request copied — Outlook → Reply All → Paste')))};
 /* ---------- 📲 install QR (qr-install.png → …/?i=1): an A4 poster to share or print ---------- */
 async function qrPosterCanvas(){
   const [logo,qr]=await Promise.all([loadImg(LOGO),loadImg('qr-install.png')]), inner=A4.w-2*A4.m;
@@ -2959,7 +2970,7 @@ $('shBtn').onclick=async()=>{
 };
 if('serviceWorker' in navigator&&location.protocol==='https:')navigator.serviceWorker.register('sw.js').catch(()=>{});
 /* ---------- quick update: version.json is never cached; a newer one shows a bar, one tap reloads ---------- */
-const APP_VER='2026.10.17.7';
+const APP_VER='2026.10.17.8';
 $('verTxt').textContent=APP_VER;
 /* update = check the internet first, then let the new service worker take over; the saved copy is NOT deleted
    (deleting it and then losing the connection left Safari with «FetchEvent.respondWith … Returned response is null»);
