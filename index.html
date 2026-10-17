@@ -1196,7 +1196,7 @@ function renderSheet(){
   $('stTxt').innerHTML=''; const sp=document.createElement('span'); sp.className='pill '+(sub?'done':'open');
   sp.textContent=sub?((c.flow?tr('✅ المالية صفّتها','✅ Settled by finance'):tr('اتسلمت للحسابات','Submitted'))+(c.submittedAt?' · '+dmy(c.submittedAt):'')):'لسه ما اتسلمتش'; $('stTxt').appendChild(sp);
   $('stBtn').textContent=sub?'رجّعها «لسه»':c.flow?tr('✅ المالية صفّتها','✅ Finance settled it'):'✓ علّم إنها اتسلمت'; $('stBtn').className='btn'+(sub?'':' ok');
-  $('stBtn').hidden=false; renderFlow(c);
+  $('stBtn').hidden=false; renderFlow(c); prepMail(c);
   $('hCode').textContent=c.fileNo||'';
   $('hMeta').textContent=`📅 ${rangeTxt(c)} · ${daysTxt(days(c))}`;
   $('sDays').textContent=days(c); $('sMeals').textContent=fmt(meals(c));
@@ -1625,7 +1625,7 @@ function closePreview(){pvMail=null;$('pvOv').hidden=true;$('pvPages').innerHTML
 function saveFiles(files){files.forEach((f,i)=>setTimeout(()=>{const a=document.createElement('a');a.href=URL.createObjectURL(f);a.download=f.name;document.body.appendChild(a);a.click();
   setTimeout(()=>{URL.revokeObjectURL(a.href);a.remove()},4000)},i*400))}
 $('pvShare').onclick=async()=>{if(!pvFiles.length)return; const send=pvPdf?[pvPdf]:pvFiles;
-  if(pvMail){copyReply();return}
+  if(pvMail){copyReply(custodies.find(x=>x.id===pvMail.id),send);return}
   if(navigator.canShare&&navigator.canShare({files:send})){try{await navigator.share({files:send,title:pvName});return}catch(e){if(e&&e.name==='AbortError')return}}
   saveFiles(send); toast(tr('المشاركة مش متاحة هنا — الملف اتحفظ','Sharing is not available here — the file was saved'))};
 $('pvPrint').onclick=()=>{if(pvFiles.length)printFiles(pvFiles,pvName)};
@@ -1657,14 +1657,20 @@ function renderFlow(c){
   if(st===2)return;
   const row=document.createElement('div'); row.className='fBtns';
   const btn=(t,ok,fn)=>{const b=document.createElement('button');b.type='button';b.className='btn'+(ok?' ok':'');b.textContent=t;b.onclick=()=>{buzz();fn()};row.appendChild(b)};
-  btn(st?tr('📧 ابعت تاني','📧 Send again'):tr('📧 ابعت Outlook','📧 Send Outlook'),!st,()=>mailStep(c));
+  btn(st?tr('📧 ابعت تاني','📧 Send again'):tr('📧 ابعت Outlook (رد جاهز + PDF)','📧 Send Outlook (reply + PDF)'),!st,()=>mailStep(c));
   if(st)btn(tr('↩️ خطوة لورا','↩️ Step back'),0,()=>mutate(x=>{delete x.flow;delete x.mgrSentAt;delete x.finSentAt}));
   F.appendChild(row);
 }
+let mailPdf={key:'',pdf:null}, mailT=0;
+const pdfKey=c=>JSON.stringify(c)+'|'+SIG.length;
+function prepMail(c){clearTimeout(mailT); if(!c||c.status==='submitted'||mailPdf.key===pdfKey(c))return;
+  mailT=setTimeout(async()=>{const x=custodies.find(y=>y.id===c.id); if(!x||pdfBusy||x.id!==curId)return; const key=pdfKey(x);
+    try{const pdf=await buildPdf(await makePages(await oneJobs(x),oneName(x)),oneName(x)); mailPdf={key,pdf}}catch(e){}},2000)}
 function mailStep(c){
   const w=custodies.find(x=>x.id!==c.id&&x.flow&&x.status!=='submitted');
   if(w&&!confirm(tr(`عهدة رقم ${w.no} (${w.project||'بدون اسم'}) لسه ما اتصفّتش من المالية. تبعت دي برضه؟`,`Custody ${w.no} (${w.project||'no name'}) is not settled by finance yet. Send this one anyway?`)))return;
   if(!MAIL.mail||!MAIL.mgr)toast(tr('💡 اكتب اسم المدير وإيميله وإيميل المالية مرة واحدة في ⚙️ الإعدادات','💡 Add the manager name + e-mail and the finance e-mail once in ⚙️ Settings'));
+  if(mailPdf.pdf&&mailPdf.key===pdfKey(c)){copyReply(c,[mailPdf.pdf]);return}
   pvMail={id:c.id}; openPreview(oneJobs(c),oneName(c));
 }
 /* the ready e-mail: To manager, CC finance, one fixed subject (one Outlook thread), his wording */
@@ -1679,8 +1685,8 @@ function markMail(){
   toast(tr('📧 اتبعتت — لما المالية تصفّيها دوس «✅ المالية صفّتها»','📧 Sent — when finance settles it tap «✅ Finance settled it»'))}
 /* one tap: the ready text goes to the clipboard in the Outlook font (Aptos 12 pt) and the share sheet opens with the PDF
    → «Save to Files» → Outlook Reply All → Paste + 📎 the PDF (iPhone Safari cannot put a PDF FILE on the clipboard) */
-function copyReply(){
-  const c=custodies.find(x=>x.id===pvMail.id); if(!c)return; const body=mailText(c).body, pdf=pvPdf?[pvPdf]:pvFiles.slice();
+function copyReply(c,pdf){
+  if(!c)return; const body=mailText(c).body;
   const esc=t=>t.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
   const html='<div style="font-family:Aptos,Aptos_EmbeddedFont,Aptos_MSFontService,Calibri,Helvetica,sans-serif;font-size:12pt;color:#000">'+esc(body).replace(/\n/g,'<br>')+'</div>';
   const fail=()=>toast(tr('⚠️ النسخ ما اشتغلش هنا','⚠️ Copy did not work here'));
@@ -2953,7 +2959,7 @@ $('shBtn').onclick=async()=>{
 };
 if('serviceWorker' in navigator&&location.protocol==='https:')navigator.serviceWorker.register('sw.js').catch(()=>{});
 /* ---------- quick update: version.json is never cached; a newer one shows a bar, one tap reloads ---------- */
-const APP_VER='2026.10.17.6';
+const APP_VER='2026.10.17.7';
 $('verTxt').textContent=APP_VER;
 /* update = check the internet first, then let the new service worker take over; the saved copy is NOT deleted
    (deleting it and then losing the connection left Safari with «FetchEvent.respondWith … Returned response is null»);
