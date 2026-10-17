@@ -1672,7 +1672,7 @@ function mailStep(c){
   const w=custodies.find(x=>x.id!==c.id&&x.flow&&x.status!=='submitted');
   if(w&&!confirm(tr(`عهدة رقم ${w.no} (${w.project||'بدون اسم'}) لسه ما اتصفّتش من المالية. تبعت دي برضه؟`,`Custody ${w.no} (${w.project||'no name'}) is not settled by finance yet. Send this one anyway?`)))return;
   if(!MAIL.mail||!MAIL.mgr)toast(tr('💡 اكتب اسم المدير وإيميله وإيميل المالية مرة واحدة في ⚙️ الإعدادات','💡 Add the manager name + e-mail and the finance e-mail once in ⚙️ Settings'));
-  if(mailPdf.pdf&&mailPdf.key===pdfKey(c)){copyReply(c,[mailPdf.pdf]);return}
+  if(mailPdf.pdf&&mailPdf.key===pdfKey(c)){copyReply(c,[mailPdf.pdf],1);return}  /* card button: straight download, no share sheet */
   pvMail={id:c.id}; openPreview(oneJobs(c),oneName(c));
 }
 /* the ready e-mail: To manager, CC finance, one fixed subject (one Outlook thread), his wording */
@@ -1688,8 +1688,9 @@ function markMail(){
 /* one tap: the ready text goes to the clipboard in the Outlook font (Aptos 12 pt) and the share sheet opens with the PDF
    → «Save to Files» → Outlook Reply All → Paste + 📎 the PDF (iPhone Safari cannot put a PDF FILE on the clipboard) */
 const mgrName=()=>MAIL.mgr.replace(/^\s*(eng(ineer)?\.?|م\.|مهندس)\s*/i,'')||'Zakaria';
-function copyReply(c,pdf){
+function copyReply(c,pdf,direct){
   if(!c)return; copyMail(mailText(c).body);
+  if(direct){saveFiles(pdf);markMail();toast(tr('✓ الكلام اتنسخ والـ PDF نزل في الملفات (التنزيلات) — Outlook ← Reply All ← لصق ← 📎','✓ Text copied, PDF downloaded to Files — Outlook → Reply All → Paste → 📎'));return}
   const done=()=>{markMail();toast(tr('✓ الكلام اتنسخ والـ PDF اتحفظ — Outlook ← Reply All ← لصق ← 📎 الـ PDF','✓ Text copied, PDF saved — Outlook → Reply All → Paste → 📎 the PDF'))};
   if(navigator.canShare&&navigator.canShare({files:pdf}))navigator.share({files:pdf}).then(done).catch(e=>{if(!e||e.name!=='AbortError'){saveFiles(pdf);done()}});
   else{saveFiles(pdf);done()}
@@ -2970,7 +2971,7 @@ $('shBtn').onclick=async()=>{
 };
 if('serviceWorker' in navigator&&location.protocol==='https:')navigator.serviceWorker.register('sw.js').catch(()=>{});
 /* ---------- quick update: version.json is never cached; a newer one shows a bar, one tap reloads ---------- */
-const APP_VER='2026.10.17.8';
+const APP_VER='2026.10.17.9';
 $('verTxt').textContent=APP_VER;
 /* update = check the internet first, then let the new service worker take over; the saved copy is NOT deleted
    (deleting it and then losing the connection left Safari with «FetchEvent.respondWith … Returned response is null»);
