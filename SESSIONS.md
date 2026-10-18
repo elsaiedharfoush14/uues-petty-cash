@@ -36,3 +36,5 @@
 2026-10-05 · طباعة PDF أبيض وأسود بنفس شكل الفورم · نسخ v2026.10.05.6 لحد .8 · —
 2026-10-04 · تبويبات، عربي/إنجليزي، رصيد العهدة، اللوجو، الإعدادات · —
 2026-10-03 · أول نشر للتطبيق · —
+2026-10-17 | ابعت تاني: حفظ مباشر؟ (petty cash) | direct save to Files impossible on iPhone; chose icon + pin «حفظ في الملفات» in share-sheet Favorites (Safari route rejected: 7-day data wipe); no code change
+2026-10-18 | PETTY · دورة موافقة العهدة | found the approval loop already live (v2026.10.17.10, other session); no code change
