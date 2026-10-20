@@ -1086,7 +1086,7 @@ const fmt=n=>(Math.round(n*100)/100).toLocaleString('en-US',{minimumFractionDigi
 const todayISO=()=>{const d=new Date();return new Date(d.getTime()-d.getTimezoneOffset()*6e4).toISOString().slice(0,10)};
 const parseISO=s=>{const [y,m,d]=s.split('-').map(Number);return Date.UTC(y,m-1,d)};
 const days=c=>(!c.from||!c.to)?0:Math.max(0,Math.round((parseISO(c.to)-parseISO(c.from))/864e5)+1);
-const meals=c=>days(c)*(c.mealRate||RATE);
+const meals=c=>c.noMeal?0:days(c)*(c.mealRate||RATE);
 const total=c=>(c.items||[]).reduce((s,i)=>s+(+i.amount||0),0)+meals(c);
 const dmy=s=>s?s.split('-').reverse().join('/'):'';
 const normNum=s=>String(s).replace(/[٠-٩]/g,d=>'٠١٢٣٤٥٦٧٨٩'.indexOf(d)).replace(/[٫,]/g,'.').replace(/[^0-9.]/g,'');
@@ -1251,8 +1251,9 @@ function renderSheet(){
   };
   sec('🏨 LODGING',g.L); sec('🚕 TRANSPORTATION',g.T);
   const m=document.createElement('div');m.className='row meal';
-  m.innerHTML='<span class="lab"></span><span class="num"></span><span></span>';
-  m.querySelector('.lab').textContent=`${days(c)} days x ${c.mealRate||RATE} SAR`;
+  m.innerHTML='<span class="lab"></span><span class="num"></span><button class="chip" type="button" style="padding:2px 9px;font-size:12px"></button>';
+  {const b=m.querySelector('button');b.textContent=c.noMeal?tr('⛔ مقفول','⛔ Off'):tr('✅ شغّال','✅ On');b.onclick=()=>mutate(x=>{x.noMeal=!x.noMeal})}
+  m.querySelector('.lab').textContent=c.noMeal?'Not claimed':`${days(c)} days x ${c.mealRate||RATE} SAR`;
   m.querySelector('.num').textContent=fmt(meals(c));
   sec('🍽️ MEALS',[],m); sec('📦 MISCELLANEOUS',g.M);
   seen=new Set((c.items||[]).map(i=>i.id)); seenFor=c.id;
@@ -1390,7 +1391,7 @@ $('sumBtn').onclick=async()=>{
   L.push(`${tr('عهدة','Custody')} ${c.no} — ${c.project||''}${c.fileNo?' ('+c.fileNo+')':''}`);
   L.push(`📅 ${dmy(c.from)} ${ARW()} ${dmy(c.to)} · ${daysTxt(days(c))}`); L.push('');
   [['🏨',g.L],['🚕',g.T],['📦',g.M]].forEach(([ic,list])=>list.forEach(i=>L.push(`${ic} ${i.label}: ${fmt(+i.amount||0)}`)));
-  L.push(`🍽️ Meals: ${days(c)} × ${c.mealRate||RATE} = ${fmt(meals(c))}`); L.push('');
+  L.push(c.noMeal?'🍽️ Meals: not claimed':`🍽️ Meals: ${days(c)} × ${c.mealRate||RATE} = ${fmt(meals(c))}`); L.push('');
   L.push(`${tr('الإجمالي','Total')}: ${fmt(total(c))} SAR`);
   if(+c.advance) L.push(`${tr('المستلم','Advance')}: ${fmt(c.advance)} · ${tr('الصافي','Balance')}: ${fmt(total(c)-c.advance)}`);
   L.push(c.status==='submitted'?tr('✅ اتسلمت للحسابات','✅ Submitted'):tr('⏳ لسه ما اتسلمتش','⏳ Not submitted yet'));
@@ -1522,7 +1523,7 @@ async function custodyCanvas(c){
     {cells:['Date','Description','Amount\n(SAR)','VAT\n(Inclusive)','Remarks'].map(t=>({t,b:1,al:'c',pt:11,fit:1})),h:10},
     sec('LODGING'),...items(gr.L,'Hotel 1'),
     sec('TRANSPORTATION'),...items(gr.T,'Fuel 1'),
-    sec('MEALS'),item(toD,`${D} days x ${rate} SAR`,pS(D*rate),'Meals allowance'),
+    sec('MEALS'),item(toD,c.noMeal?'Not claimed':`${D} days x ${rate} SAR`,pS(meals(c)),'Meals allowance'),
     sec('MISCELLANEOUS'),...items(gr.M,'Material 1'),
     {cells:[{t:'Total Amount',cs:2,b:1,al:'c',pt:11.5},{t:pS(T),al:'r',b:1,fit:1},{t:'SAR 0.00',al:'r',b:1,fit:1},{t:''}],h:6.6},
     {cells:[{cs:5}],h:4},
@@ -2732,8 +2733,8 @@ function buildSheet(wb,c,ids){
   section('TRANSPORTATION'); (g.T.length?g.T:[{label:'Fuel 1',amount:''}]).forEach(i=>item(i.label,i.amount,i.remark,null,null,i.date));
   section('MEALS'); const rate=c.mealRate||RATE;
   first=first||r; put('A'+r,{formula:'$D$7',result:xdate(toD)},{h:'center',fmt:DATEF,L:true});
-  put('B'+r,{formula:`B8&" days x ${rate} SAR"`,result:`${D} days x ${rate} SAR`});
-  put('C'+r,{formula:`B8*${rate}`,result:D*rate},{h:'right',fmt:SAR}); put('D'+r,null); put('E'+r,'Meals allowance'); r++;
+  put('B'+r,c.noMeal?'Not claimed':{formula:`B8&" days x ${rate} SAR"`,result:`${D} days x ${rate} SAR`});
+  put('C'+r,c.noMeal?{formula:'0',result:0}:{formula:`B8*${rate}`,result:D*rate},{h:'right',fmt:SAR}); put('D'+r,null); put('E'+r,'Meals allowance'); r++;
   section('MISCELLANEOUS'); (g.M.length?g.M:[{label:'Material 1',amount:''}]).forEach(i=>item(i.label,i.amount,i.remark,null,null,i.date));
   const last=r-1, T=total(c);
   ws.mergeCells(`A${r}:B${r}`); put('A'+r,'Total Amount',{b:true,sz:12,h:'center',L:true});
@@ -2970,7 +2971,7 @@ $('shBtn').onclick=async()=>{
 };
 if('serviceWorker' in navigator&&location.protocol==='https:')navigator.serviceWorker.register('sw.js').catch(()=>{});
 /* ---------- quick update: version.json is never cached; a newer one shows a bar, one tap reloads ---------- */
-const APP_VER='2026.10.17.10';
+const APP_VER='2026.10.20.1';
 $('verTxt').textContent=APP_VER;
 /* update = check the internet first, then let the new service worker take over; the saved copy is NOT deleted
    (deleting it and then losing the connection left Safari with «FetchEvent.respondWith … Returned response is null»);
