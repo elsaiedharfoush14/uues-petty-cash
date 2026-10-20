@@ -38,3 +38,4 @@
 2026-10-03 · أول نشر للتطبيق · —
 2026-10-17 | ابعت تاني: حفظ مباشر؟ (petty cash) | direct save to Files impossible on iPhone; chose icon + pin «حفظ في الملفات» in share-sheet Favorites (Safari route rejected: 7-day data wipe); no code change
 2026-10-18 | PETTY · دورة موافقة العهدة | found the approval loop already live (v2026.10.17.10, other session); no code change
+2026-10-20 | PETTY · زرار بدل الأكل | v2026.10.20.1 live: meal allowance on/off per custody (chip on Meals row), PDF/Excel show Not claimed
