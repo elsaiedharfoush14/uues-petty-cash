@@ -2094,7 +2094,21 @@ $('sigFile').onchange=async e=>{const f=e.target.files&&e.target.files[0];e.targ
   const cv=document.createElement('canvas');cv.width=W;cv.height=H;const g=cv.getContext('2d');g.drawImage(im,0,0,W,H);
   const id=g.getImageData(0,0,W,H),d=id.data,px=new Uint8ClampedArray(W*H);for(let i=0;i<px.length;i++)px[i]=d[i*4]*.299+d[i*4+1]*.587+d[i*4+2]*.114;
   const m=Math.round(Math.min(W,H)*.08);   /* edges of the photo/crop are never ink */
-  for(let i=0;i<px.length;i++){const x=i%W,y=(i/W)|0,a=x<m||y<m||x>=W-m||y>=H-m?0:Math.min(255,(255-px[i])*1.6);d[i*4]=d[i*4+1]=d[i*4+2]=0;d[i*4+3]=a<50?0:a}
+  /* ink / paper split (Otsu): paper = fully transparent, ink = solid black, only a 1-px soft edge */
+  const hs=new Array(256).fill(0);let n=0;for(let i=0;i<px.length;i++)if(px[i]<250){hs[px[i]]++;n++}
+  let T=160;if(n){let sum=0;for(let v=0;v<256;v++)sum+=v*hs[v];let sB=0,wB=0,best=-1;
+    for(let v=0;v<250;v++){wB+=hs[v];if(!wB)continue;const wF=n-wB;if(!wF)break;sB+=v*hs[v];const mB=sB/wB,mF=(sum-sB)/wF,b=wB*wF*(mB-mF)*(mB-mF);if(b>best){best=b;T=v}}}
+  T=Math.max(90,Math.min(190,T));
+  const al=new Uint8ClampedArray(W*H);
+  for(let i=0;i<px.length;i++){const x=i%W,y=(i/W)|0;if(x<m||y<m||x>=W-m||y>=H-m)continue;const v=px[i];al[i]=v<=T-30?255:v>=T?0:(T-v)*255/30}
+  /* specks: ink pieces much smaller than the signature are dirt / paper grain → removed */
+  const lab=new Int32Array(W*H),st=[];let ink=0;for(let i=0;i<al.length;i++)if(al[i])ink++;
+  const minPx=Math.max(15,ink*.004);
+  for(let i=0;i<al.length;i++){if(!al[i]||lab[i])continue;const comp=[];lab[i]=1;st.push(i);
+    while(st.length){const k=st.pop();comp.push(k);const x=k%W;
+      for(const q of [k-1,k+1,k-W,k+W,k-W-1,k-W+1,k+W-1,k+W+1]){if(q<0||q>=al.length||lab[q]||!al[q])continue;const qx=q%W;if(Math.abs(qx-x)>1)continue;lab[q]=1;st.push(q)}}
+    if(comp.length<minPx)comp.forEach(k=>al[k]=0)}
+  for(let i=0;i<px.length;i++){d[i*4]=d[i*4+1]=d[i*4+2]=0;d[i*4+3]=al[i]}
   g.putImageData(id,0,0);const u=sigTrim(cv);if(!u){toast(tr('ما لقيتش توقيع في الصورة','No signature found in the photo'));return}
   sigStore(u);$('sigOv').hidden=true;toast(tr('✓ اتحفظ التوقيع من الصورة','✓ Signature saved from the photo'))};
 $('sigDel').onclick=()=>{sigStore('');$('sigOv').hidden=true;toast(tr('اتمسح التوقيع','Signature removed'))};
@@ -2989,7 +3003,7 @@ $('shBtn').onclick=async()=>{
 };
 if('serviceWorker' in navigator&&location.protocol==='https:')navigator.serviceWorker.register('sw.js').catch(()=>{});
 /* ---------- quick update: version.json is never cached; a newer one shows a bar, one tap reloads ---------- */
-const APP_VER='2026.10.21.2';
+const APP_VER='2026.10.21.3';
 $('verTxt').textContent=APP_VER;
 /* update = check the internet first, then let the new service worker take over; the saved copy is NOT deleted
    (deleting it and then losing the connection left Safari with «FetchEvent.respondWith … Returned response is null»);
