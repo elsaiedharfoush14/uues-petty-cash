@@ -24,6 +24,12 @@ this repo, so GitHub is the single source of truth — never leave work only in 
   إيه», show him the latest lines as a numbered list; when he picks one, continue that work.
 
 ## Status
+- **v2026.10.21.4** (2026-10-21): receipt amount = ONE number, the total WITH VAT (his rule: «take the biggest number»).
+  `readReceipt` → amount = max of: total lines (not «before/excl VAT», not VAT-only), sub-total + VAT when both are printed,
+  and the biggest x.xx money figure; lines with cash / change / paid / discount / phone / «No» / رقم are skipped, dates and
+  times are stripped first. Returns `alts` (top 4) → chips under «المبلغ» on the confirm card, tap = use that number.
+  Tested: 7 sample texts (fuel with cash 200 > total, Arabic net+VAT without a total line, hotel 1,150.00, Arabic digits,
+  parking with a date «31.12»), and the card in Chromium (stubbed `ocrRead`): 168.94 picked, chip tap changes it, no errors.
 - **v2026.10.12.1** (2026-10-12): (1) pinch zoom «zooms and comes back» + the fixed «الإجمالي» bar floated in the
   middle of the screen (a zoomed iPhone page moves fixed bars) → no zoom: viewport maximum-scale=1,user-scalable=no,
   iPhone ignores that so gesturestart/change/end + 2-finger touchmove are preventDefault'ed (except inside #viewer),
