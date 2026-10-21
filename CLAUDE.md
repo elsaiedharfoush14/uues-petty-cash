@@ -24,12 +24,16 @@ this repo, so GitHub is the single source of truth — never leave work only in 
   إيه», show him the latest lines as a numbered list; when he picks one, continue that work.
 
 ## Status
-- **v2026.10.21.4** (2026-10-21): receipt amount = ONE number, the total WITH VAT (his rule: «take the biggest number»).
-  `readReceipt` → amount = max of: total lines (not «before/excl VAT», not VAT-only), sub-total + VAT when both are printed,
-  and the biggest x.xx money figure; lines with cash / change / paid / discount / phone / «No» / رقم are skipped, dates and
-  times are stripped first. Returns `alts` (top 4) → chips under «المبلغ» on the confirm card, tap = use that number.
-  Tested: 7 sample texts (fuel with cash 200 > total, Arabic net+VAT without a total line, hotel 1,150.00, Arabic digits,
-  parking with a date «31.12»), and the card in Chromium (stubbed `ocrRead`): 168.94 picked, chip tap changes it, no errors.
+- **v2026.10.21.5** (2026-10-21): receipt reader UNDERSTANDS the receipt (he said the biggest number is not always the
+  total; .4 took the max). `readReceipt` scores every money figure: words on its line (Total/الإجمالي +4, grand/due/incl.
+  VAT/شامل/المستحق +6, mada/card +2, Amount/SAR/المبلغ +2; sub-total/excl −4, VAT-only −4, cash/change/discount −5,
+  price/volume/litres −2, phone/No/رقم −6; a label alone on the line above counts for the number below), receipt maths
+  (sub+VAT = it +6, VAT = 15/115 of it +4, it = another ×1.15 +2), repeats +1 each (max 3); biggest = +1 tie-breaker.
+  → `{amount, alts (by score), sure}`; type = most keyword hits in `RC_TYPES` (now /g, header lines ×2). Card text:
+  «دي فاتورة بنزين من ALDREES — الإجمالي شامل الضريبة X» or «مش متأكد… دوس على الرقم الصح» + number chips.
+  Tested: 11 sample texts (cash > total, fuel volume, loyalty points 1450, hotel folio, Uber, label on the line above,
+  labels lost by OCR, Arabic digits, net+VAT with no total) all right amount + type; card in Chromium, no errors.
+  Not tested on a real photo (Tesseract quality). Free, offline after first load — he chose free over Claude API (v.05.10).
 - **v2026.10.12.1** (2026-10-12): (1) pinch zoom «zooms and comes back» + the fixed «الإجمالي» bar floated in the
   middle of the screen (a zoomed iPhone page moves fixed bars) → no zoom: viewport maximum-scale=1,user-scalable=no,
   iPhone ignores that so gesturestart/change/end + 2-finger touchmove are preventDefault'ed (except inside #viewer),
