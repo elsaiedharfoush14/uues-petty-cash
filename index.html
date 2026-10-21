@@ -1502,7 +1502,7 @@ async function custodyCanvas(c){
   const cols=[11.2,26.4,13.4,10.7,38.3].map(p=>p/100*inner);
   const lb=t=>({t,b:1,al:'c',pt:11.5,fit:1}), sec=t=>({cells:[{t,cs:5,b:1,u:1}],h:6.2,grow:1});
   const item=(a,b,cc,e)=>({cells:[{t:a,al:'c'},{t:b},{t:cc,al:'r',fit:1},{t:''},{t:e}],h:6.2,grow:1});
-  const items=(list,empty)=>(list.length?list:[{label:empty,amount:''}]).map(i=>item(i.date?dmy(i.date):toD,i.label,pS(i.amount),(rn.get(i.id)?'#'+rn.get(i.id)+'  ':'')+(i.remark||'')));
+  const items=list=>list.map(i=>item(i.date?dmy(i.date):toD,i.label,pS(i.amount),(rn.get(i.id)?'#'+rn.get(i.id)+'  ':'')+(i.remark||'')));
   const head=(g,x,y,w,h)=>{const pad=1.4, lh=logo?22:0, lw=logo?logo.naturalWidth/logo.naturalHeight*lh:0;
     if(logo)g.drawImage(logo,(x+pad)*PX,(y+(h-lh)/2)*PX,lw*PX,lh*PX);
     const right=x+w-pad, room=w-2*pad-lw-3, nw=Math.min(58,room), nh=name?name.naturalHeight/name.naturalWidth*nw:0;
@@ -1521,10 +1521,10 @@ async function custodyCanvas(c){
     {cells:[lb('Days:'),{t:String(D),al:'c'},lb('Nights:'),{t:String(Math.max(0,D-1)),al:'c'}],h:6.6},
     {cells:[{t:'Employee Name:',b:1},{t:EMP,cs:4,b:1}],h:6.6,grow:1},
     {cells:['Date','Description','Amount\n(SAR)','VAT\n(Inclusive)','Remarks'].map(t=>({t,b:1,al:'c',pt:11,fit:1})),h:10},
-    sec('LODGING'),...items(gr.L,'Hotel 1'),
-    sec('TRANSPORTATION'),...items(gr.T,'Fuel 1'),
-    sec('MEALS'),item(toD,c.noMeal?'Not claimed':`${D} days x ${rate} SAR`,pS(meals(c)),'Meals allowance'),
-    sec('MISCELLANEOUS'),...items(gr.M,'Material 1'),
+    ...(gr.L.length?[sec('LODGING'),...items(gr.L)]:[]),
+    ...(gr.T.length?[sec('TRANSPORTATION'),...items(gr.T)]:[]),
+    ...(c.noMeal?[]:[sec('MEALS'),item(toD,`${D} days x ${rate} SAR`,pS(meals(c)),'Meals allowance')]),
+    ...(gr.M.length?[sec('MISCELLANEOUS'),...items(gr.M)]:[]),
     {cells:[{t:'Total Amount',cs:2,b:1,al:'c',pt:11.5},{t:pS(T),al:'r',b:1,fit:1},{t:'SAR 0.00',al:'r',b:1,fit:1},{t:''}],h:6.6},
     {cells:[{cs:5}],h:4},
     {cells:[{t:'Total spent by Employee:',cs:2,b:1},{t:pS(T),al:'c',fit:1},{t:'',cs:2}],h:6.6},
@@ -2729,13 +2729,14 @@ function buildSheet(wb,c,ids){
     put('B'+r,label); put('C'+r,formula?{formula,result:res}:(amt===''?null:amt),{h:'right',fmt:SAR});
     put('D'+r,null,{fmt:SAR}); put('E'+r,rem||null); r++};
   const g=grouped(c);
-  section('LODGING'); (g.L.length?g.L:[{label:'Hotel 1',amount:''}]).forEach(i=>item(i.label,i.amount,i.remark,null,null,i.date));
-  section('TRANSPORTATION'); (g.T.length?g.T:[{label:'Fuel 1',amount:''}]).forEach(i=>item(i.label,i.amount,i.remark,null,null,i.date));
-  section('MEALS'); const rate=c.mealRate||RATE;
+  const part=(t,list)=>{if(!list.length)return;section(t);list.forEach(i=>item(i.label,i.amount,i.remark,null,null,i.date))};
+  part('LODGING',g.L); part('TRANSPORTATION',g.T);
+  if(!c.noMeal){section('MEALS'); const rate=c.mealRate||RATE;
   first=first||r; put('A'+r,{formula:'$D$7',result:xdate(toD)},{h:'center',fmt:DATEF,L:true});
-  put('B'+r,c.noMeal?'Not claimed':{formula:`B8&" days x ${rate} SAR"`,result:`${D} days x ${rate} SAR`});
-  put('C'+r,c.noMeal?{formula:'0',result:0}:{formula:`B8*${rate}`,result:D*rate},{h:'right',fmt:SAR}); put('D'+r,null); put('E'+r,'Meals allowance'); r++;
-  section('MISCELLANEOUS'); (g.M.length?g.M:[{label:'Material 1',amount:''}]).forEach(i=>item(i.label,i.amount,i.remark,null,null,i.date));
+  put('B'+r,{formula:`B8&" days x ${rate} SAR"`,result:`${D} days x ${rate} SAR`});
+  put('C'+r,{formula:`B8*${rate}`,result:D*rate},{h:'right',fmt:SAR}); put('D'+r,null); put('E'+r,'Meals allowance'); r++}
+  part('MISCELLANEOUS',g.M);
+  first=first||r;
   const last=r-1, T=total(c);
   ws.mergeCells(`A${r}:B${r}`); put('A'+r,'Total Amount',{b:true,sz:12,h:'center',L:true});
   put('C'+r,{formula:`SUM(C${first}:C${last})`,result:T},{b:true,h:'right',fmt:SAR});
@@ -2971,7 +2972,7 @@ $('shBtn').onclick=async()=>{
 };
 if('serviceWorker' in navigator&&location.protocol==='https:')navigator.serviceWorker.register('sw.js').catch(()=>{});
 /* ---------- quick update: version.json is never cached; a newer one shows a bar, one tap reloads ---------- */
-const APP_VER='2026.10.20.1';
+const APP_VER='2026.10.21.1';
 $('verTxt').textContent=APP_VER;
 /* update = check the internet first, then let the new service worker take over; the saved copy is NOT deleted
    (deleting it and then losing the connection left Safari with «FetchEvent.respondWith … Returned response is null»);
