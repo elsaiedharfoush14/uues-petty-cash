@@ -3055,7 +3055,7 @@ $('shBtn').onclick=async()=>{
 };
 if('serviceWorker' in navigator&&location.protocol==='https:')navigator.serviceWorker.register('sw.js').catch(()=>{});
 /* ---------- quick update: version.json is never cached; a newer one shows a bar, one tap reloads ---------- */
-const APP_VER='2026.10.21.5';
+const APP_VER='2026.10.24.1';
 $('verTxt').textContent=APP_VER;
 /* update = check the internet first, then let the new service worker take over; the saved copy is NOT deleted
    (deleting it and then losing the connection left Safari with «FetchEvent.respondWith … Returned response is null»);
@@ -3083,8 +3083,9 @@ renderChips(); renderHome();
 
 /* ---------- storage: this phone only (localStorage) ---------- */
 const LS={k:'uues_pc_v1',
-  read(){try{return JSON.parse(localStorage.getItem(this.k)||'{}')||{}}catch(e){return {}}},
-  write(o){try{localStorage.setItem(this.k,JSON.stringify(o));return true}catch(e){return false}}};
+  /* if the saved data can't be read, never write over it (a write of {} + one field would wipe every custody) */
+  read(){try{return JSON.parse(localStorage.getItem(this.k)||'{}')||{}}catch(e){this.bad=true;return {}}},
+  write(o){if(this.bad)return false;try{localStorage.setItem(this.k,JSON.stringify(o));return true}catch(e){return false}}};
 function lsColl(name){return{doc:id=>({
   set:async body=>{const o=LS.read();o[name]=o[name]||{};o[name][id]=body;if(!LS.write(o))throw {code:'unavailable'}},
   delete:async()=>{const o=LS.read();if(o[name])delete o[name][id];LS.write(o)}})}}
