@@ -782,6 +782,7 @@ html[dir=ltr] .card::before{border-radius:4px 0 0 4px}
     <div class="panel">
       <strong>آخر التحديثات</strong>
       <ul class="log">
+        <li><b class="num">2026.11.15</b><span>📸 صور الفواتير بأعلى جودة: الصورة بتتحفظ بدقتها الكاملة (12 ميجا)، زرار «📸 كاميرا الموبايل» بيفتح كاميرا الموبايل نفسها، والصور في ملف العهدة أوضح.</span></li>
         <li><b class="num">2026.11.15</b><span>📎 فاتورة الـ PDF بتتحط بنفس عدد صفحاتها ونفس مقاسها في ملف العهدة (من غير دمج ولا تصغير)، وزرار 📄 بتاع الفاتورة القديمة بيفتح الملفات زي الفاتورة الجديدة.</span></li>
         <li><b class="num">2026.10.21</b><span>🧾 قارئ الفواتير بقى بيفهم الفاتورة: بيعرف الإجمالي شامل الضريبة من الكلام اللي جنبه وحسبة الضريبة (مش أكبر رقم)، وبيعرف نوعها (بنزين، فندق، تاكسي…) — ولو مش متأكد بيقولك تختار الرقم الصح.</span></li>
         <li><b class="num">2026.10.12</b><span>🔒 الصفحة بقت ثابتة من غير زوم، وشريط الإجمالي فاضل تحت. وزرار 📄 جنب أي فاتورة قديمة بيفتح كاميرا السكان.</span></li>
@@ -903,7 +904,8 @@ html[dir=ltr] .card::before{border-radius:4px 0 0 4px}
 <input type="file" id="phFile" accept="image/*,application/pdf,.pdf" hidden>
 <div class="viewer" id="viewer" hidden><div class="vpg" id="vPg"></div><img id="vImg" alt="صورة الفاتورة"><div class="vbar"><button class="btn" id="vAdd" type="button">➕ صفحة كمان</button><button class="btn" id="vRep" type="button">استبدال</button><button class="btn" id="vDel" type="button">حذف الصفحة دي</button><button class="btn" id="vClose" type="button">إغلاق</button></div></div>
 <div class="camOv" id="camOv" hidden>
-  <div class="camTop"><span id="camHint">وجّه الكاميرا على الفاتورة</span><button class="camAuto" id="camAuto" type="button">⚡ أوتوماتيك</button></div>
+  <div class="camTop"><span id="camHint">وجّه الكاميرا على الفاتورة</span><button class="camAuto" id="camHd" type="button">📸 كاميرا الموبايل</button><button class="camAuto" id="camAuto" type="button">⚡ أوتوماتيك</button></div>
+  <input type="file" id="camHdFile" accept="image/*" capture="environment" hidden>
   <div class="camStage" id="camStage"><video id="camV" playsinline muted autoplay></video><canvas id="camC"></canvas><div class="camMsg" id="camMsg" hidden></div></div>
   <div class="camBar"><button class="btn" id="camGal" type="button">🖼️ من الصور</button><button class="camShot" id="camShot" type="button" aria-label="صوّر"><i></i></button><button class="btn" id="camX" type="button">✕ قفل</button></div>
 </div>
@@ -985,6 +987,7 @@ let LANG='ar'; try{LANG=localStorage.getItem('uues_lang')==='en'?'en':'ar'}catch
 const tr=(a,e)=>LANG==='en'?e:a;
 const ARW=()=>LANG==='en'?'→':'←';
 const EN={
+ '📸 كاميرا الموبايل':'📸 Phone camera',
  '📧 الموافقات':'📧 Approvals','إيميل واحد للمدير والمالية: المدير يوافق والمالية تصفّي':'One e-mail to the manager and finance: the manager approves, finance settles',
  'اسم المدير بالإنجليزي (بيتكتب في «Dear Eng.»)':'Manager name in English (used in «Dear Eng.»)','إيميل المدير':'Manager e-mail','إيميل المالية':'Finance e-mail','📧 اطلب عهدة جديدة':'📧 Request new petty cash','مبلغ طلب العهدة الجديدة (SAR)':'New petty cash request amount (SAR)',
  'عنوان الإيميل الثابت (كل العهد في نفس السلسلة)':'Fixed e-mail subject (all custodies in one thread)',
@@ -1563,7 +1566,7 @@ setTimeout(()=>grayImgs(),1500);
 async function makePages(jobs,base){
   const files=[];
   for(let i=0;i<jobs.length;i++){const cv=await jobs[i](), w=cv.width, h=cv.height;
-    const b=await new Promise((ok,no)=>cv.toBlob(x=>x?ok(x):no(new Error('blob')),'image/jpeg',.92)), pt=cv.pt||null; cv.width=cv.height=0;
+    const b=await new Promise((ok,no)=>cv.toBlob(x=>x?ok(x):no(new Error('blob')),'image/jpeg',cv.hq?.95:.92)), pt=cv.pt||null; cv.width=cv.height=0;
     const f=new File([b],base+(jobs.length>1?`_p${i+1}`:'')+'.jpg',{type:'image/jpeg'}); f.w=w; f.h=h; f.pt=pt; files.push(f)}
   return files;
 }
@@ -2012,9 +2015,9 @@ let photoKeys=new Set(), phTarget=null, vUrl=null, phPage=0, phAdd=false;
 const pageKeys=id=>{const a=[];if(!photoKeys.has(id))return a;a.push(id);for(let n=2;photoKeys.has(id+'#'+n);n++)a.push(id+'#'+n);return a};
 PDB.keys().then(k=>{photoKeys=new Set(k||[]);if(!$('sheet').hidden)renderSheet()}).catch(()=>{});
 async function shrink(file){
-  try{const img=await createImageBitmap(file);const k=Math.min(1,2600/Math.max(img.width,img.height));
+  try{const img=await createImageBitmap(file);const k=Math.min(1,SCAN_MAX/Math.max(img.width,img.height),Math.sqrt(SCAN_MP/(img.width*img.height)));
     const c=document.createElement('canvas');c.width=Math.round(img.width*k);c.height=Math.round(img.height*k);
-    c.getContext('2d').drawImage(img,0,0,c.width,c.height);return await new Promise(r=>c.toBlob(b=>r(b||file),'image/jpeg',0.9))}catch(e){return file}
+    c.getContext('2d').drawImage(img,0,0,c.width,c.height);return await new Promise(r=>c.toBlob(b=>r(b||file),'image/jpeg',.95))}catch(e){return file}
 }
 async function photoTap(id){
   phTarget=id; phPage=0; phAdd=false;
@@ -2147,7 +2150,7 @@ async function photoJobs(c){
 async function pdfPageCanvas(u){
   const b=await PDB.get(u.key), url=URL.createObjectURL(b), im=await loadImg(url); URL.revokeObjectURL(url);
   const cv=document.createElement('canvas');cv.width=im.naturalWidth;cv.height=im.naturalHeight;const g=cv.getContext('2d');
-  g.fillStyle='#fff';g.fillRect(0,0,cv.width,cv.height);g.drawImage(im,0,0);cv.pt=pgSize(b);return cv;
+  g.fillStyle='#fff';g.fillRect(0,0,cv.width,cv.height);g.drawImage(im,0,0);cv.pt=pgSize(b);cv.hq=1;return cv;
 }
 async function photoCanvas(c,gr,pg,n,total){
   /* the receipt fills the page (his request 2026-10-11): 4 mm margin, ONE tiny caption line per receipt, the rest is the photo */
@@ -2171,7 +2174,7 @@ async function photoCanvas(c,gr,pg,n,total){
     const sc=Math.min(cw/im.naturalWidth,bh/im.naturalHeight), w=im.naturalWidth*sc, h=im.naturalHeight*sc, ix=x+(cw-w)/2;
     g.imageSmoothingQuality='high';g.drawImage(im,ix*PX,by*PX,w*PX,h*PX);   /* receipt photos in COLOUR (his request 2026-10-11) */
     g.lineWidth=.4*PT*PX;g.strokeRect(ix*PX,by*PX,w*PX,h*PX)});
-  g.restore(); return P.cv;
+  g.restore(); P.cv.hq=1;return P.cv;
 }
 
 /* ---------- 📷 read a receipt photo: Tesseract.js (free, runs on the phone; the first use downloads ~10 MB) ---------- */
@@ -2434,7 +2437,7 @@ function homography(dst,src){          /* 3×3 (h8=1) that maps a point of the f
 }
 function scanWarp(gray,sw,sh,q){        /* q = 4 corners in photo pixels → straight, clean grayscale canvas */
   const d=(a,b)=>Math.hypot(a[0]-b[0],a[1]-b[1]);
-  let W=Math.max(d(q[0],q[1]),d(q[3],q[2])),H=Math.max(d(q[0],q[3]),d(q[1],q[2]));const k=Math.min(1,3200/Math.max(W,H),Math.sqrt(7e6/(W*H)));W=Math.max(50,Math.round(W*k));H=Math.max(50,Math.round(H*k));
+  let W=Math.max(d(q[0],q[1]),d(q[3],q[2])),H=Math.max(d(q[0],q[3]),d(q[1],q[2]));const k=Math.min(1,SCAN_MAX/Math.max(W,H),Math.sqrt(SCAN_MP/(W*H)));W=Math.max(50,Math.round(W*k));H=Math.max(50,Math.round(H*k));
   const h=homography([[0,0],[W,0],[W,H],[0,H]],q), out=new Uint8ClampedArray(W*H);
   for(let y=0;y<H;y++)for(let x=0;x<W;x++){const den=h[6]*x+h[7]*y+1,u=(h[0]*x+h[1]*y+h[2])/den,v=(h[3]*x+h[4]*y+h[5])/den;
     const x0=Math.floor(u),y0=Math.floor(v);if(x0<0||y0<0||x0>=sw-1||y0>=sh-1){out[y*W+x]=255;continue}
@@ -2446,7 +2449,7 @@ function scanWarp(gray,sw,sh,q){        /* q = 4 corners in photo pixels → str
 }
 function scanWarpColor(rgba,sw,sh,q){   /* same straightening, keeping the colours (light auto-level) */
   const d=(a,b)=>Math.hypot(a[0]-b[0],a[1]-b[1]);
-  let W=Math.max(d(q[0],q[1]),d(q[3],q[2])),H=Math.max(d(q[0],q[3]),d(q[1],q[2]));const k=Math.min(1,3200/Math.max(W,H),Math.sqrt(7e6/(W*H)));W=Math.max(50,Math.round(W*k));H=Math.max(50,Math.round(H*k));
+  let W=Math.max(d(q[0],q[1]),d(q[3],q[2])),H=Math.max(d(q[0],q[3]),d(q[1],q[2]));const k=Math.min(1,SCAN_MAX/Math.max(W,H),Math.sqrt(SCAN_MP/(W*H)));W=Math.max(50,Math.round(W*k));H=Math.max(50,Math.round(H*k));
   const h=homography([[0,0],[W,0],[W,H],[0,H]],q),c=document.createElement('canvas');c.width=W;c.height=H;const g=c.getContext('2d'),id=g.createImageData(W,H),o=id.data;
   for(let y=0;y<H;y++)for(let x=0;x<W;x++){const den=h[6]*x+h[7]*y+1,u=(h[0]*x+h[1]*y+h[2])/den,v=(h[3]*x+h[4]*y+h[5])/den,j=(y*W+x)*4;o[j+3]=255;
     const x0=Math.floor(u),y0=Math.floor(v);if(x0<0||y0<0||x0>=sw-1||y0>=sh-1){o[j]=o[j+1]=o[j+2]=255;continue}
@@ -2474,6 +2477,8 @@ function scanClean(px,W,H){
       v=255-(255-v)*1.35;                              /* darker, crisper ink */
       px[y*W+x]=v>=232?255:v<0?0:v}}
 }
+/* best quality (his request 2026-11-15): full 12 MP phone photo kept (4096 px / 12.5 MP cap = iPhone 4032x3024), JPEG 96 % */
+const SCAN_MAX=4096, SCAN_MP=12.5e6;
 /* receipt photos are saved in COLOUR, as taken (his request 2026-10-11); ⚫ applies to that one scan only */
 let scanMode='color', sigBW=false;   /* sigBW: a signature photo opens in ⚫ (already cleaned, no sharpen halos) */
 async function scanDoc(file){
@@ -2486,7 +2491,7 @@ async function scanDoc(file){
 }
 /* drawable (photo / camera frame) → editor (4 handles, ⚫ scan / 🎨 colour) → straightened JPEG blob, or null */
 async function scanSource(bmp,bw,bh,qIn){
-  const k=Math.min(1,3200/Math.max(bw,bh)),sw=Math.round(bw*k),sh=Math.round(bh*k);
+  const k=Math.min(1,SCAN_MAX/Math.max(bw,bh),Math.sqrt(SCAN_MP/(bw*bh))),sw=Math.round(bw*k),sh=Math.round(bh*k);
   const src=document.createElement('canvas');src.width=sw;src.height=sh;const sg=src.getContext('2d');sg.drawImage(bmp,0,0,sw,sh);
   const rgba=sg.getImageData(0,0,sw,sh).data,gray=new Uint8ClampedArray(sw*sh);for(let i=0;i<gray.length;i++)gray[i]=rgba[i*4]*.299+rgba[i*4+1]*.587+rgba[i*4+2]*.114;
   /* find the paper on a small copy */
@@ -2514,12 +2519,17 @@ async function scanSource(bmp,bw,bh,qIn){
   const out=scanMode==='color'?scanWarpColor(rgba,sw,sh,q):scanWarp(gray,sw,sh,q);src.width=src.height=0;
   /* a thin white frame hides the sliver of table at the paper's edge (it confused the reader) */
   {const og=out.getContext('2d'),bw=Math.max(4,Math.round(Math.min(out.width,out.height)*.012));og.strokeStyle='#fff';og.lineWidth=bw*2;og.strokeRect(0,0,out.width,out.height)}
-  const blob=await new Promise(ok=>out.toBlob(ok,'image/jpeg',.94));out.width=out.height=0;return blob;
+  const blob=await new Promise(ok=>out.toBlob(ok,'image/jpeg',.96));out.width=out.height=0;return blob;
 }
 /* ---------- 📸 live document camera (like WhatsApp / Notes): the paper is outlined live, it shoots by itself when the
    outline holds still (or with the button), then the 4-corner editor opens pre-set → straightened scan ---------- */
 let camStream=null, camAutoOn=(()=>{try{return localStorage.getItem('uues_camauto')!=='0'}catch(e){return true}})();
 function camStop(){if(camStream){camStream.getTracks().forEach(t=>t.stop());camStream=null}const v=$('camV');v.srcObject=null}
+/* the phone's camera app → same path as a picked photo (new invoice → reader, old invoice → its pages) */
+let camHdTo='ocr';
+$('camHdFile').onchange=e=>{const fs=[...(e.target.files||[])];e.target.value='';if(!fs.length)return;
+  if(camHdTo==='ph'){const dt=new DataTransfer();dt.items.add(fs[0]);$('phFile').files=dt.files;$('phFile').dispatchEvent(new Event('change'))}
+  else takeReceipts(fs)};
 async function camScan(onGal){
   const O=$('camOv'),v=$('camV'),C=$('camC'),msg=$('camMsg'),shot=$('camShot'),auto=$('camAuto');O.hidden=false;msg.hidden=true;
   const showAuto=()=>{auto.textContent=camAutoOn?tr('⚡ أوتوماتيك','⚡ Auto'):tr('✋ يدوي','✋ Manual');auto.classList.toggle('off',!camAutoOn)};showAuto();
@@ -2534,10 +2544,20 @@ async function camScan(onGal){
   let quad=null,prev=null,still=0,timer=null,done=false;
   return await new Promise(resolve=>{
     const finish=r=>{if(done)return;done=true;clearInterval(timer);camStop();O.hidden=true;const g=C.getContext('2d');g.clearRect(0,0,C.width,C.height);resolve(r)};
-    const capture=()=>{const vw=v.videoWidth,vh=v.videoHeight;if(!vw)return;const c=document.createElement('canvas');c.width=vw;c.height=vh;c.getContext('2d').drawImage(v,0,0,vw,vh);
-      buzz();finish({cv:c,w:vw,h:vh,q:quad})};
+    let shooting=false;
+    const capture=async()=>{const vw=v.videoWidth,vh=v.videoHeight;if(!vw||shooting)return;shooting=true;buzz();const q0=quad;
+      /* a real still photo when the phone allows it (Android: full camera resolution, sharper than a video frame) */
+      try{const tk=camStream&&camStream.getVideoTracks()[0];
+        if(tk&&window.ImageCapture){const ic=new ImageCapture(tk);let o={};try{const pc=await ic.getPhotoCapabilities();if(pc.imageWidth&&pc.imageWidth.max)o={imageWidth:pc.imageWidth.max}}catch(e){}
+          const ph=await Promise.race([ic.takePhoto(o),new Promise((_,no)=>setTimeout(()=>no(new Error('t')),4000))]), bm=await createImageBitmap(ph);
+          if(bm.width>vw&&Math.abs(bm.width/bm.height-vw/vh)<.05){const c=document.createElement('canvas');c.width=bm.width;c.height=bm.height;c.getContext('2d').drawImage(bm,0,0);if(bm.close)bm.close();
+            const z=c.width/vw;finish({cv:c,w:c.width,h:c.height,q:q0&&q0.map(([x,y])=>[x*z,y*z])});return}
+          if(bm.close)bm.close()}}catch(e){}
+      const c=document.createElement('canvas');c.width=vw;c.height=vh;c.getContext('2d').drawImage(v,0,0,vw,vh);
+      finish({cv:c,w:vw,h:vh,q:q0})};
     shot.onclick=capture;$('camX').onclick=()=>finish(null);
-    $('camGal').onclick=()=>{finish(null);(onGal||(()=>$('ocrFile').click()))()};      /* still inside the tap → the picker may open */
+    $('camGal').onclick=()=>{finish(null);(onGal||(()=>$('ocrFile').click()))()};
+    $('camHd').onclick=()=>{finish(null);camHdTo=onGal?'ph':'ocr';$('camHdFile').click()};      /* still inside the tap → the picker may open */
     timer=setInterval(()=>{const vw=v.videoWidth,vh=v.videoHeight;if(!vw)return;
       const f=Math.min(1,320/Math.max(vw,vh)),tw=Math.round(vw*f),th=Math.round(vh*f);sm.width=tw;sm.height=th;sx.drawImage(v,0,0,tw,th);
       const d=sx.getImageData(0,0,tw,th).data,g=new Uint8ClampedArray(tw*th);for(let i=0;i<g.length;i++)g[i]=d[i*4]*.299+d[i*4+1]*.587+d[i*4+2]*.114;
@@ -2595,7 +2615,7 @@ async function pdfReceipt(file){
     const c=document.createElement('canvas');c.width=Math.round(v.width);c.height=Math.round(v.height);const g=c.getContext('2d');g.fillStyle='#fff';g.fillRect(0,0,c.width,c.height);
     /* intent 'print': drawn without requestAnimationFrame, so it never stalls when the page isn't on screen */
     await pg.render({canvasContext:g,viewport:v,intent:'print'}).promise;
-    const b=await new Promise(ok=>c.toBlob(ok,'image/jpeg',.92));c.width=c.height=0;
+    const b=await new Promise(ok=>c.toBlob(ok,'image/jpeg',.95));c.width=c.height=0;
     blobs.push(new Blob([b],{type:`image/jpeg;pg=${v0.width.toFixed(2)}x${v0.height.toFixed(2)}`}));
     const tc=await pg.getTextContent();text+=tc.items.map(it=>it.str+(it.hasEOL?'\n':' ')).join('')+'\n'}
   if(doc.numPages>n)toast(tr(`الملف فيه ${doc.numPages} صفحة — اتضاف أول ${n} بس`,`The file has ${doc.numPages} pages — only the first ${n} were added`));
@@ -3082,7 +3102,7 @@ $('shBtn').onclick=async()=>{
 };
 if('serviceWorker' in navigator&&location.protocol==='https:')navigator.serviceWorker.register('sw.js').catch(()=>{});
 /* ---------- quick update: version.json is never cached; a newer one shows a bar, one tap reloads ---------- */
-const APP_VER='2026.11.15.1';
+const APP_VER='2026.11.15.2';
 $('verTxt').textContent=APP_VER;
 /* update = check the internet first, then let the new service worker take over; the saved copy is NOT deleted
    (deleting it and then losing the connection left Safari with «FetchEvent.respondWith … Returned response is null»);
