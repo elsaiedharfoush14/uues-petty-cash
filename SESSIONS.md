@@ -41,3 +41,14 @@
 2026-10-17 | ابعت تاني: حفظ مباشر؟ (petty cash) | direct save to Files impossible on iPhone; chose icon + pin «حفظ في الملفات» in share-sheet Favorites (Safari route rejected: 7-day data wipe); no code change
 2026-10-18 | PETTY · دورة موافقة العهدة | found the approval loop already live (v2026.10.17.10, other session); no code change
 2026-10-20 | PETTY · زرار بدل الأكل | v2026.10.20.1 live: meal allowance on/off per custody (chip on Meals row), PDF/Excel show Not claimed
+2026-10-21 | PETTY · زرار بدل الأكل | v2026.10.21.1 live: form PDF/Excel shows only sections that have invoices; Meals hidden when off
+2026-10-21 | PETTY · زرار بدل الأكل | v2026.10.21.2 live: sharper receipt photos + signature from a photo (transparent, ink only)
+2026-10-21 | PETTY · زرار بدل الأكل | v2026.10.21.3 live: signature photo background fully removed, solid black ink only
+2026-10-24 | PETTY · العهد اتمسحت | investigated data loss (no wipe path in code), v2026.10.24.1 guard against overwriting unreadable data; recovery steps sent, waiting for him
+2026-11-12 | PETTY · نسخة احتياطية مشفّرة تلقائية | اتبنت في index.html (لوحة في «عن التطبيق»، استرجاع بكود، حماية من الكتابة فوق السحابة) واتختبرت محلياً على سيرفر وهمي؛ ما اتنشرتش: قواعد Firebase الحيّة بترفض (403) ومحتاجة نشر منه
+2026-11-14 | DigitalOcean hosting | DO needs a card even for free static sites -> dropped; both apps stay on GitHub Pages (his choice)
+2026-11-15 | DOCS · (PETTY request) | v2026.11.15.1: PDF invoice keeps its pages + page size; old-invoice picker opens Files like a new invoice; tested in browser, committed locally, push waits for his yes
+2026-11-15 | DOCS · (PETTY request) | v2026.11.15.1 pushed + live (Pages deploy OK); waits for his iPhone test
+2026-11-15 | DOCS · (PETTY request) | v2026.11.15.2 photo quality (12 MP kept, JPEG 96 %, phone-camera button, Android still photo); tested in browser, committed locally, push waits for his yes
+2026-11-15 | DOCS · (PETTY request) | v2026.11.15.2 pushed + live (Pages deploy OK); waits for his iPhone test
+2026-11-15 | PETTY · عام | continued from the DOCS session: live = v2026.11.15.2 checked; nothing to code, waits for his iPhone test of .1/.2; cloud-backup diff kept uncommitted
