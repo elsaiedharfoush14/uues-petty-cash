@@ -782,6 +782,7 @@ html[dir=ltr] .card::before{border-radius:4px 0 0 4px}
     <div class="panel">
       <strong>آخر التحديثات</strong>
       <ul class="log">
+        <li><b class="num">2026.11.15</b><span>📎 فاتورة الـ PDF بتتحط بنفس عدد صفحاتها ونفس مقاسها في ملف العهدة (من غير دمج ولا تصغير)، وزرار 📄 بتاع الفاتورة القديمة بيفتح الملفات زي الفاتورة الجديدة.</span></li>
         <li><b class="num">2026.10.21</b><span>🧾 قارئ الفواتير بقى بيفهم الفاتورة: بيعرف الإجمالي شامل الضريبة من الكلام اللي جنبه وحسبة الضريبة (مش أكبر رقم)، وبيعرف نوعها (بنزين، فندق، تاكسي…) — ولو مش متأكد بيقولك تختار الرقم الصح.</span></li>
         <li><b class="num">2026.10.12</b><span>🔒 الصفحة بقت ثابتة من غير زوم، وشريط الإجمالي فاضل تحت. وزرار 📄 جنب أي فاتورة قديمة بيفتح كاميرا السكان.</span></li>
         <li><b class="num">2026.10.11</b><span>🎯 الكاميرا بقت بتلقط حرف الورقة نفسه: بتشتغل على ترابيزة بيضا أو خشب، ولو إيدك ماسكة الفاتورة.</span></li>
@@ -899,7 +900,7 @@ html[dir=ltr] .card::before{border-radius:4px 0 0 4px}
 </div>
 
 <datalist id="projList"></datalist>
-<input type="file" id="phFile" accept="image/*" hidden>
+<input type="file" id="phFile" accept="image/*,application/pdf,.pdf" hidden>
 <div class="viewer" id="viewer" hidden><div class="vpg" id="vPg"></div><img id="vImg" alt="صورة الفاتورة"><div class="vbar"><button class="btn" id="vAdd" type="button">➕ صفحة كمان</button><button class="btn" id="vRep" type="button">استبدال</button><button class="btn" id="vDel" type="button">حذف الصفحة دي</button><button class="btn" id="vClose" type="button">إغلاق</button></div></div>
 <div class="camOv" id="camOv" hidden>
   <div class="camTop"><span id="camHint">وجّه الكاميرا على الفاتورة</span><button class="camAuto" id="camAuto" type="button">⚡ أوتوماتيك</button></div>
@@ -1562,8 +1563,8 @@ setTimeout(()=>grayImgs(),1500);
 async function makePages(jobs,base){
   const files=[];
   for(let i=0;i<jobs.length;i++){const cv=await jobs[i](), w=cv.width, h=cv.height;
-    const b=await new Promise((ok,no)=>cv.toBlob(x=>x?ok(x):no(new Error('blob')),'image/jpeg',.92)); cv.width=cv.height=0;
-    const f=new File([b],base+(jobs.length>1?`_p${i+1}`:'')+'.jpg',{type:'image/jpeg'}); f.w=w; f.h=h; files.push(f)}
+    const b=await new Promise((ok,no)=>cv.toBlob(x=>x?ok(x):no(new Error('blob')),'image/jpeg',.92)), pt=cv.pt||null; cv.width=cv.height=0;
+    const f=new File([b],base+(jobs.length>1?`_p${i+1}`:'')+'.jpg',{type:'image/jpeg'}); f.w=w; f.h=h; f.pt=pt; files.push(f)}
   return files;
 }
 /* 📎 the pages → ONE PDF file (each page = one A4 JPEG), so the form + every receipt goes out as a single attachment */
@@ -1574,8 +1575,8 @@ async function buildPdf(files,name){
   add(new Uint8Array([37,80,68,70,45,49,46,52,10,37,226,227,207,211,10]));             /* %PDF-1.4 + binary marker */
   offs[1]=len;add('1 0 obj\n<< /Type /Catalog /Pages 2 0 R >>\nendobj\n');
   offs[2]=len;add(`2 0 obj\n<< /Type /Pages /Count ${N} /Kids [${files.map((_,i)=>(3+3*i)+' 0 R').join(' ')}] >>\nendobj\n`);
-  for(let i=0;i<N;i++){const f=files[i], jpg=new Uint8Array(await f.arrayBuffer()), P=3+3*i, C=P+1, I=P+2, cs=`q ${PW} 0 0 ${PH} 0 0 cm /Im0 Do Q`;
-    offs[P]=len;add(`${P} 0 obj\n<< /Type /Page /Parent 2 0 R /MediaBox [0 0 ${PW} ${PH}] /Resources << /XObject << /Im0 ${I} 0 R >> >> /Contents ${C} 0 R >>\nendobj\n`);
+  for(let i=0;i<N;i++){const f=files[i], [pw,ph]=f.pt||[PW,PH], jpg=new Uint8Array(await f.arrayBuffer()), P=3+3*i, C=P+1, I=P+2, cs=`q ${pw} 0 0 ${ph} 0 0 cm /Im0 Do Q`;
+    offs[P]=len;add(`${P} 0 obj\n<< /Type /Page /Parent 2 0 R /MediaBox [0 0 ${pw} ${ph}] /Resources << /XObject << /Im0 ${I} 0 R >> >> /Contents ${C} 0 R >>\nendobj\n`);
     offs[C]=len;add(`${C} 0 obj\n<< /Length ${cs.length} >>\nstream\n${cs}\nendstream\nendobj\n`);
     offs[I]=len;add(`${I} 0 obj\n<< /Type /XObject /Subtype /Image /Width ${f.w} /Height ${f.h} /ColorSpace /DeviceRGB /BitsPerComponent 8 /Filter /DCTDecode /Length ${jpg.length} >>\nstream\n`);add(jpg);add('\nendstream\nendobj\n')}
   const xo=len; add(`xref\n0 ${total}\n0000000000 65535 f \n`); for(let n=1;n<total;n++)add(String(offs[n]).padStart(10,'0')+' 00000 n \n');
@@ -2049,8 +2050,21 @@ async function phSave(blob){
     toast(add?tr(`اتضافت الصفحة ${ks.length+1}`,`Page ${ks.length+1} added`):'اتحفظت صورة الفاتورة')}catch(err){toast('ما اتحفظتش الصورة — المساحة ممكن تكون مليانة')}
 }
 $('phFile').onchange=async e=>{const f=e.target.files&&e.target.files[0];e.target.value='';if(!f||!phTarget)return;
-  const tgt=phTarget, add=phAdd, blob=isPdf(f)?(await pdfReceipt(f).catch(()=>null))?.blob:await scanDoc(f); if(!blob){phAdd=false;return}
+  const tgt=phTarget, add=phAdd;
+  if(isPdf(f)){toast(tr('بفتح ملف الـ PDF…','Opening the PDF…'));const r=await pdfReceipt(f).catch(()=>null);
+    if(!r||!r.blobs.length){phAdd=false;toast(tr('ما قدرتش أفتح ملف الـ PDF ده (محتاج نت أول مرة)','Could not open this PDF (needs internet the first time)'));return}
+    phTarget=tgt; phAdd=add; await phSaveAll(r.blobs); return}
+  const blob=await scanDoc(f); if(!blob){phAdd=false;return}
   phTarget=tgt; phAdd=add; await phSave(blob)};
+async function phSaveAll(bs){
+  const tgt=phTarget, add=phAdd; phAdd=false; const ks=pageKeys(tgt);
+  try{if(!add)for(let j=ks.length-1;j>=1;j--){await PDB.del(ks[j]);photoKeys.delete(ks[j])}   /* a PDF = the whole invoice */
+    const at=add?ks.length:0;
+    for(let j=0;j<bs.length;j++){const n=at+j,key=n?tgt+'#'+(n+1):tgt;await PDB.put(key,bs[j]);photoKeys.add(key)}
+    renderSheet();phTarget=tgt;phPage=at;showPhPage();
+    toast(add?tr(`اتضافت ${bs.length} صفحة من الملف`,`${bs.length} page(s) added from the file`):tr(`اتحفظت الفاتورة: ${bs.length} صفحة زي الملف`,`Invoice saved: ${bs.length} page(s) as in the file`))}
+  catch(err){toast('ما اتحفظتش الصورة — المساحة ممكن تكون مليانة')}
+}
 $('vClose').onclick=()=>{$('viewer').hidden=true};
 $('vAdd').onclick=()=>{phAdd=true;phCapture()};
 $('vRep').onclick=()=>{phAdd=false;phCapture()};
@@ -2122,12 +2136,18 @@ const receiptNums=c=>{const g=grouped(c),m=new Map();let n=0;[...g.L,...g.T,...g
 async function photoJobs(c){
   const g=grouped(c), list=[...g.L,...g.T,...g.M].filter(i=>photoKeys.has(i.id)), units=[];
   list.forEach((i,k)=>{const ks=pageKeys(i.id);ks.forEach((key,p)=>units.push({i,no:k+1,key,p:p+1,np:ks.length}))});
-  for(const u of units){u.kind='full';try{const b=await PDB.get(u.key);const im=await createImageBitmap(b);const r=im.height/im.width;if(im.close)im.close();
+  for(const u of units){u.kind='full';try{const b=await PDB.get(u.key);if(pgSize(b)){u.kind='pdf';continue}const im=await createImageBitmap(b);const r=im.height/im.width;if(im.close)im.close();
     u.kind=r>=1.7?'tall':r<=.8?'wide':'full'}catch(e){}}
   const groups=[];
   for(let k=0;k<units.length;k++){const u=units[k],v=units[k+1];
-    if(u.kind!=='full'&&v&&v.kind===u.kind){groups.push({lay:u.kind==='tall'?'cols':'rows',us:[u,v]});k++}else groups.push({lay:'full',us:[u]})}
-  return groups.map((gr,k)=>()=>photoCanvas(c,gr,k+1,groups.length,list.length));
+    if((u.kind==='tall'||u.kind==='wide')&&v&&v.kind===u.kind){groups.push({lay:u.kind==='tall'?'cols':'rows',us:[u,v]});k++}else groups.push({lay:'full',us:[u]})}
+  return groups.map((gr,k)=>gr.us[0].kind==='pdf'?()=>pdfPageCanvas(gr.us[0]):()=>photoCanvas(c,gr,k+1,groups.length,list.length));
+}
+/* a page from a PDF invoice: exactly as in the file (same size, nothing drawn on top); cv.pt = its page size in points */
+async function pdfPageCanvas(u){
+  const b=await PDB.get(u.key), url=URL.createObjectURL(b), im=await loadImg(url); URL.revokeObjectURL(url);
+  const cv=document.createElement('canvas');cv.width=im.naturalWidth;cv.height=im.naturalHeight;const g=cv.getContext('2d');
+  g.fillStyle='#fff';g.fillRect(0,0,cv.width,cv.height);g.drawImage(im,0,0);cv.pt=pgSize(b);return cv;
 }
 async function photoCanvas(c,gr,pg,n,total){
   /* the receipt fills the page (his request 2026-10-11): 4 mm margin, ONE tiny caption line per receipt, the rest is the photo */
@@ -2243,9 +2263,9 @@ async function ocrStart(file){
   const img=document.createElement('img'); img.className='ocrThumb'; img.alt=''; box.appendChild(img);
   const st=document.createElement('div'); st.className='note'; st.textContent=tr('بقرا الفاتورة…','Reading the receipt…'); box.appendChild(st);
   box.scrollIntoView({behavior:'smooth',block:'center'});
-  let blob, pdfText='';
+  let blob, blobs=null, pdfText='';
   if(isPdf(file)){st.textContent=tr('بفتح ملف الـ PDF…','Opening the PDF…');
-    try{const r=await pdfReceipt(file);blob=r.blob;pdfText=r.text}
+    try{const r=await pdfReceipt(file);blobs=r.blobs;blob=blobs[0];pdfText=r.text}
     catch(e){st.textContent=tr('ما قدرتش أفتح ملف الـ PDF ده (محتاج نت أول مرة) — جرّب صورة للفاتورة.','Could not open this PDF (needs internet the first time) — try a photo of the receipt.');ocrQ.length&&setTimeout(()=>ocrNext(),2500);return}}
   else if(file._scanned)blob=file;
   else{st.textContent=tr('ظبّط أطراف الفاتورة…','Adjust the receipt corners…');
@@ -2284,10 +2304,10 @@ async function ocrStart(file){
     const id=uid(), it={id,type:$('ocType').value,amount:Math.round(v*100)/100,remark:$('ocRem').value.trim()||c.project||''};
     if($('ocDate').value) it.date=$('ocDate').value;
     mutate(cc=>{cc.items=[...(cc.items||[]),it]});
-    try{await PDB.put(id,blob);photoKeys.add(id)}catch(e){}
+    try{const bs=blobs||[blob];for(let j=0;j<bs.length;j++){const k=j?id+'#'+(j+1):id;await PDB.put(k,bs[j]);photoKeys.add(k)}}catch(e){}
     URL.revokeObjectURL(u);renderSheet();
     const no=receiptNums(custodies.find(x=>x.id===curId)).get(id);
-    toast(tr(`✓ فاتورة رقم ${no} اتضافت بصورتها (${fmt(it.amount)})`,`✓ Receipt #${no} added with its photo (${fmt(it.amount)})`),()=>mutate(cc=>{cc.items=cc.items.filter(x=>x.id!==id)}));
+    toast(blobs&&blobs.length>1?tr(`✓ فاتورة رقم ${no} اتضافت بـ ${blobs.length} صفحات (${fmt(it.amount)})`,`✓ Receipt #${no} added with ${blobs.length} pages (${fmt(it.amount)})`):tr(`✓ فاتورة رقم ${no} اتضافت بصورتها (${fmt(it.amount)})`,`✓ Receipt #${no} added with its photo (${fmt(it.amount)})`),()=>mutate(cc=>{cc.items=cc.items.filter(x=>x.id!==id)}));
     ocrNext(no)};
   if(ocrQ.length){const sk=document.createElement('button');sk.className='btn';sk.textContent=tr('تخطّي','Skip');a.appendChild(sk);
     sk.onclick=()=>{URL.revokeObjectURL(u);ocrNext()}}
@@ -2557,23 +2577,30 @@ $('pasteBtn').onclick=async()=>{buzz();
   catch(e){hint()}};
 /* the normal «لصق» anywhere (text box included) also works when what was copied is a picture or a PDF */
 document.addEventListener('paste',e=>{const fs=[...((e.clipboardData&&e.clipboardData.files)||[])];if(fs.length&&takeReceipts(fs))e.preventDefault()});
-/* pdf.js (cdnjs, loaded the first time a PDF is opened): pages → one tall picture, plus the PDF's own text */
+/* pdf.js (cdnjs, loaded the first time a PDF is opened): EVERY page → its own picture (his request 2026-11-15:
+   same number of pages, same size, never merged, never scaled). The page size in points rides in the picture's type
+   («image/jpeg;pg=WxH») so the custody PDF prints that page 1:1 on a page of the same size */
+const PDF_MAXP=30;
+const pgSize=b=>{const m=/;pg=([\d.]+)x([\d.]+)/.exec((b&&b.type)||'');return m?[+m[1],+m[2]]:null};
 async function pdfReceipt(file){
   /* the worker is fetched and started from a blob: a worker straight from another site (cdnjs) is blocked and pdf.js hangs */
   if(!window.pdfjsLib)await loadScript('https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js');
   if(!/^blob:/.test(pdfjsLib.GlobalWorkerOptions.workerSrc||'')){
     const code=await (await fetch('https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js')).text();
     pdfjsLib.GlobalWorkerOptions.workerSrc=URL.createObjectURL(new Blob([code],{type:'text/javascript'}))}
-  const doc=await pdfjsLib.getDocument({data:new Uint8Array(await file.arrayBuffer())}).promise, n=Math.min(doc.numPages,3), canv=[];let text='';
-  for(let i=1;i<=n;i++){const pg=await doc.getPage(i), v0=pg.getViewport({scale:1}), sc=Math.min(3,1400/v0.width), v=pg.getViewport({scale:sc});
+  const doc=await pdfjsLib.getDocument({data:new Uint8Array(await file.arrayBuffer())}).promise, n=Math.min(doc.numPages,PDF_MAXP), blobs=[];let text='';
+  for(let i=1;i<=n;i++){const pg=await doc.getPage(i), v0=pg.getViewport({scale:1});
+    /* 300 dpi, capped at 3508 px on the long side (= A4 at 300 dpi) so a phone never runs out of canvas memory */
+    const sc=Math.min(300/72,3508/Math.max(v0.width,v0.height)), v=pg.getViewport({scale:sc});
     const c=document.createElement('canvas');c.width=Math.round(v.width);c.height=Math.round(v.height);const g=c.getContext('2d');g.fillStyle='#fff';g.fillRect(0,0,c.width,c.height);
     /* intent 'print': drawn without requestAnimationFrame, so it never stalls when the page isn't on screen */
-    await pg.render({canvasContext:g,viewport:v,intent:'print'}).promise;canv.push(c);
+    await pg.render({canvasContext:g,viewport:v,intent:'print'}).promise;
+    const b=await new Promise(ok=>c.toBlob(ok,'image/jpeg',.92));c.width=c.height=0;
+    blobs.push(new Blob([b],{type:`image/jpeg;pg=${v0.width.toFixed(2)}x${v0.height.toFixed(2)}`}));
     const tc=await pg.getTextContent();text+=tc.items.map(it=>it.str+(it.hasEOL?'\n':' ')).join('')+'\n'}
-  const W=Math.max(...canv.map(c=>c.width)),H=canv.reduce((s,c)=>s+c.height,0),out=document.createElement('canvas');out.width=W;out.height=H;
-  const og=out.getContext('2d');og.fillStyle='#fff';og.fillRect(0,0,W,H);let y=0;canv.forEach(c=>{og.drawImage(c,0,y);y+=c.height;c.width=c.height=0});
-  const blob=await new Promise(ok=>out.toBlob(ok,'image/jpeg',.85));out.width=out.height=0;doc.destroy();
-  return {blob,text};
+  if(doc.numPages>n)toast(tr(`الملف فيه ${doc.numPages} صفحة — اتضاف أول ${n} بس`,`The file has ${doc.numPages} pages — only the first ${n} were added`));
+  doc.destroy();
+  return {blobs,text};
 }
 /* ---------- projects: name <-> fixed code ---------- */
 let projects=[], pcol=null;
@@ -3055,7 +3082,7 @@ $('shBtn').onclick=async()=>{
 };
 if('serviceWorker' in navigator&&location.protocol==='https:')navigator.serviceWorker.register('sw.js').catch(()=>{});
 /* ---------- quick update: version.json is never cached; a newer one shows a bar, one tap reloads ---------- */
-const APP_VER='2026.10.24.1';
+const APP_VER='2026.11.15.1';
 $('verTxt').textContent=APP_VER;
 /* update = check the internet first, then let the new service worker take over; the saved copy is NOT deleted
    (deleting it and then losing the connection left Safari with «FetchEvent.respondWith … Returned response is null»);
