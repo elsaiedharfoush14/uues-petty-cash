@@ -22,6 +22,7 @@
 <meta name="mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-title" content="عهدة UUES">
 <meta name="apple-mobile-web-app-status-bar-style" content="default">
+<script>try{var t=localStorage.getItem('uues_theme');if(t==='light'||t==='dark')document.documentElement.dataset.theme=t}catch(e){}</script>
 <style>
 html,body{touch-action:manipulation}   /* no double-tap zoom */
 input,select,textarea{font-size:max(16px,1em)}   /* < 16px makes iPhone zoom in on focus */
@@ -472,8 +473,10 @@ html[dir=ltr] .card::before{border-radius:4px 0 0 4px}
 @keyframes spIn{from{opacity:0;transform:translateY(14px) scale(.92)}to{opacity:1;transform:none}}
 @keyframes spUp{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:none}}
 @keyframes spDot{0%,100%{opacity:.25}50%{opacity:1}}
-@media (prefers-color-scheme: dark){.splash{background:radial-gradient(120% 80% at 50% 0%,#1b2a40 0%,#0f1826 60%,#0b111a 100%)}
-  .spTitle{color:#e8eef6}.spLine{color:#7db6ff}.spSub{color:#a5b3c6}.spDots i{background:#7db6ff}}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]) .splash{background:radial-gradient(120% 80% at 50% 0%,#1b2a40 0%,#0f1826 60%,#0b111a 100%)}
+  :root:not([data-theme="light"]) .spTitle{color:#e8eef6}:root:not([data-theme="light"]) .spLine{color:#7db6ff}:root:not([data-theme="light"]) .spSub{color:#a5b3c6}:root:not([data-theme="light"]) .spDots i{background:#7db6ff}}
+:root[data-theme="dark"] .splash{background:radial-gradient(120% 80% at 50% 0%,#1b2a40 0%,#0f1826 60%,#0b111a 100%)}
+:root[data-theme="dark"] .spTitle{color:#e8eef6}:root[data-theme="dark"] .spLine{color:#7db6ff}:root[data-theme="dark"] .spSub{color:#a5b3c6}:root[data-theme="dark"] .spDots i{background:#7db6ff}
 .logoTile img{height:36px!important;width:auto}
 .aLogo{width:auto;height:auto;padding:14px 20px;border-radius:22px}
 .aLogo img{width:min(60vw,240px);height:auto}
@@ -510,7 +513,8 @@ html[dir=ltr] .card::before{border-radius:4px 0 0 4px}
 .foot{display:flex;flex-direction:column;gap:2px}
 .foot b{color:var(--ink)}
 .spBy{position:absolute;bottom:calc(22px + env(safe-area-inset-bottom,0px));font-size:12.5px;color:#6b7a90;letter-spacing:.01em;animation:spUp .6s .85s both}
-@media (prefers-color-scheme: dark){.spBy{color:#8c9bb0}}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]) .spBy{color:#8c9bb0}}
+:root[data-theme="dark"] .spBy{color:#8c9bb0}
 /* ---- tour, settings, summary, confetti ---- */
 .hBtns{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:10px}
 .hBtns .btn.big{font-size:15px;padding:12px 6px}
@@ -761,6 +765,7 @@ html[dir=ltr] .card::before{border-radius:4px 0 0 4px}
       <button class="linkBtn" id="tourBtn" type="button">👋 شوف الجولة التعريفية تاني</button>
     </div>
     <div class="panel langPanel"><strong>اللغة</strong><div class="seg langSeg" data-noi18n><button type="button" data-l="ar">العربية</button><button type="button" data-l="en">English</button></div></div>
+    <div class="panel langPanel"><strong>المظهر</strong><div class="seg themeSeg"><button type="button" data-t="auto">🌗 تلقائي</button><button type="button" data-t="light">☀️ فاتح</button><button type="button" data-t="dark">🌙 غامق</button></div></div>
 
     <div class="panel credit">
       <span class="cAv" aria-hidden="true">س</span>
@@ -782,6 +787,7 @@ html[dir=ltr] .card::before{border-radius:4px 0 0 4px}
     <div class="panel">
       <strong>آخر التحديثات</strong>
       <ul class="log">
+        <li><b class="num">2026.11.16</b><span>🌙 اختار شكل التطبيق: فاتح أو غامق أو تلقائي زي الموبايل (من «عن التطبيق»). ملف العهدة بيفضل أبيض زي ما هو.</span></li>
         <li><b class="num">2026.11.15</b><span>📸 صور الفواتير بأعلى جودة: الصورة بتتحفظ بدقتها الكاملة (12 ميجا)، زرار «📸 كاميرا الموبايل» بيفتح كاميرا الموبايل نفسها، والصور في ملف العهدة أوضح.</span></li>
         <li><b class="num">2026.11.15</b><span>📎 فاتورة الـ PDF بتتحط بنفس عدد صفحاتها ونفس مقاسها في ملف العهدة (من غير دمج ولا تصغير)، وزرار 📄 بتاع الفاتورة القديمة بيفتح الملفات زي الفاتورة الجديدة.</span></li>
         <li><b class="num">2026.10.21</b><span>🧾 قارئ الفواتير بقى بيفهم الفاتورة: بيعرف الإجمالي شامل الضريبة من الكلام اللي جنبه وحسبة الضريبة (مش أكبر رقم)، وبيعرف نوعها (بنزين، فندق، تاكسي…) — ولو مش متأكد بيقولك تختار الرقم الصح.</span></li>
@@ -1056,6 +1062,7 @@ const EN={
  'قول العهدة بصوتك':'Say your custody','المشروع والتاريخ والفواتير في جملة واحدة — زي ما بتحكيها لزميلك.':'Project, dates and invoices in one sentence — just like telling a colleague.',
  'راجع بلمسة':'Review in a tap','التطبيق بيرتب الفواتير ويحسب الأيام والوجبات. أي رقم تقدر تعدّله بلمسة.':'The app sorts the invoices and counts days and meals. Fix any number with a tap.',
  'طلّع Excel وتابع رصيدك':'Export Excel, track your balance','فورم UUES Expenses Report جاهز للحسابات، وتعرف دايماً ليك ولا عليك.':'A ready UUES Expenses Report for accounts — and you always know who owes whom.',
+ 'المظهر':'Appearance','🌗 تلقائي':'🌗 Auto','☀️ فاتح':'☀️ Light','🌙 غامق':'🌙 Dark','🌙 اختار شكل التطبيق: فاتح أو غامق أو تلقائي زي الموبايل (من «عن التطبيق»). ملف العهدة بيفضل أبيض زي ما هو.':'🌙 Choose the app look: light, dark or auto like the phone (in «About»). The custody file stays white as before.',
  'تخطي':'Skip','التالي':'Next','السكن':'Lodging','المواصلات':'Transport','متنوع':'Misc.','دوّر بالمشروع أو الكود أو الرقم…':'Search by project, code or number…',
  'آخر التحديثات':'What’s new','🧾 قارئ الفواتير بقى بيفهم الفاتورة: بيعرف الإجمالي شامل الضريبة من الكلام اللي جنبه وحسبة الضريبة (مش أكبر رقم)، وبيعرف نوعها (بنزين، فندق، تاكسي…) — ولو مش متأكد بيقولك تختار الرقم الصح.':'🧾 The receipt reader now understands the receipt: it finds the total incl. VAT from the words next to it and the VAT maths (not just the biggest figure), and knows its type (fuel, hotel, taxi…) — if unsure it asks you to tap the right number.','🔒 الصفحة بقت ثابتة من غير زوم، وشريط الإجمالي فاضل تحت. وزرار 📄 جنب أي فاتورة قديمة بيفتح كاميرا السكان.':'🔒 The page no longer zooms and the total bar stays at the bottom. The 📄 button next to any old invoice opens the scan camera.','➕ صفحة كمان':'➕ Add page','حذف الصفحة دي':'Delete this page','🎯 الكاميرا بقت بتلقط حرف الورقة نفسه: بتشتغل على ترابيزة بيضا أو خشب، ولو إيدك ماسكة الفاتورة.':'🎯 The camera now finds the paper edges themselves: works on a white or wooden table, even with your hand holding the receipt.','📸 كاميرا سكان جوه التطبيق زي واتساب: بتحوّط الفاتورة بإطار وتصوّر لوحدها (أو يدوي)، واختيار أبيض وأسود أو ألوان.':'📸 In-app scan camera like WhatsApp: it outlines the receipt and shoots by itself (or manually), black & white or colour.','📄 السكان بقى أنضف: بيشيل الظل، الورقة بيضا والكلام أوضح وبدقة أعلى — وزرار 📷 بتاع الفاتورة القديمة بيعدّي على السكان كمان.':'📄 Cleaner scans: shadows removed, white paper, sharper text at higher resolution — and an existing invoice’s 📷 button uses the scanner too.','📄 ماسح مستندات: التطبيق بيلاقي أطراف الفاتورة لوحده، بيعدّلها لو متصوّرة مايلة ويخلّيها أوضح زي السكانر.':'📄 Document scanner: the app finds the receipt edges, straightens a tilted photo and cleans it like a scanner.','📋 الصق الفاتورة على طول من واتساب (نسخ ← لصق)، وفواتير الـ PDF بتتقري وتتحط في الملف زي الصور.':'📋 Paste a receipt straight from WhatsApp (Copy → Paste), and PDF receipts are read and added to the file like photos.','📷 صوّر الفواتير ورا بعض — كل فاتورة بتاخد رقم، وتتحط مترقمة بعد الفورم في ملف PDF واحد تبعته مرة واحدة.':'📷 Snap receipts one after another — each gets a number and goes, numbered, after the form in ONE PDF file you send at once.','✍️ توقيعك على الفورم، 🧾 صور الفواتير بعد الفورم في الـ PDF، 📅 تاريخ لكل فاتورة («بنزين 110 يوم 3»)، 📷 صوّر الفاتورة والتطبيق يقراها، 💾 نسخة احتياطية كل أسبوع بدوسة.':'✍️ Your signature on the form, 🧾 receipt photos after the form in the PDF, 📅 a date per invoice («fuel 110 day 3»), 📷 snap a receipt and the app reads it, 💾 one-tap weekly backup.','📲 باركود للتطبيق: زميلك يصوّره ويضيف التطبيق بزرار واحد — واللوجو بقى ملوّن في الطباعة والـ Excel.':'📲 App QR code: a colleague scans it and adds the app with one button — and the logo is now in colour in print and Excel.','👁️ عرض العهدة كصورة واضحة A4 — شاركها واتساب أو اطبعها على طول، والـ PDF بقى مظبوط على ورقة A4 في أي موبايل.':'👁️ View a custody as a sharp A4 picture — share it on WhatsApp or print it right away; PDF now fits A4 on every phone.','تحليل المصروفات بالشهور والأنواع، بحث في العهد، وتنبيهات للعهد المتأخرة والنسخة الاحتياطية.':'Spending insights by month and type, custody search, and reminders for late custodies and backups.',
  'رصيد العهدة: المستلم والمصروف، ومدين أو دائن — ونسخة إنجليزي كاملة.':'Cash balance: received vs. spent, debit or credit — plus a full English version.',
@@ -1315,6 +1322,11 @@ $('langBtn').textContent=LANG==='en'?'ع':'EN';
 ['aria-label','title'].forEach(a=>$('langBtn').setAttribute(a,LANG==='en'?'العربية':'English'));
 $('langBtn').onclick=()=>setLang(LANG==='en'?'ar':'en');
 document.querySelectorAll('.langSeg [data-l]').forEach(b=>{b.setAttribute('aria-pressed',b.dataset.l===LANG);b.onclick=()=>{if(b.dataset.l!==LANG)setLang(b.dataset.l)}});
+function setTheme(t){try{t==='auto'?localStorage.removeItem('uues_theme'):localStorage.setItem('uues_theme',t)}catch(e){}
+  if(t==='auto')delete document.documentElement.dataset.theme;else document.documentElement.dataset.theme=t;
+  document.querySelectorAll('.themeSeg [data-t]').forEach(b=>b.setAttribute('aria-pressed',b.dataset.t===t))}
+document.querySelectorAll('.themeSeg [data-t]').forEach(b=>b.onclick=()=>setTheme(b.dataset.t));
+setTheme(document.documentElement.dataset.theme||'auto');
 
 /* ---------- smart reminders: late custodies + backup ---------- */
 const buzz=()=>{try{navigator.vibrate&&navigator.vibrate(8)}catch(e){}};
@@ -3102,7 +3114,7 @@ $('shBtn').onclick=async()=>{
 };
 if('serviceWorker' in navigator&&location.protocol==='https:')navigator.serviceWorker.register('sw.js').catch(()=>{});
 /* ---------- quick update: version.json is never cached; a newer one shows a bar, one tap reloads ---------- */
-const APP_VER='2026.11.15.2';
+const APP_VER='2026.11.16.1';
 $('verTxt').textContent=APP_VER;
 /* update = check the internet first, then let the new service worker take over; the saved copy is NOT deleted
    (deleting it and then losing the connection left Safari with «FetchEvent.respondWith … Returned response is null»);
