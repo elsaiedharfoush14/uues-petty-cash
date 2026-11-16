@@ -52,3 +52,5 @@
 2026-11-15 | DOCS · (PETTY request) | v2026.11.15.2 photo quality (12 MP kept, JPEG 96 %, phone-camera button, Android still photo); tested in browser, committed locally, push waits for his yes
 2026-11-15 | DOCS · (PETTY request) | v2026.11.15.2 pushed + live (Pages deploy OK); waits for his iPhone test
 2026-11-15 | PETTY · عام | continued from the DOCS session: live = v2026.11.15.2 checked; nothing to code, waits for his iPhone test of .1/.2; cloud-backup diff kept uncommitted
+2026-11-16 | PETTY · عام | compared the app with the YouTube delivery-app course; built + tested appearance switch (dark / light / auto) v2026.11.16.1, commit f735327 local, push waits for his yes
+2026-11-16 | PETTY · عام | v2026.11.16.1 pushed on his yes, live (Pages deploy OK)
